@@ -16,14 +16,14 @@ A feature-complete, production-ready NodeJS client library for the Kaseya Autota
 ## Installation
 
 ```sh
-npm install autotask-api-wrapper
+npm install autotask-node
 # or use npx for CLI
 ```
 
 ## Usage (Library)
 
 ```ts
-import { AutotaskClient } from 'autotask-api-wrapper';
+import { AutotaskClient } from 'autotask-node';
 
 const client = new AutotaskClient({
   username: 'user@example.com',
