@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+
+# Prompt logs and plans (project-specific)
+prompt_logs/
+plans/
+
+# TypeScript
+*.tsbuildinfo
+
+# OS files
+.DS_Store 
+ww2*
