@@ -1,10 +1,7 @@
-export type AutotaskRegion = 'NA' | 'EU' | 'AU' | 'UK' | 'CN';
-
 export interface AutotaskAuth {
   username: string;
   integrationCode: string;
   secret: string;
-  region?: AutotaskRegion;
   apiUrl?: string; // Optional override
 }
 

@@ -10,7 +10,6 @@ Env vars required:
   AUTOTASK_USERNAME
   AUTOTASK_INTEGRATION_CODE
   AUTOTASK_SECRET
-  AUTOTASK_REGION (optional, default: NA)
 `);
 }
 
@@ -22,13 +21,18 @@ async function main() {
     username: process.env.AUTOTASK_USERNAME!,
     integrationCode: process.env.AUTOTASK_INTEGRATION_CODE!,
     secret: process.env.AUTOTASK_SECRET!,
-    region: (process.env.AUTOTASK_REGION as any) || 'NA',
   };
   if (!auth.username || !auth.integrationCode || !auth.secret) {
     console.error('Missing required environment variables.');
     return printUsage();
   }
-  const client = new AutotaskClient(auth);
+  let client;
+  try {
+    client = await AutotaskClient.create(auth);
+  } catch (err) {
+    console.error('Failed to initialize Autotask client:', err);
+    process.exit(1);
+  }
 
   try {
     if (entity === 'tickets') {

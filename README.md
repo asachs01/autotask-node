@@ -41,6 +41,14 @@ const ticket = await client.tickets.create({ title: 'Test', ... });
 npx autotask-api tickets list --filter '{"status":4}'
 ```
 
+## Environment Variables
+
+- `AUTOTASK_USERNAME`: Your Autotask API username
+- `AUTOTASK_INTEGRATION_CODE`: Your Autotask API integration code
+- `AUTOTASK_SECRET`: Your Autotask API secret
+
+> The client will automatically detect the correct API zone for your account using your credentials. You do not need to specify a region.
+
 ## Development
 
 - Build: `npm run build`

@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import winston from 'winston';
-import { AutotaskAuth, AutotaskRegion } from '../types';
-import { getApiUrl } from '../utils/region';
+import { AutotaskAuth } from '../types';
 import { Tickets, Accounts, Contacts, Projects, TimeEntries, ConfigurationItems, ServiceCalls, Tasks, Resources, Notes, Attachments } from '../entities';
 
 export class AutotaskClient {
@@ -19,21 +18,12 @@ export class AutotaskClient {
   public attachments: Attachments;
   private logger: winston.Logger;
 
-  constructor(private config: AutotaskAuth) {
-    const apiUrl = config.apiUrl || getApiUrl(config.region || 'NA');
+  private constructor(private config: AutotaskAuth, axiosInstance: AxiosInstance) {
     this.logger = winston.createLogger({
       level: 'info',
       transports: [new winston.transports.Console()],
     });
-    this.axios = axios.create({
-      baseURL: apiUrl,
-      headers: {
-        'Content-Type': 'application/json',
-        'ApiIntegrationcode': config.integrationCode,
-        'UserName': config.username,
-        'Secret': config.secret,
-      },
-    });
+    this.axios = axiosInstance;
     this.tickets = new Tickets(this.axios, this.logger);
     this.accounts = new Accounts(this.axios, this.logger);
     this.contacts = new Contacts(this.axios, this.logger);
@@ -45,6 +35,38 @@ export class AutotaskClient {
     this.resources = new Resources(this.axios, this.logger);
     this.notes = new Notes(this.axios, this.logger);
     this.attachments = new Attachments(this.axios, this.logger);
+  }
+
+  static async create(config: AutotaskAuth): Promise<AutotaskClient> {
+    let apiUrl = config.apiUrl;
+    if (!apiUrl) {
+      // Zone detection
+      const zoneInfoUrl = 'https://webservices.autotask.net/atservicesrest/v1.0/zoneInformation';
+      try {
+        const resp = await axios.get(zoneInfoUrl, {
+          headers: {
+            'Content-Type': 'application/json',
+            'ApiIntegrationcode': config.integrationCode,
+            'UserName': config.username,
+            'Secret': config.secret,
+          },
+        });
+        apiUrl = resp.data?.url || resp.data?.ApiZoneURL || resp.data?.apiZoneUrl;
+        if (!apiUrl) throw new Error('Could not determine API zone URL from zoneInformation response');
+      } catch (err) {
+        throw new Error('Failed to detect Autotask API zone: ' + err);
+      }
+    }
+    const axiosInstance = axios.create({
+      baseURL: apiUrl,
+      headers: {
+        'Content-Type': 'application/json',
+        'ApiIntegrationcode': config.integrationCode,
+        'UserName': config.username,
+        'Secret': config.secret,
+      },
+    });
+    return new AutotaskClient(config, axiosInstance);
   }
 
   getLogger() {
