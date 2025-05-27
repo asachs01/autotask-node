@@ -1,15 +1,32 @@
 #!/usr/bin/env node
-import { AutotaskClient } from '../src/client/AutotaskClient';
-import { AutotaskAuth } from '../src/types';
+import { AutotaskClient } from '../client/AutotaskClient';
+import { AutotaskAuth } from '../types';
+import * as dotenv from 'dotenv';
+import { resolve } from 'path';
+
+// Load environment variables from .env file
+dotenv.config();
+
+// Also try to load from .env file in current working directory
+const cwdEnvPath = resolve(process.cwd(), '.env');
+dotenv.config({ path: cwdEnvPath });
 
 function printUsage() {
   console.log(`Usage:
-  autotask-api tickets <create|get|update|delete|list> [args]
+  autotask-node <entity> <create|get|update|delete|list> [args]
+
+Entities:
+  tickets, accounts, contacts, projects, timeEntries, configurationItems, 
+  serviceCalls, tasks, resources, notes, attachments, contracts,
+  contractServices, contractBlocks, contractAdjustments, contractExclusions,
+  invoices, quotes
 
 Env vars required:
   AUTOTASK_USERNAME
   AUTOTASK_INTEGRATION_CODE
   AUTOTASK_SECRET
+
+Environment variables can be set in a .env file in the current directory.
 `);
 }
 
@@ -247,6 +264,223 @@ async function main() {
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
           const res = await client.serviceCalls.list(query);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        default:
+          return printUsage();
+      }
+    } else if (entity === 'contracts') {
+      switch (command) {
+        case 'create': {
+          const contract = JSON.parse(args[0] || '{}');
+          const res = await client.contracts.create(contract);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'get': {
+          const id = Number(args[0]);
+          const res = await client.contracts.get(id);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'update': {
+          const id = Number(args[0]);
+          const contract = JSON.parse(args[1] || '{}');
+          const res = await client.contracts.update(id, contract);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'delete': {
+          const id = Number(args[0]);
+          await client.contracts.delete(id);
+          return console.log('Deleted');
+        }
+        case 'list': {
+          const query = args[0] ? JSON.parse(args[0]) : {};
+          const res = await client.contracts.list(query);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        default:
+          return printUsage();
+      }
+    } else if (entity === 'contractServices') {
+      switch (command) {
+        case 'create': {
+          const contractService = JSON.parse(args[0] || '{}');
+          const res = await client.contractServices.create(contractService);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'get': {
+          const id = Number(args[0]);
+          const res = await client.contractServices.get(id);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'update': {
+          const id = Number(args[0]);
+          const contractService = JSON.parse(args[1] || '{}');
+          const res = await client.contractServices.update(id, contractService);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'delete': {
+          const id = Number(args[0]);
+          await client.contractServices.delete(id);
+          return console.log('Deleted');
+        }
+        case 'list': {
+          const query = args[0] ? JSON.parse(args[0]) : {};
+          const res = await client.contractServices.list(query);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        default:
+          return printUsage();
+      }
+    } else if (entity === 'contractBlocks') {
+      switch (command) {
+        case 'create': {
+          const contractBlock = JSON.parse(args[0] || '{}');
+          const res = await client.contractBlocks.create(contractBlock);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'get': {
+          const id = Number(args[0]);
+          const res = await client.contractBlocks.get(id);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'update': {
+          const id = Number(args[0]);
+          const contractBlock = JSON.parse(args[1] || '{}');
+          const res = await client.contractBlocks.update(id, contractBlock);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'delete': {
+          const id = Number(args[0]);
+          await client.contractBlocks.delete(id);
+          return console.log('Deleted');
+        }
+        case 'list': {
+          const query = args[0] ? JSON.parse(args[0]) : {};
+          const res = await client.contractBlocks.list(query);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        default:
+          return printUsage();
+      }
+    } else if (entity === 'contractAdjustments') {
+      switch (command) {
+        case 'create': {
+          const contractAdjustment = JSON.parse(args[0] || '{}');
+          const res = await client.contractAdjustments.create(contractAdjustment);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'get': {
+          const id = Number(args[0]);
+          const res = await client.contractAdjustments.get(id);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'update': {
+          const id = Number(args[0]);
+          const contractAdjustment = JSON.parse(args[1] || '{}');
+          const res = await client.contractAdjustments.update(id, contractAdjustment);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'delete': {
+          const id = Number(args[0]);
+          await client.contractAdjustments.delete(id);
+          return console.log('Deleted');
+        }
+        case 'list': {
+          const query = args[0] ? JSON.parse(args[0]) : {};
+          const res = await client.contractAdjustments.list(query);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        default:
+          return printUsage();
+      }
+    } else if (entity === 'contractExclusions') {
+      switch (command) {
+        case 'create': {
+          const contractExclusion = JSON.parse(args[0] || '{}');
+          const res = await client.contractExclusions.create(contractExclusion);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'get': {
+          const id = Number(args[0]);
+          const res = await client.contractExclusions.get(id);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'update': {
+          const id = Number(args[0]);
+          const contractExclusion = JSON.parse(args[1] || '{}');
+          const res = await client.contractExclusions.update(id, contractExclusion);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'delete': {
+          const id = Number(args[0]);
+          await client.contractExclusions.delete(id);
+          return console.log('Deleted');
+        }
+        case 'list': {
+          const query = args[0] ? JSON.parse(args[0]) : {};
+          const res = await client.contractExclusions.list(query);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        default:
+          return printUsage();
+      }
+    } else if (entity === 'invoices') {
+      switch (command) {
+        case 'create': {
+          const invoice = JSON.parse(args[0] || '{}');
+          const res = await client.invoices.create(invoice);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'get': {
+          const id = Number(args[0]);
+          const res = await client.invoices.get(id);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'update': {
+          const id = Number(args[0]);
+          const invoice = JSON.parse(args[1] || '{}');
+          const res = await client.invoices.update(id, invoice);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'delete': {
+          const id = Number(args[0]);
+          await client.invoices.delete(id);
+          return console.log('Deleted');
+        }
+        case 'list': {
+          const query = args[0] ? JSON.parse(args[0]) : {};
+          const res = await client.invoices.list(query);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        default:
+          return printUsage();
+      }
+    } else if (entity === 'quotes') {
+      switch (command) {
+        case 'create': {
+          const quote = JSON.parse(args[0] || '{}');
+          const res = await client.quotes.create(quote);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'get': {
+          const id = Number(args[0]);
+          const res = await client.quotes.get(id);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'update': {
+          const id = Number(args[0]);
+          const quote = JSON.parse(args[1] || '{}');
+          const res = await client.quotes.update(id, quote);
+          return console.log(JSON.stringify(res, null, 2));
+        }
+        case 'delete': {
+          const id = Number(args[0]);
+          await client.quotes.delete(id);
+          return console.log('Deleted');
+        }
+        case 'list': {
+          const query = args[0] ? JSON.parse(args[0]) : {};
+          const res = await client.quotes.list(query);
           return console.log(JSON.stringify(res, null, 2));
         }
         default:

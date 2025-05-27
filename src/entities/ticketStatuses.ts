@@ -2,68 +2,66 @@ import { AxiosInstance } from 'axios';
 import winston from 'winston';
 import { MethodMetadata, ApiResponse } from '../types';
 
-export interface TimeEntry {
+export interface TicketStatus {
   id?: number;
-  resourceID?: number;
-  ticketID?: number;
-  taskID?: number;
-  projectID?: number;
-  startDateTime?: string;
-  endDateTime?: string;
-  hoursWorked?: number;
-  hoursToBill?: number;
-  type?: number;
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+  isDefaultValue?: boolean;
+  isSystemValue?: boolean;
+  label?: string;
+  sortOrder?: number;
   [key: string]: any;
 }
 
-export interface TimeEntryQuery {
+export interface TicketStatusQuery {
   filter?: Record<string, any>;
   sort?: string;
   page?: number;
   pageSize?: number;
 }
 
-export class TimeEntries {
-  private readonly endpoint = '/TimeEntries';
+export class TicketStatuses {
+  private readonly endpoint = '/TicketStatuses';
 
   constructor(private axios: AxiosInstance, private logger: winston.Logger) {}
 
   static getMetadata(): MethodMetadata[] {
     return [
       {
-        operation: 'createTimeEntry',
-        requiredParams: ['timeEntry'],
+        operation: 'createTicketStatus',
+        requiredParams: ['ticketStatus'],
         optionalParams: [],
-        returnType: 'TimeEntry',
-        endpoint: '/TimeEntries',
+        returnType: 'TicketStatus',
+        endpoint: '/TicketStatuses',
       },
       {
-        operation: 'getTimeEntry',
+        operation: 'getTicketStatus',
         requiredParams: ['id'],
         optionalParams: [],
-        returnType: 'TimeEntry',
-        endpoint: '/TimeEntries/{id}',
+        returnType: 'TicketStatus',
+        endpoint: '/TicketStatuses/{id}',
       },
       {
-        operation: 'updateTimeEntry',
-        requiredParams: ['id', 'timeEntry'],
+        operation: 'updateTicketStatus',
+        requiredParams: ['id', 'ticketStatus'],
         optionalParams: [],
-        returnType: 'TimeEntry',
-        endpoint: '/TimeEntries/{id}',
+        returnType: 'TicketStatus',
+        endpoint: '/TicketStatuses/{id}',
       },
       {
-        operation: 'deleteTimeEntry',
+        operation: 'deleteTicketStatus',
         requiredParams: ['id'],
         optionalParams: [],
         returnType: 'void',
-        endpoint: '/TimeEntries/{id}',
+        endpoint: '/TicketStatuses/{id}',
       },
       {
-        operation: 'listTimeEntries',
+        operation: 'listTicketStatuses',
         requiredParams: [],
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
-        returnType: 'TimeEntry[]',
-        endpoint: '/TimeEntries',
+        returnType: 'TicketStatus[]',
+        endpoint: '/TicketStatuses',
       },
     ];
   }
@@ -82,39 +80,39 @@ export class TimeEntries {
     }
   }
 
-  async create(timeEntry: TimeEntry): Promise<ApiResponse<TimeEntry>> {
-    this.logger.info('Creating time entry', { timeEntry });
+  async create(ticketStatus: TicketStatus): Promise<ApiResponse<TicketStatus>> {
+    this.logger.info('Creating ticket status', { ticketStatus });
     return this.requestWithRetry(async () => {
-      const { data } = await this.axios.post(this.endpoint, timeEntry);
+      const { data } = await this.axios.post(this.endpoint, ticketStatus);
       return { data };
     });
   }
 
-  async get(id: number): Promise<ApiResponse<TimeEntry>> {
-    this.logger.info('Getting time entry', { id });
+  async get(id: number): Promise<ApiResponse<TicketStatus>> {
+    this.logger.info('Getting ticket status', { id });
     return this.requestWithRetry(async () => {
       const { data } = await this.axios.get(`${this.endpoint}/${id}`);
       return { data };
     });
   }
 
-  async update(id: number, timeEntry: Partial<TimeEntry>): Promise<ApiResponse<TimeEntry>> {
-    this.logger.info('Updating time entry', { id, timeEntry });
+  async update(id: number, ticketStatus: Partial<TicketStatus>): Promise<ApiResponse<TicketStatus>> {
+    this.logger.info('Updating ticket status', { id, ticketStatus });
     return this.requestWithRetry(async () => {
-      const { data } = await this.axios.put(`${this.endpoint}/${id}`, timeEntry);
+      const { data } = await this.axios.put(`${this.endpoint}/${id}`, ticketStatus);
       return { data };
     });
   }
 
   async delete(id: number): Promise<void> {
-    this.logger.info('Deleting time entry', { id });
+    this.logger.info('Deleting ticket status', { id });
     return this.requestWithRetry(async () => {
       await this.axios.delete(`${this.endpoint}/${id}`);
     });
   }
 
-  async list(query: TimeEntryQuery = {}): Promise<ApiResponse<TimeEntry[]>> {
-    this.logger.info('Listing time entries', { query });
+  async list(query: TicketStatusQuery = {}): Promise<ApiResponse<TicketStatus[]>> {
+    this.logger.info('Listing ticket statuses', { query });
     const params: Record<string, any> = {};
     if (query.filter) params['search'] = JSON.stringify(query.filter);
     if (query.sort) params['sort'] = query.sort;

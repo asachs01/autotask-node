@@ -3,23 +3,33 @@ import winston from 'winston';
 import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
 import { BaseEntity } from './base';
 
-export interface Ticket {
+export interface ContractService {
   id?: number;
-  accountId?: number;
-  title?: string;
-  status?: number;
+  contractId?: number;
+  serviceId?: number;
+  unitPrice?: number;
+  unitCost?: number;
+  unitDiscount?: number;
+  adjustedPrice?: number;
+  quantity?: number;
+  internalCurrencyUnitPrice?: number;
+  internalCurrencyUnitCost?: number;
+  internalCurrencyAdjustedPrice?: number;
+  invoiceDescription?: string;
+  isOptional?: boolean;
+  quoteItemId?: number;
   [key: string]: any;
 }
 
-export interface TicketQuery {
+export interface ContractServiceQuery {
   filter?: Record<string, any>;
   sort?: string;
   page?: number;
   pageSize?: number;
 }
 
-export class Tickets extends BaseEntity {
-  private readonly endpoint = '/Tickets';
+export class ContractServices extends BaseEntity {
+  private readonly endpoint = '/ContractServices';
 
   constructor(
     axios: AxiosInstance, 
@@ -32,54 +42,54 @@ export class Tickets extends BaseEntity {
   static getMetadata(): MethodMetadata[] {
     return [
       {
-        operation: 'createTicket',
-        requiredParams: ['ticket'],
+        operation: 'createContractService',
+        requiredParams: ['contractService'],
         optionalParams: [],
-        returnType: 'Ticket',
-        endpoint: '/Tickets',
+        returnType: 'ContractService',
+        endpoint: '/ContractServices',
       },
       {
-        operation: 'getTicket',
+        operation: 'getContractService',
         requiredParams: ['id'],
         optionalParams: [],
-        returnType: 'Ticket',
-        endpoint: '/Tickets/{id}',
+        returnType: 'ContractService',
+        endpoint: '/ContractServices/{id}',
       },
       {
-        operation: 'updateTicket',
-        requiredParams: ['id', 'ticket'],
+        operation: 'updateContractService',
+        requiredParams: ['id', 'contractService'],
         optionalParams: [],
-        returnType: 'Ticket',
-        endpoint: '/Tickets/{id}',
+        returnType: 'ContractService',
+        endpoint: '/ContractServices/{id}',
       },
       {
-        operation: 'deleteTicket',
+        operation: 'deleteContractService',
         requiredParams: ['id'],
         optionalParams: [],
         returnType: 'void',
-        endpoint: '/Tickets/{id}',
+        endpoint: '/ContractServices/{id}',
       },
       {
-        operation: 'listTickets',
+        operation: 'listContractServices',
         requiredParams: [],
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
-        returnType: 'Ticket[]',
-        endpoint: '/Tickets',
+        returnType: 'ContractService[]',
+        endpoint: '/ContractServices',
       },
     ];
   }
 
-  async create(ticket: Ticket): Promise<ApiResponse<Ticket>> {
-    this.logger.info('Creating ticket', { ticket });
+  async create(contractService: ContractService): Promise<ApiResponse<ContractService>> {
+    this.logger.info('Creating contract service', { contractService });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, ticket),
+      async () => this.axios.post(this.endpoint, contractService),
       this.endpoint,
       'POST'
     );
   }
 
-  async get(id: number): Promise<ApiResponse<Ticket>> {
-    this.logger.info('Getting ticket', { id });
+  async get(id: number): Promise<ApiResponse<ContractService>> {
+    this.logger.info('Getting contract service', { id });
     return this.executeRequest(
       async () => this.axios.get(`${this.endpoint}/${id}`),
       `${this.endpoint}/${id}`,
@@ -87,28 +97,26 @@ export class Tickets extends BaseEntity {
     );
   }
 
-  async update(id: number, ticket: Partial<Ticket>): Promise<ApiResponse<Ticket>> {
-    this.logger.info('Updating ticket', { id, ticket });
+  async update(id: number, contractService: Partial<ContractService>): Promise<ApiResponse<ContractService>> {
+    this.logger.info('Updating contract service', { id, contractService });
     return this.executeRequest(
-      async () => this.axios.put(`${this.endpoint}/${id}`, ticket),
+      async () => this.axios.put(`${this.endpoint}/${id}`, contractService),
       `${this.endpoint}/${id}`,
       'PUT'
     );
   }
 
   async delete(id: number): Promise<void> {
-    this.logger.info('Deleting ticket', { id });
-    const response = await this.executeRequest(
+    this.logger.info('Deleting contract service', { id });
+    await this.executeRequest(
       async () => this.axios.delete(`${this.endpoint}/${id}`),
       `${this.endpoint}/${id}`,
       'DELETE'
     );
-    // Return void for delete operations
-    return;
   }
 
-  async list(query: TicketQuery = {}): Promise<ApiResponse<Ticket[]>> {
-    this.logger.info('Listing tickets', { query });
+  async list(query: ContractServiceQuery = {}): Promise<ApiResponse<ContractService[]>> {
+    this.logger.info('Listing contract services', { query });
     const searchBody: Record<string, any> = {};
     
     // Ensure there's a filter - Autotask API requires a filter
@@ -141,12 +149,22 @@ export class Tickets extends BaseEntity {
     if (query.page) searchBody.page = query.page;
     if (query.pageSize) searchBody.pageSize = query.pageSize;
     
-    this.logger.info('Listing tickets with search body', { searchBody });
+    this.logger.info('Listing contract services with search body', { searchBody });
     
     return this.executeRequest(
       async () => this.axios.post(`${this.endpoint}/query`, searchBody),
       `${this.endpoint}/query`,
       'POST'
     );
+  }
+
+  /**
+   * Get all services for a specific contract
+   */
+  async getByContract(contractId: number): Promise<ApiResponse<ContractService[]>> {
+    this.logger.info('Getting contract services by contract ID', { contractId });
+    return this.list({
+      filter: { contractId }
+    });
   }
 } 

@@ -14,6 +14,16 @@ yarn-error.log*
 .env
 .env.*
 
+# Integration test environment (keep example)
+.env.test
+!env.test.example
+
+# Test reports and logs
+test/integration/logs/
+test/integration/reports/
+coverage/
+junit.xml
+
 # Prompt logs and plans (project-specific)
 prompt_logs/
 plans/

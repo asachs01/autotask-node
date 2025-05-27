@@ -2,68 +2,70 @@ import { AxiosInstance } from 'axios';
 import winston from 'winston';
 import { MethodMetadata, ApiResponse } from '../types';
 
-export interface TimeEntry {
+export interface PurchaseOrder {
   id?: number;
-  resourceID?: number;
-  ticketID?: number;
-  taskID?: number;
-  projectID?: number;
-  startDateTime?: string;
-  endDateTime?: string;
-  hoursWorked?: number;
-  hoursToBill?: number;
-  type?: number;
+  vendorAccountId?: number;
+  purchaseOrderNumber?: string;
+  orderDate?: string;
+  expectedDeliveryDate?: string;
+  totalAmount?: number;
+  status?: string;
+  description?: string;
+  shippingType?: string;
+  shippingAmount?: number;
+  taxAmount?: number;
+  receivedDate?: string;
   [key: string]: any;
 }
 
-export interface TimeEntryQuery {
+export interface PurchaseOrderQuery {
   filter?: Record<string, any>;
   sort?: string;
   page?: number;
   pageSize?: number;
 }
 
-export class TimeEntries {
-  private readonly endpoint = '/TimeEntries';
+export class PurchaseOrders {
+  private readonly endpoint = '/PurchaseOrders';
 
   constructor(private axios: AxiosInstance, private logger: winston.Logger) {}
 
   static getMetadata(): MethodMetadata[] {
     return [
       {
-        operation: 'createTimeEntry',
-        requiredParams: ['timeEntry'],
+        operation: 'createPurchaseOrder',
+        requiredParams: ['purchaseOrder'],
         optionalParams: [],
-        returnType: 'TimeEntry',
-        endpoint: '/TimeEntries',
+        returnType: 'PurchaseOrder',
+        endpoint: '/PurchaseOrders',
       },
       {
-        operation: 'getTimeEntry',
+        operation: 'getPurchaseOrder',
         requiredParams: ['id'],
         optionalParams: [],
-        returnType: 'TimeEntry',
-        endpoint: '/TimeEntries/{id}',
+        returnType: 'PurchaseOrder',
+        endpoint: '/PurchaseOrders/{id}',
       },
       {
-        operation: 'updateTimeEntry',
-        requiredParams: ['id', 'timeEntry'],
+        operation: 'updatePurchaseOrder',
+        requiredParams: ['id', 'purchaseOrder'],
         optionalParams: [],
-        returnType: 'TimeEntry',
-        endpoint: '/TimeEntries/{id}',
+        returnType: 'PurchaseOrder',
+        endpoint: '/PurchaseOrders/{id}',
       },
       {
-        operation: 'deleteTimeEntry',
+        operation: 'deletePurchaseOrder',
         requiredParams: ['id'],
         optionalParams: [],
         returnType: 'void',
-        endpoint: '/TimeEntries/{id}',
+        endpoint: '/PurchaseOrders/{id}',
       },
       {
-        operation: 'listTimeEntries',
+        operation: 'listPurchaseOrders',
         requiredParams: [],
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
-        returnType: 'TimeEntry[]',
-        endpoint: '/TimeEntries',
+        returnType: 'PurchaseOrder[]',
+        endpoint: '/PurchaseOrders',
       },
     ];
   }
@@ -82,39 +84,39 @@ export class TimeEntries {
     }
   }
 
-  async create(timeEntry: TimeEntry): Promise<ApiResponse<TimeEntry>> {
-    this.logger.info('Creating time entry', { timeEntry });
+  async create(purchaseOrder: PurchaseOrder): Promise<ApiResponse<PurchaseOrder>> {
+    this.logger.info('Creating purchase order', { purchaseOrder });
     return this.requestWithRetry(async () => {
-      const { data } = await this.axios.post(this.endpoint, timeEntry);
+      const { data } = await this.axios.post(this.endpoint, purchaseOrder);
       return { data };
     });
   }
 
-  async get(id: number): Promise<ApiResponse<TimeEntry>> {
-    this.logger.info('Getting time entry', { id });
+  async get(id: number): Promise<ApiResponse<PurchaseOrder>> {
+    this.logger.info('Getting purchase order', { id });
     return this.requestWithRetry(async () => {
       const { data } = await this.axios.get(`${this.endpoint}/${id}`);
       return { data };
     });
   }
 
-  async update(id: number, timeEntry: Partial<TimeEntry>): Promise<ApiResponse<TimeEntry>> {
-    this.logger.info('Updating time entry', { id, timeEntry });
+  async update(id: number, purchaseOrder: Partial<PurchaseOrder>): Promise<ApiResponse<PurchaseOrder>> {
+    this.logger.info('Updating purchase order', { id, purchaseOrder });
     return this.requestWithRetry(async () => {
-      const { data } = await this.axios.put(`${this.endpoint}/${id}`, timeEntry);
+      const { data } = await this.axios.put(`${this.endpoint}/${id}`, purchaseOrder);
       return { data };
     });
   }
 
   async delete(id: number): Promise<void> {
-    this.logger.info('Deleting time entry', { id });
+    this.logger.info('Deleting purchase order', { id });
     return this.requestWithRetry(async () => {
       await this.axios.delete(`${this.endpoint}/${id}`);
     });
   }
 
-  async list(query: TimeEntryQuery = {}): Promise<ApiResponse<TimeEntry[]>> {
-    this.logger.info('Listing time entries', { query });
+  async list(query: PurchaseOrderQuery = {}): Promise<ApiResponse<PurchaseOrder[]>> {
+    this.logger.info('Listing purchase orders', { query });
     const params: Record<string, any> = {};
     if (query.filter) params['search'] = JSON.stringify(query.filter);
     if (query.sort) params['sort'] = query.sort;

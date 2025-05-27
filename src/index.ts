@@ -1,2 +1,3 @@
 export { AutotaskClient } from './client/AutotaskClient';
-export * from './types'; 
+export { AutotaskAuth } from './types';
+export * from './entities'; 

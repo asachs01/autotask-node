@@ -16,4 +16,26 @@ export interface MethodMetadata {
 export interface ApiResponse<T> {
   data: T;
   meta?: any;
-} 
+}
+
+// Enhanced error handling exports
+export {
+  AutotaskError,
+  AuthError,
+  ValidationError,
+  RateLimitError,
+  NotFoundError,
+  ServerError,
+  NetworkError,
+  ConfigurationError,
+  createAutotaskError,
+  isRetryableError,
+  getRetryDelay,
+} from '../utils/errors';
+
+// Request handling exports
+export {
+  RequestHandler,
+  RequestOptions,
+  RequestContext,
+} from '../utils/requestHandler'; 
