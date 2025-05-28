@@ -4,9 +4,49 @@ import { MethodMetadata, ApiResponse } from '../types';
 
 export interface Contact {
   id?: number;
-  accountId?: number;
-  name?: string;
-  email?: string;
+  companyID?: number;
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+  emailAddress2?: string;
+  emailAddress3?: string;
+  phone?: string;
+  alternatePhone?: string;
+  mobilePhone?: string;
+  faxNumber?: string;
+  extension?: string;
+  title?: string;
+  addressLine?: string;
+  addressLine1?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  countryID?: number;
+  isActive?: number;
+  primaryContact?: boolean;
+  note?: string;
+  externalID?: string;
+  namePrefix?: number;
+  nameSuffix?: number;
+  middleInitial?: string;
+  roomNumber?: string;
+  createDate?: string;
+  lastActivityDate?: string;
+  lastModifiedDate?: string;
+  companylocationID?: number;
+  additionalAddressInformation?: string;
+  bulkEmailOptOutTime?: string;
+  facebookUrl?: string;
+  linkedInUrl?: string;
+  twitterUrl?: string;
+  isOptedOutFromBulkEmail?: boolean;
+  receivesEmailNotifications?: boolean;
+  solicitationOptOut?: boolean;
+  solicitationOptOutTime?: string;
+  surveyOptOut?: boolean;
+  startDate?: string;
+  impersonatorCreatorResourceID?: number;
+  apiVendorID?: number;
   [key: string]: any;
 }
 
@@ -20,7 +60,10 @@ export interface ContactQuery {
 export class Contacts {
   private readonly endpoint = '/Contacts';
 
-  constructor(private axios: AxiosInstance, private logger: winston.Logger) {}
+  constructor(
+    private axios: AxiosInstance,
+    private logger: winston.Logger
+  ) {}
 
   static getMetadata(): MethodMetadata[] {
     return [
@@ -62,7 +105,11 @@ export class Contacts {
     ];
   }
 
-  private async requestWithRetry<T>(fn: () => Promise<T>, retries = 3, delay = 500): Promise<T> {
+  private async requestWithRetry<T>(
+    fn: () => Promise<T>,
+    retries = 3,
+    delay = 500
+  ): Promise<T> {
     let attempt = 0;
     while (true) {
       try {
@@ -71,7 +118,9 @@ export class Contacts {
         attempt++;
         this.logger.warn(`Request failed (attempt ${attempt}): ${err}`);
         if (attempt > retries) throw err;
-        await new Promise(res => setTimeout(res, delay * Math.pow(2, attempt - 1)));
+        await new Promise(res =>
+          setTimeout(res, delay * Math.pow(2, attempt - 1))
+        );
       }
     }
   }
@@ -92,7 +141,10 @@ export class Contacts {
     });
   }
 
-  async update(id: number, contact: Partial<Contact>): Promise<ApiResponse<Contact>> {
+  async update(
+    id: number,
+    contact: Partial<Contact>
+  ): Promise<ApiResponse<Contact>> {
     this.logger.info('Updating contact', { id, contact });
     return this.requestWithRetry(async () => {
       const { data } = await this.axios.put(`${this.endpoint}/${id}`, contact);
@@ -119,4 +171,4 @@ export class Contacts {
       return { data };
     });
   }
-} 
+}

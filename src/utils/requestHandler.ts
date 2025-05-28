@@ -1,13 +1,19 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+} from 'axios';
 import winston from 'winston';
 import { v4 as uuidv4 } from 'uuid';
-import { 
-  AutotaskError, 
-  createAutotaskError, 
-  isRetryableError, 
+import {
+  AutotaskError,
+  createAutotaskError,
+  isRetryableError,
   getRetryDelay,
-  ConfigurationError 
+  ConfigurationError,
 } from './errors';
+import { PerformanceMonitor } from './performanceMonitor';
 
 export interface RequestOptions {
   retries?: number;
@@ -16,6 +22,7 @@ export interface RequestOptions {
   enableRequestLogging?: boolean;
   enableResponseLogging?: boolean;
   requestId?: string;
+  enablePerformanceMonitoring?: boolean;
 }
 
 export interface RequestContext {
@@ -37,13 +44,17 @@ export class RequestHandler {
     enableRequestLogging: true,
     enableResponseLogging: true,
     requestId: '',
+    enablePerformanceMonitoring: true,
   };
+
+  private performanceMonitor: PerformanceMonitor;
 
   constructor(
     private axios: AxiosInstance,
     private logger: winston.Logger,
     private globalOptions: Partial<RequestOptions> = {}
   ) {
+    this.performanceMonitor = new PerformanceMonitor(this.logger);
     this.setupAxiosInterceptors();
   }
 
@@ -53,7 +64,7 @@ export class RequestHandler {
   private setupAxiosInterceptors(): void {
     // Request interceptor
     this.axios.interceptors.request.use(
-      (config) => {
+      config => {
         // Add timeout if not already set
         if (!config.timeout && this.defaultOptions.timeout) {
           config.timeout = this.defaultOptions.timeout;
@@ -65,7 +76,7 @@ export class RequestHandler {
 
         return config;
       },
-      (error) => {
+      error => {
         this.logger.error('Request interceptor error:', error);
         return Promise.reject(error);
       }
@@ -73,22 +84,23 @@ export class RequestHandler {
 
     // Response interceptor
     this.axios.interceptors.response.use(
-      (response) => {
-        const duration = Date.now() - (response.config.metadata?.startTime || 0);
-        response.metadata = { 
-          ...response.config.metadata, 
+      response => {
+        const duration =
+          Date.now() - (response.config.metadata?.startTime || 0);
+        response.metadata = {
+          ...response.config.metadata,
           duration,
-          success: true 
+          success: true,
         };
         return response;
       },
-      (error) => {
+      error => {
         const duration = Date.now() - (error.config?.metadata?.startTime || 0);
         if (error.config) {
-          error.config.metadata = { 
-            ...error.config.metadata, 
+          error.config.metadata = {
+            ...error.config.metadata,
             duration,
-            success: false 
+            success: false,
           };
         }
         return Promise.reject(error);
@@ -105,9 +117,13 @@ export class RequestHandler {
     method: string,
     options: RequestOptions = {}
   ): Promise<AxiosResponse<T>> {
-    const mergedOptions = { ...this.defaultOptions, ...this.globalOptions, ...options };
+    const mergedOptions = {
+      ...this.defaultOptions,
+      ...this.globalOptions,
+      ...options,
+    };
     const requestId = options.requestId || uuidv4();
-    
+
     const context: RequestContext = {
       requestId,
       endpoint,
@@ -116,6 +132,14 @@ export class RequestHandler {
       attempt: 0,
     };
 
+    // Start performance monitoring if enabled
+    let performanceTimer:
+      | ((statusCode?: number, error?: string) => void)
+      | undefined;
+    if (mergedOptions.enablePerformanceMonitoring) {
+      performanceTimer = this.performanceMonitor.startTimer(endpoint, method);
+    }
+
     let lastError: AutotaskError | undefined;
 
     for (let attempt = 1; attempt <= mergedOptions.retries + 1; attempt++) {
@@ -123,24 +147,41 @@ export class RequestHandler {
 
       try {
         this.logRequest(context, mergedOptions, attempt > 1);
-        
+
         const response = await requestFn();
-        
+
         this.logResponse(context, response, mergedOptions);
-        
+
+        // Record successful performance metrics
+        if (performanceTimer) {
+          performanceTimer(response.status, undefined);
+        }
+
         // Success - return the response
         return response;
-
       } catch (error) {
         const autotaskError = this.handleError(error, context);
         lastError = autotaskError;
 
         this.logError(context, autotaskError, mergedOptions);
 
+        // Record error performance metrics
+        if (performanceTimer && attempt === mergedOptions.retries + 1) {
+          // Only record on final attempt to avoid duplicate metrics
+          performanceTimer(autotaskError.statusCode, autotaskError.message);
+        }
+
         // Check if we should retry
-        if (attempt <= mergedOptions.retries && isRetryableError(autotaskError)) {
-          const delay = getRetryDelay(autotaskError, attempt, mergedOptions.baseDelay);
-          
+        if (
+          attempt <= mergedOptions.retries &&
+          isRetryableError(autotaskError)
+        ) {
+          const delay = getRetryDelay(
+            autotaskError,
+            attempt,
+            mergedOptions.baseDelay
+          );
+
           this.logger.warn(`Request failed, retrying in ${delay}ms`, {
             requestId: context.requestId,
             endpoint: context.endpoint,
@@ -162,7 +203,7 @@ export class RequestHandler {
     }
 
     // This should never be reached, but TypeScript requires it
-    throw lastError || new ConfigurationError('Unexpected error in request execution');
+    throw lastError || new Error('Unexpected error in request execution');
   }
 
   /**
@@ -197,8 +238,8 @@ export class RequestHandler {
    * Log request details
    */
   private logRequest(
-    context: RequestContext, 
-    options: Required<RequestOptions>, 
+    context: RequestContext,
+    options: Required<RequestOptions>,
     isRetry: boolean = false
   ): void {
     if (!options.enableRequestLogging) return;
@@ -223,14 +264,14 @@ export class RequestHandler {
    * Log response details
    */
   private logResponse<T>(
-    context: RequestContext, 
-    response: AxiosResponse<T>, 
+    context: RequestContext,
+    response: AxiosResponse<T>,
     options: Required<RequestOptions>
   ): void {
     if (!options.enableResponseLogging) return;
 
     const duration = Date.now() - context.startTime;
-    
+
     this.logger.info('Request completed successfully', {
       requestId: context.requestId,
       endpoint: context.endpoint,
@@ -248,12 +289,12 @@ export class RequestHandler {
    * Log error details
    */
   private logError(
-    context: RequestContext, 
-    error: AutotaskError, 
+    context: RequestContext,
+    error: AutotaskError,
     options: Required<RequestOptions>
   ): void {
     const duration = Date.now() - context.startTime;
-    
+
     const logData = {
       requestId: context.requestId,
       endpoint: context.endpoint,
@@ -277,10 +318,45 @@ export class RequestHandler {
   }
 
   /**
-   * Sleep utility for retry delays
+   * Sleep for specified milliseconds
    */
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Get performance monitor instance
+   */
+  getPerformanceMonitor(): PerformanceMonitor {
+    return this.performanceMonitor;
+  }
+
+  /**
+   * Get current performance metrics
+   */
+  getPerformanceMetrics() {
+    return this.performanceMonitor.getMetrics();
+  }
+
+  /**
+   * Get detailed performance report
+   */
+  getPerformanceReport() {
+    return this.performanceMonitor.getDetailedReport();
+  }
+
+  /**
+   * Reset performance metrics
+   */
+  resetPerformanceMetrics(): void {
+    this.performanceMonitor.reset();
+  }
+
+  /**
+   * Log performance summary
+   */
+  logPerformanceSummary(): void {
+    this.performanceMonitor.logSummary();
   }
 
   /**
@@ -296,4 +372,4 @@ export class RequestHandler {
   getGlobalOptions(): Partial<RequestOptions> {
     return { ...this.globalOptions };
   }
-} 
+}

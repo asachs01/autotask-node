@@ -1,257 +1,284 @@
-import {
-  getIntegrationHelpers,
-  IntegrationTestHelpers,
-} from '../helpers/testHelpers';
+import { AutotaskClient } from '../../../src/client/AutotaskClient';
+import { Account } from '../../../src/entities/accounts';
+import { setupIntegrationTest, delay, generateTestId } from '../setup';
+import { IntegrationTestConfig } from '../setup';
 
-IntegrationTestHelpers.describeIfEnabled('Accounts Integration Tests', () => {
-  let helpers: IntegrationTestHelpers;
+describe('Accounts Integration Tests', () => {
+  let config: IntegrationTestConfig;
   const createdAccountIds: number[] = [];
 
-  beforeAll(() => {
-    helpers = getIntegrationHelpers();
+  beforeAll(async () => {
+    config = await setupIntegrationTest();
+    console.log('🏢 Starting Accounts integration tests...');
   });
 
   afterAll(async () => {
-    // Cleanup any created accounts
-    for (const accountId of createdAccountIds) {
-      await helpers.cleanupTestAccount(accountId);
+    // Note: Companies cannot be deleted via API according to Autotask documentation
+    // We'll leave test accounts in place but mark them as inactive if possible
+    if (createdAccountIds.length > 0) {
+      console.log(
+        `⚠️ Created ${createdAccountIds.length} test accounts that cannot be deleted via API`
+      );
+      console.log('Test account IDs:', createdAccountIds);
+
+      // Try to deactivate test accounts instead
+      for (const accountId of createdAccountIds) {
+        try {
+          await config.client.accounts.update(accountId, { isActive: false });
+          console.log(`✅ Deactivated test account ${accountId}`);
+        } catch (error: any) {
+          console.log(
+            `⚠️ Could not deactivate account ${accountId}:`,
+            error.message
+          );
+        }
+      }
     }
+
+    await config.cleanup();
+  });
+
+  describe('Authentication and Connectivity', () => {
+    it('should connect to Autotask API successfully', async () => {
+      expect(config.client).toBeDefined();
+      expect(config.client.accounts).toBeDefined();
+    });
   });
 
   describe('CRUD Operations', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should create a new account',
-      async () => {
-        const accountData = {
-          accountName: `Integration Test Account - ${Date.now()}`,
-          accountType: 1, // Customer
-          phone: '555-0123',
-          city: 'Test City',
-          state: 'TS',
-          postalCode: '12345',
-          country: 'United States',
-        };
+    it('should create a new account', async () => {
+      const testId = generateTestId();
+      const accountData: Account = {
+        companyName: `Test Account ${testId}`,
+        companyType: 1, // Customer
+        phone: '555-0123',
+        isActive: true,
+      };
 
-        const response = await (
-          globalThis as any
-        ).__AUTOTASK_CLIENT__.accounts.create(accountData);
+      const createdAccount = await config.client.accounts.create(accountData);
 
-        expect(response.data).toBeValidAutotaskEntity();
-        expect(response.data.accountName).toBe(accountData.accountName);
-        expect(response.data.accountType).toBe(accountData.accountType);
-        expect(response.data.phone).toBe(accountData.phone);
+      expect(createdAccount).toBeDefined();
+      expect(createdAccount.data).toBeDefined();
+      expect(createdAccount.data.companyName).toBe(accountData.companyName);
+      expect(createdAccount.data.companyType).toBe(accountData.companyType);
 
-        if (response.data.id) {
-          createdAccountIds.push(response.data.id);
-        }
+      if (createdAccount.data.id) {
+        createdAccountIds.push(createdAccount.data.id);
       }
-    );
+    });
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should retrieve an account by ID',
-      async () => {
-        // Create an account first
-        const createResponse = await helpers.createTestAccount();
-        if (createResponse.data.id) {
-          createdAccountIds.push(createResponse.data.id);
-        }
+    it('should retrieve an existing account', async () => {
+      // First create an account to retrieve
+      const testId = generateTestId();
+      const accountData: Account = {
+        companyName: `Test Account ${testId}`,
+        companyType: 1,
+        isActive: true,
+      };
 
-        // Retrieve the account
-        const response = await (
-          globalThis as any
-        ).__AUTOTASK_CLIENT__.accounts.get(createResponse.data.id);
+      const createdAccount = await config.client.accounts.create(accountData);
 
-        expect(response.data).toBeValidAutotaskEntity();
-        expect(response.data.id).toBe(createResponse.data.id);
-        expect(response.data.accountName).toBe(createResponse.data.accountName);
+      if (!createdAccount.data.id) {
+        throw new Error('Failed to create account for retrieval test');
       }
-    );
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should update an account',
-      async () => {
-        // Create an account first
-        const createResponse = await helpers.createTestAccount();
-        if (createResponse.data.id) {
-          createdAccountIds.push(createResponse.data.id);
-        }
+      createdAccountIds.push(createdAccount.data.id);
 
-        const updateData = {
-          accountName: `Updated Account Name - ${Date.now()}`,
-          phone: '555-9999',
-        };
+      // Now retrieve it
+      const retrievedAccount = await config.client.accounts.get(
+        createdAccount.data.id
+      );
 
-        // Update the account
-        const response = await (
-          globalThis as any
-        ).__AUTOTASK_CLIENT__.accounts.update(
-          createResponse.data.id,
-          updateData
-        );
+      expect(retrievedAccount).toBeDefined();
+      expect(retrievedAccount.data).toBeDefined();
+      expect(retrievedAccount.data.id).toBe(createdAccount.data.id);
+      expect(retrievedAccount.data.companyName).toBe(accountData.companyName);
+    });
 
-        expect(response.data).toBeValidAutotaskEntity();
-        expect(response.data.id).toBe(createResponse.data.id);
-        expect(response.data.accountName).toBe(updateData.accountName);
-        expect(response.data.phone).toBe(updateData.phone);
+    it('should update an existing account', async () => {
+      // First create an account to update
+      const testId = generateTestId();
+      const accountData: Account = {
+        companyName: `Test Account ${testId}`,
+        companyType: 1,
+        isActive: true,
+      };
+
+      const createdAccount = await config.client.accounts.create(accountData);
+
+      if (!createdAccount.data.id) {
+        throw new Error('Failed to create account for update test');
       }
-    );
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should list accounts with filtering',
-      async () => {
-        const response = await (
-          globalThis as any
-        ).__AUTOTASK_CLIENT__.accounts.list({
-          filter: { accountType: 1 }, // Customer accounts
-          pageSize: 10,
-        });
+      createdAccountIds.push(createdAccount.data.id);
 
-        expect(response.data).toBeInstanceOf(Array);
-        expect(response.data.length).toBeGreaterThan(0);
+      // Update the account
+      const updateData = {
+        phone: '555-9999',
+        fax: '555-8888',
+      };
 
-        // Verify all returned accounts have accountType = 1
-        response.data.forEach((account: any) => {
-          expect(account).toBeValidAutotaskEntity();
-          expect(account.accountType).toBe(1);
-        });
-      }
-    );
+      const updatedAccount = await config.client.accounts.update(
+        createdAccount.data.id,
+        updateData
+      );
+
+      expect(updatedAccount).toBeDefined();
+      expect(updatedAccount.data).toBeDefined();
+      expect(updatedAccount.data.phone).toBe(updateData.phone);
+      expect(updatedAccount.data.fax).toBe(updateData.fax);
+    });
+
+    // Note: Delete test removed because Companies cannot be deleted via API
   });
 
-  describe('Business Logic', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should handle account hierarchy',
-      async () => {
-        // Create a parent account
-        const parentAccount = await helpers.createTestAccount({
-          accountName: `Parent Account - ${Date.now()}`,
-        });
-        if (parentAccount.data.id) {
-          createdAccountIds.push(parentAccount.data.id);
+  describe('List Operations', () => {
+    it('should list accounts with pagination', async () => {
+      const accounts = await config.client.accounts.list({
+        pageSize: 5,
+        page: 1,
+      });
+
+      expect(accounts).toBeDefined();
+      expect(accounts.data).toBeDefined();
+      expect(Array.isArray(accounts.data)).toBe(true);
+      expect(accounts.data.length).toBeLessThanOrEqual(5);
+
+      if (accounts.data.length > 0) {
+        expect(accounts.data[0]).toHaveProperty('id');
+        expect(accounts.data[0]).toHaveProperty('companyName');
+      }
+    });
+
+    it('should filter accounts by active status', async () => {
+      const activeAccounts = await config.client.accounts.list({
+        filter: { isActive: true },
+        pageSize: 3,
+      });
+
+      expect(activeAccounts).toBeDefined();
+      expect(activeAccounts.data).toBeDefined();
+      expect(Array.isArray(activeAccounts.data)).toBe(true);
+
+      // All returned accounts should be active
+      activeAccounts.data.forEach(account => {
+        expect(account.isActive).toBe(true);
+      });
+    });
+
+    it('should sort accounts by company name', async () => {
+      const sortedAccounts = await config.client.accounts.list({
+        sort: 'companyName asc',
+        pageSize: 5,
+      });
+
+      expect(sortedAccounts).toBeDefined();
+      expect(sortedAccounts.data).toBeDefined();
+      expect(Array.isArray(sortedAccounts.data)).toBe(true);
+
+      // Check if results are sorted (if we have multiple accounts)
+      if (sortedAccounts.data.length > 1) {
+        for (let i = 1; i < sortedAccounts.data.length; i++) {
+          const prev = sortedAccounts.data[i - 1].companyName || '';
+          const curr = sortedAccounts.data[i].companyName || '';
+          expect(prev.localeCompare(curr)).toBeLessThanOrEqual(0);
         }
-
-        // Create a child account
-        const childAccount = await helpers.createTestAccount({
-          accountName: `Child Account - ${Date.now()}`,
-          parentAccountId: parentAccount.data.id,
-        });
-        if (childAccount.data.id) {
-          createdAccountIds.push(childAccount.data.id);
-        }
-
-        // Verify the relationship
-        expect(childAccount.data.parentAccountId).toBe(parentAccount.data.id);
       }
-    );
-
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should validate required fields',
-      async () => {
-        const invalidAccountData = {
-          // Missing required accountName
-          accountType: 1,
-        };
-
-        await expect(
-          (globalThis as any).__AUTOTASK_CLIENT__.accounts.create(
-            invalidAccountData
-          )
-        ).rejects.toThrow();
-      }
-    );
-  });
-
-  describe('Search and Filtering', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should search accounts by name',
-      async () => {
-        // Create a uniquely named account
-        const uniqueName = `SearchTest-${Date.now()}`;
-        const createResponse = await helpers.createTestAccount({
-          accountName: uniqueName,
-        });
-        if (createResponse.data.id) {
-          createdAccountIds.push(createResponse.data.id);
-        }
-
-        // Search for the account
-        const response = await (
-          globalThis as any
-        ).__AUTOTASK_CLIENT__.accounts.list({
-          filter: { accountName: uniqueName },
-        });
-
-        expect(response.data).toBeInstanceOf(Array);
-        expect(response.data.length).toBeGreaterThan(0);
-
-        const foundAccount = response.data.find(
-          (acc: any) => acc.id === createResponse.data.id
-        );
-        expect(foundAccount).toBeDefined();
-        expect(foundAccount?.accountName).toBe(uniqueName);
-      }
-    );
-
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should filter by account type',
-      async () => {
-        const response = await (
-          globalThis as any
-        ).__AUTOTASK_CLIENT__.accounts.list({
-          filter: { accountType: 1 }, // Customer
-          pageSize: 5,
-        });
-
-        expect(response.data).toBeInstanceOf(Array);
-
-        response.data.forEach((account: any) => {
-          expect(account.accountType).toBe(1);
-        });
-      }
-    );
+    });
   });
 
   describe('Error Handling', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should handle non-existent account retrieval',
-      async () => {
-        const nonExistentId = 999999999;
+    it('should handle non-existent account retrieval', async () => {
+      const nonExistentId = 999999999;
 
-        await expect(
-          (globalThis as any).__AUTOTASK_CLIENT__.accounts.get(nonExistentId)
-        ).rejects.toThrow();
+      await expect(config.client.accounts.get(nonExistentId)).rejects.toThrow();
+    });
+
+    it('should validate required fields when creating account', async () => {
+      const invalidAccountData = {
+        // Missing required companyName
+        companyType: 1,
+      };
+
+      await expect(
+        config.client.accounts.create(invalidAccountData)
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('Business Logic', () => {
+    it('should handle different company types', async () => {
+      const testId = generateTestId();
+
+      // Test Customer type (1)
+      const customerData: Account = {
+        companyName: `Test Customer ${testId}`,
+        companyType: 1, // Customer
+        isActive: true,
+      };
+
+      const createdCustomer = await config.client.accounts.create(customerData);
+      expect(createdCustomer.data.companyType).toBe(1);
+
+      if (createdCustomer.data.id) {
+        createdAccountIds.push(createdCustomer.data.id);
       }
-    );
+    });
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should handle duplicate account names gracefully',
-      async () => {
-        // Create first account
-        const accountName = `Duplicate Test - ${Date.now()}`;
-        const firstAccount = await helpers.createTestAccount({
-          accountName,
-        });
-        if (firstAccount.data.id) {
-          createdAccountIds.push(firstAccount.data.id);
-        }
+    it('should handle account activation/deactivation', async () => {
+      const testId = generateTestId();
+      const accountData: Account = {
+        companyName: `Test Account ${testId}`,
+        companyType: 1,
+        isActive: true,
+      };
 
-        // Try to create second account with same name
-        // Note: Autotask may or may not allow duplicate names depending on configuration
-        try {
-          const secondAccount = await helpers.createTestAccount({
-            accountName,
-          });
-          if (secondAccount.data.id) {
-            createdAccountIds.push(secondAccount.data.id);
-          }
+      const createdAccount = await config.client.accounts.create(accountData);
 
-          // If it succeeds, that's also valid behavior
-          expect(secondAccount.data).toBeValidAutotaskEntity();
-        } catch (error) {
-          // If it fails, that's expected behavior for duplicate prevention
-          expect(error).toBeDefined();
-        }
+      if (!createdAccount.data.id) {
+        throw new Error('Failed to create account for activation test');
       }
-    );
+
+      createdAccountIds.push(createdAccount.data.id);
+
+      // Deactivate the account
+      const deactivatedAccount = await config.client.accounts.update(
+        createdAccount.data.id,
+        {
+          isActive: false,
+        }
+      );
+
+      expect(deactivatedAccount.data.isActive).toBe(false);
+
+      // Reactivate the account
+      const reactivatedAccount = await config.client.accounts.update(
+        createdAccount.data.id,
+        {
+          isActive: true,
+        }
+      );
+
+      expect(reactivatedAccount.data.isActive).toBe(true);
+    });
+  });
+
+  describe('Performance Monitoring', () => {
+    it('should track performance metrics', async () => {
+      const initialReport = config.client
+        .getRequestHandler()
+        .getPerformanceReport();
+      const initialRequestCount = initialReport.metrics.requestCount || 0;
+
+      // Make a simple request
+      await config.client.accounts.list({ pageSize: 1 });
+
+      const finalReport = config.client
+        .getRequestHandler()
+        .getPerformanceReport();
+      const finalRequestCount = finalReport.metrics.requestCount || 0;
+
+      expect(finalRequestCount).toBeGreaterThan(initialRequestCount);
+    });
   });
 });

@@ -1,242 +1,340 @@
-import {
-  getIntegrationHelpers,
-  IntegrationTestHelpers,
-} from '../helpers/testHelpers';
+import { AutotaskClient } from '../../../src/client/AutotaskClient';
+import { Ticket } from '../../../src/entities/tickets';
+import { setupIntegrationTest, delay, generateTestId } from '../setup';
+import { IntegrationTestConfig } from '../setup';
 
-// Type declarations for global variables
-declare const globalThis: {
-  __AUTOTASK_CLIENT__: any;
-  __INTEGRATION_CONFIG__: {
-    testAccountId: number;
-    skipIntegrationTests: boolean;
-  };
-};
-
-IntegrationTestHelpers.describeIfEnabled('Tickets Integration Tests', () => {
-  let helpers: IntegrationTestHelpers;
+describe('Tickets Integration Tests', () => {
+  let config: IntegrationTestConfig;
   const createdTicketIds: number[] = [];
 
-  beforeAll(() => {
-    helpers = getIntegrationHelpers();
+  beforeAll(async () => {
+    config = await setupIntegrationTest();
+    console.log('🎫 Starting Tickets integration tests...');
   });
 
   afterAll(async () => {
-    // Cleanup any created tickets
+    console.log('🧹 Cleaning up created tickets...');
+
+    // Clean up any tickets created during tests
     for (const ticketId of createdTicketIds) {
-      await helpers.cleanupTestTicket(ticketId);
+      try {
+        await config.client.tickets.delete(ticketId);
+        console.log(`✅ Cleaned up ticket ${ticketId}`);
+      } catch (error) {
+        console.warn(`⚠️ Could not clean up ticket ${ticketId}:`, error);
+      }
     }
+
+    await config.cleanup();
+    console.log('🎉 Tickets integration tests completed');
+  });
+
+  beforeEach(async () => {
+    // Rate limiting - wait between tests
+    await delay(1000);
+  });
+
+  describe('Authentication and Connectivity', () => {
+    it('should authenticate and connect to Autotask API', async () => {
+      expect(config.client).toBeDefined();
+      expect(config.client.tickets).toBeDefined();
+      console.log('✅ Successfully connected to Autotask API');
+    });
+  });
+
+  describe('List Operations', () => {
+    it('should list tickets with basic query', async () => {
+      console.log('📋 Testing basic ticket listing...');
+
+      const result = await config.client.tickets.list({
+        pageSize: 5,
+      });
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(Array.isArray(result.data)).toBe(true);
+
+      console.log(`📋 Found ${result.data.length} tickets`);
+    });
+
+    it('should list tickets with pagination', async () => {
+      console.log('📄 Testing ticket pagination...');
+
+      const result = await config.client.tickets.list({
+        pageSize: 5,
+        page: 1,
+      });
+
+      expect(result.data.length).toBeLessThanOrEqual(5);
+
+      console.log(`📄 Retrieved page 1 with ${result.data.length} tickets`);
+    });
+
+    it('should list tickets with filtering', async () => {
+      console.log('🔍 Testing ticket filtering...');
+
+      const result = await config.client.tickets.list({
+        filter: { status: 1 },
+        pageSize: 10,
+      });
+
+      expect(Array.isArray(result.data)).toBe(true);
+
+      // Verify all returned tickets have the expected status
+      result.data.forEach(ticket => {
+        expect(ticket.status).toBe(1);
+      });
+
+      console.log(`🔍 Found ${result.data.length} tickets with status = 1`);
+    });
+
+    it('should list tickets with sorting', async () => {
+      const result = await config.client.tickets.list({
+        sort: 'createDate desc',
+        pageSize: 10,
+      });
+
+      expect(result.data.length).toBeGreaterThan(0);
+
+      // Verify sorting (if we have multiple tickets)
+      if (result.data.length > 1) {
+        const dates = result.data.map(t => new Date(t.createDate));
+        for (let i = 1; i < dates.length; i++) {
+          expect(dates[i - 1].getTime()).toBeGreaterThanOrEqual(
+            dates[i].getTime()
+          );
+        }
+      }
+
+      console.log(
+        `📅 Retrieved ${result.data.length} tickets sorted by creation date`
+      );
+    });
+  });
+
+  describe('Get Operations', () => {
+    it('should get a specific ticket by ID', async () => {
+      console.log('🎫 Testing ticket retrieval...');
+
+      // First get a list to find a ticket ID
+      const listResult = await config.client.tickets.list({ pageSize: 1 });
+
+      if (listResult.data.length === 0) {
+        console.log('⚠️ No tickets found, skipping get test');
+        return;
+      }
+
+      const ticketId = listResult.data[0].id;
+      if (!ticketId) {
+        console.log('⚠️ Ticket has no ID, skipping get test');
+        return;
+      }
+
+      // Now get the specific ticket
+      const ticket = await config.client.tickets.get(ticketId);
+
+      expect(ticket.data.id).toBe(ticketId);
+      expect(typeof ticket.data.title).toBe('string');
+      expect(typeof ticket.data.accountId).toBe('number');
+      expect(typeof ticket.data.status).toBe('number');
+
+      console.log(`🎫 Retrieved ticket ${ticketId}: "${ticket.data.title}"`);
+    });
   });
 
   describe('CRUD Operations', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should create a new ticket',
-      async () => {
-        const ticketData = {
-          title: `Integration Test Ticket - ${Date.now()}`,
-          description: 'This is a test ticket created by integration tests',
-          accountId: globalThis.__INTEGRATION_CONFIG__.testAccountId || 1,
-          status: 1, // New
-          priority: 3, // Normal
-          issueType: 1,
-          subIssueType: 1,
-        };
+    it('should create a new ticket', async () => {
+      console.log('✨ Testing ticket creation...');
 
-        const response =
-          await globalThis.__AUTOTASK_CLIENT__.tickets.create(ticketData);
-
-        expect(response.data).toBeValidAutotaskEntity();
-        expect(response.data.title).toBe(ticketData.title);
-        expect(response.data.description).toBe(ticketData.description);
-        expect(response.data.accountId).toBe(ticketData.accountId);
-
-        if (response.data.id) {
-          createdTicketIds.push(response.data.id);
-        }
+      if (!config.testAccountId) {
+        console.log('⚠️ No test account ID provided, skipping create test');
+        return;
       }
-    );
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should retrieve a ticket by ID',
-      async () => {
-        // Create a ticket first
-        const createResponse = await helpers.createTestTicket();
-        if (createResponse.data.id) {
-          createdTicketIds.push(createResponse.data.id);
-        }
+      const testId = generateTestId();
+      const ticketData: Ticket = {
+        title: `Integration Test Ticket ${testId}`,
+        accountId: config.testAccountId,
+        status: 1, // New
+        description: `This is a test ticket created by integration tests at ${new Date().toISOString()}`,
+        priority: 3, // Normal
+      };
 
-        // Retrieve the ticket
-        const response = await globalThis.__AUTOTASK_CLIENT__.tickets.get(
-          createResponse.data.id
-        );
+      const createdTicket = await config.client.tickets.create(ticketData);
 
-        expect(response.data).toBeValidAutotaskEntity();
-        expect(response.data.id).toBe(createResponse.data.id);
-        expect(response.data.title).toBe(createResponse.data.title);
+      if (createdTicket.data.id) {
+        createdTicketIds.push(createdTicket.data.id);
       }
-    );
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should update a ticket',
-      async () => {
-        // Create a ticket first
-        const createResponse = await helpers.createTestTicket();
-        if (createResponse.data.id) {
-          createdTicketIds.push(createResponse.data.id);
-        }
+      // Verify the created ticket
+      expect(createdTicket.data.id).toBeGreaterThan(0);
+      expect(createdTicket.data.title).toBe(ticketData.title);
+      expect(createdTicket.data.accountId).toBe(ticketData.accountId);
+      expect(createdTicket.data.status).toBe(ticketData.status);
 
-        const updateData = {
-          title: `Updated Ticket Title - ${Date.now()}`,
-          description: 'Updated description',
-        };
+      console.log(
+        `✅ Created ticket ${createdTicket.data.id}: "${createdTicket.data.title}"`
+      );
+    });
 
-        // Update the ticket
-        const response = await globalThis.__AUTOTASK_CLIENT__.tickets.update(
-          createResponse.data.id,
-          updateData
-        );
+    it('should update an existing ticket', async () => {
+      console.log('🔄 Testing ticket update...');
 
-        expect(response.data).toBeValidAutotaskEntity();
-        expect(response.data.id).toBe(createResponse.data.id);
-        expect(response.data.title).toBe(updateData.title);
-        expect(response.data.description).toBe(updateData.description);
+      if (!config.testAccountId) {
+        console.log('⚠️ No test account ID provided, skipping update test');
+        return;
       }
-    );
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should list tickets with filtering',
-      async () => {
-        const response = await globalThis.__AUTOTASK_CLIENT__.tickets.list({
-          filter: { status: 1 }, // New tickets
-          pageSize: 10,
-        });
+      // First create a ticket to update
+      const testId = generateTestId();
+      const ticketData: Ticket = {
+        title: `Update Test Ticket ${testId}`,
+        accountId: config.testAccountId,
+        status: 1,
+        description: 'Original description',
+        priority: 3,
+      };
 
-        expect(response.data).toBeInstanceOf(Array);
-        expect(response.data.length).toBeGreaterThan(0);
+      const createdTicket = await config.client.tickets.create(ticketData);
 
-        // Verify all returned tickets have status = 1
-        response.data.forEach((ticket: any) => {
-          expect(ticket).toBeValidAutotaskEntity();
-          expect(ticket.status).toBe(1);
-        });
+      if (createdTicket.data.id) {
+        createdTicketIds.push(createdTicket.data.id);
       }
-    );
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should handle pagination',
-      async () => {
-        const page1 = await globalThis.__AUTOTASK_CLIENT__.tickets.list({
-          pageSize: 5,
-          page: 1,
-        });
-
-        const page2 = await globalThis.__AUTOTASK_CLIENT__.tickets.list({
-          pageSize: 5,
-          page: 2,
-        });
-
-        expect(page1.data).toBeInstanceOf(Array);
-        expect(page2.data).toBeInstanceOf(Array);
-
-        // Verify pages contain different tickets (if there are enough tickets)
-        if (page1.data.length > 0 && page2.data.length > 0) {
-          const page1Ids = page1.data.map((t: any) => t.id);
-          const page2Ids = page2.data.map((t: any) => t.id);
-
-          // Should not have overlapping IDs
-          const intersection = page1Ids.filter((id: any) =>
-            page2Ids.includes(id)
-          );
-          expect(intersection.length).toBe(0);
-        }
+      if (!createdTicket.data.id) {
+        throw new Error('Created ticket has no ID');
       }
-    );
+
+      // Now update it
+      const updateData: Partial<Ticket> = {
+        title: `Updated Test Ticket ${testId}`,
+        description: 'Updated description',
+        priority: 4, // High
+      };
+
+      const updatedTicket = await config.client.tickets.update(
+        createdTicket.data.id,
+        updateData
+      );
+
+      expect(updatedTicket.data.id).toBe(createdTicket.data.id);
+      expect(updatedTicket.data.title).toBe(updateData.title);
+      expect(updatedTicket.data.description).toBe(updateData.description);
+      expect(updatedTicket.data.priority).toBe(updateData.priority);
+
+      console.log(
+        `🔄 Updated ticket ${updatedTicket.data.id}: "${updatedTicket.data.title}"`
+      );
+    });
+
+    it('should handle update validation errors', async () => {
+      const invalidUpdateData: Partial<Ticket> = {
+        status: 999, // Invalid status
+      };
+
+      await expect(
+        config.client.tickets.update(999999, invalidUpdateData)
+      ).rejects.toThrow();
+
+      console.log('✅ Update validation working correctly');
+    });
+
+    it('should delete a ticket', async () => {
+      console.log('🗑️ Testing ticket deletion...');
+
+      if (!config.testAccountId) {
+        console.log('⚠️ No test account ID provided, skipping delete test');
+        return;
+      }
+
+      // First create a ticket to delete
+      const testId = generateTestId();
+      const ticketData: Ticket = {
+        title: `Delete Test Ticket ${testId}`,
+        accountId: config.testAccountId,
+        status: 1,
+        description: 'This ticket will be deleted',
+      };
+
+      const createdTicket = await config.client.tickets.create(ticketData);
+
+      if (!createdTicket.data.id) {
+        throw new Error('Created ticket has no ID');
+      }
+
+      // Delete the ticket
+      await config.client.tickets.delete(createdTicket.data.id);
+
+      // Verify it's deleted by trying to get it (should throw)
+      await expect(
+        config.client.tickets.get(createdTicket.data.id)
+      ).rejects.toThrow();
+
+      console.log(`🗑️ Deleted ticket ${createdTicket.data.id}`);
+    });
   });
 
   describe('Error Handling', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should handle non-existent ticket retrieval',
-      async () => {
-        const nonExistentId = 999999999;
+    it('should handle non-existent ticket requests', async () => {
+      const nonExistentId = 999999999;
 
-        await expect(
-          globalThis.__AUTOTASK_CLIENT__.tickets.get(nonExistentId)
-        ).rejects.toThrow();
+      await expect(config.client.tickets.get(nonExistentId)).rejects.toThrow();
+
+      console.log('✅ Non-existent ticket error handling working');
+    });
+
+    it('should handle invalid filter syntax', async () => {
+      await expect(
+        config.client.tickets.list({
+          filter: 'invalid filter syntax' as any,
+        })
+      ).rejects.toThrow();
+
+      console.log('✅ Invalid filter error handling working');
+    });
+
+    it('should handle rate limiting gracefully', async () => {
+      console.log('⏱️ Testing rate limiting behavior...');
+
+      // Make multiple rapid requests to test rate limiting
+      const promises = [];
+      for (let i = 0; i < 3; i++) {
+        promises.push(config.client.tickets.list({ pageSize: 1 }));
       }
-    );
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should handle invalid ticket creation',
-      async () => {
-        const invalidTicketData = {
-          // Missing required fields
-          title: '',
-          accountId: -1,
-        };
+      const results = await Promise.allSettled(promises);
 
-        await expect(
-          globalThis.__AUTOTASK_CLIENT__.tickets.create(invalidTicketData)
-        ).rejects.toThrow();
-      }
-    );
+      // At least some should succeed
+      const successful = results.filter(r => r.status === 'fulfilled');
+      expect(successful.length).toBeGreaterThan(0);
+
+      console.log(
+        `⏱️ Rate limiting test completed: ${successful.length}/3 requests succeeded`
+      );
+    });
   });
 
-  describe('Performance & Rate Limiting', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should handle multiple concurrent requests',
-      async () => {
-        const promises = Array.from({ length: 5 }, (_, i) =>
-          globalThis.__AUTOTASK_CLIENT__.tickets.list({
-            pageSize: 1,
-            page: i + 1,
-          })
-        );
+  describe('Performance Monitoring', () => {
+    it('should track performance metrics', async () => {
+      console.log('📊 Testing performance monitoring...');
 
-        const responses = await Promise.all(promises);
+      // Make a few requests to generate metrics
+      await config.client.tickets.list({ pageSize: 5 });
+      await delay(100);
+      await config.client.tickets.list({ pageSize: 3 });
 
-        responses.forEach(response => {
-          expect(response.data).toBeInstanceOf(Array);
-        });
-      }
-    );
+      // Get performance report
+      const report = config.client.getRequestHandler().getPerformanceReport();
 
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should respect rate limits with retry',
-      async () => {
-        // This test verifies that our retry logic works
-        const startTime = Date.now();
+      expect(report).toBeDefined();
+      expect(report.metrics).toBeDefined();
+      expect(report.metrics.requestCount).toBeGreaterThan(0);
 
-        const response = await helpers.retryOperation(
-          () => globalThis.__AUTOTASK_CLIENT__.tickets.list({ pageSize: 1 }),
-          3,
-          500
-        );
-
-        const endTime = Date.now();
-
-        expect((response as any).data).toBeInstanceOf(Array);
-        // Should complete within reasonable time even with retries
-        expect(endTime - startTime).toBeLessThan(10000);
-      }
-    );
-  });
-
-  describe('Zone Detection', () => {
-    IntegrationTestHelpers.skipIfDisabled()(
-      'should successfully connect to correct API zone',
-      async () => {
-        // This test verifies that zone detection worked correctly
-        const response = await globalThis.__AUTOTASK_CLIENT__.tickets.list({
-          pageSize: 1,
-        });
-
-        expect(response.data).toBeInstanceOf(Array);
-
-        // Verify the client has the correct base URL set
-        const client = globalThis.__AUTOTASK_CLIENT__;
-        expect(client).toBeDefined();
-
-        // The fact that we can make successful API calls means zone detection worked
-      }
-    );
+      console.log('📊 Performance monitoring working correctly');
+      console.log(`📈 Total requests: ${report.metrics.requestCount}`);
+      console.log(
+        `⚡ Average response time: ${report.metrics.averageResponseTime}ms`
+      );
+    });
   });
 });

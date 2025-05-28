@@ -4,7 +4,42 @@ import { MethodMetadata, ApiResponse } from '../types';
 
 export interface Account {
   id?: number;
-  name?: string;
+  companyName?: string;
+  companyType?: number;
+  companyNumber?: string;
+  phone?: string;
+  fax?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  countryID?: number;
+  webAddress?: string;
+  isActive?: boolean;
+  ownerResourceID?: number;
+  parentCompanyID?: number;
+  companyCategoryID?: number;
+  territoryID?: number;
+  marketSegmentID?: number;
+  competitorID?: number;
+  currencyID?: number;
+  taxID?: string;
+  taxRegionID?: number;
+  isTaxExempt?: boolean;
+  isClientPortalActive?: boolean;
+  isTaskFireActive?: boolean;
+  alternatePhone1?: string;
+  alternatePhone2?: string;
+  additionalAddressInformation?: string;
+  sicCode?: string;
+  stockSymbol?: string;
+  stockMarket?: string;
+  assetValue?: number;
+  classification?: number;
+  createDate?: string;
+  lastActivityDate?: string;
+  lastTrackedModifiedDateTime?: string;
   [key: string]: any;
 }
 
@@ -16,9 +51,12 @@ export interface AccountQuery {
 }
 
 export class Accounts {
-  private readonly endpoint = '/Accounts';
+  private readonly endpoint = '/Companies';
 
-  constructor(private axios: AxiosInstance, private logger: winston.Logger) {}
+  constructor(
+    private axios: AxiosInstance,
+    private logger: winston.Logger
+  ) {}
 
   static getMetadata(): MethodMetadata[] {
     return [
@@ -27,40 +65,44 @@ export class Accounts {
         requiredParams: ['account'],
         optionalParams: [],
         returnType: 'Account',
-        endpoint: '/Accounts',
+        endpoint: '/Companies',
       },
       {
         operation: 'getAccount',
         requiredParams: ['id'],
         optionalParams: [],
         returnType: 'Account',
-        endpoint: '/Accounts/{id}',
+        endpoint: '/Companies/{id}',
       },
       {
         operation: 'updateAccount',
         requiredParams: ['id', 'account'],
         optionalParams: [],
         returnType: 'Account',
-        endpoint: '/Accounts/{id}',
+        endpoint: '/Companies/{id}',
       },
       {
         operation: 'deleteAccount',
         requiredParams: ['id'],
         optionalParams: [],
         returnType: 'void',
-        endpoint: '/Accounts/{id}',
+        endpoint: '/Companies/{id}',
       },
       {
         operation: 'listAccounts',
         requiredParams: [],
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
         returnType: 'Account[]',
-        endpoint: '/Accounts',
+        endpoint: '/Companies',
       },
     ];
   }
 
-  private async requestWithRetry<T>(fn: () => Promise<T>, retries = 3, delay = 500): Promise<T> {
+  private async requestWithRetry<T>(
+    fn: () => Promise<T>,
+    retries = 3,
+    delay = 500
+  ): Promise<T> {
     let attempt = 0;
     while (true) {
       try {
@@ -69,7 +111,9 @@ export class Accounts {
         attempt++;
         this.logger.warn(`Request failed (attempt ${attempt}): ${err}`);
         if (attempt > retries) throw err;
-        await new Promise(res => setTimeout(res, delay * Math.pow(2, attempt - 1)));
+        await new Promise(res =>
+          setTimeout(res, delay * Math.pow(2, attempt - 1))
+        );
       }
     }
   }
@@ -90,7 +134,10 @@ export class Accounts {
     });
   }
 
-  async update(id: number, account: Partial<Account>): Promise<ApiResponse<Account>> {
+  async update(
+    id: number,
+    account: Partial<Account>
+  ): Promise<ApiResponse<Account>> {
     this.logger.info('Updating account', { id, account });
     return this.requestWithRetry(async () => {
       const { data } = await this.axios.put(`${this.endpoint}/${id}`, account);
@@ -117,4 +164,4 @@ export class Accounts {
       return { data };
     });
   }
-} 
+}

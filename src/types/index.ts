@@ -38,4 +38,15 @@ export {
   RequestHandler,
   RequestOptions,
   RequestContext,
-} from '../utils/requestHandler'; 
+} from '../utils/requestHandler';
+
+// Query builder exports
+export * from './queryBuilder';
+export { QueryBuilder } from '../utils/queryBuilder';
+export { QueryableEntity } from '../utils/queryableEntity';
+
+// Export utility types
+export * from '../utils/errors';
+export * from '../utils/requestHandler';
+export * from '../utils/memoryOptimization';
+export * from '../utils/performanceMonitor';
