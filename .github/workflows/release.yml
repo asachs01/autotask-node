@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0, v1.2.3, etc.
 
 permissions:
   contents: write # to be able to publish a GitHub release
@@ -51,8 +51,24 @@ jobs:
       - name: Build project
         run: npm run build --if-present
 
-      - name: Release
+      - name: Extract version from tag
+        id: extract_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Update package.json version
+        run: npm version ${{ steps.extract_version.outputs.VERSION }} --no-git-tag-version
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Publish to NPM
+        env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release 
+        run: npm publish 

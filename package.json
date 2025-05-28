@@ -32,7 +32,9 @@
     "lint:fix": "eslint . --ext .ts,.js --fix",
     "cli": "ts-node src/cli/index.ts",
     "prepublishOnly": "npm run build",
-    "semantic-release": "semantic-release",
+    "release:patch": "npm version patch && git push origin main --tags",
+    "release:minor": "npm version minor && git push origin main --tags",
+    "release:major": "npm version major && git push origin main --tags",
     "prepare": "husky"
   },
   "lint-staged": {

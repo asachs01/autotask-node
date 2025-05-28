@@ -21,29 +21,32 @@ This directory contains GitHub Actions workflows for automated CI/CD, releases, 
 
 ### 2. Release Workflow (`.github/workflows/release.yml`)
 
-**Triggers:** Push to `main` branch
+**Triggers:** Push of version tags (e.g., `v1.0.0`, `v1.2.3`)
 
-**Purpose:** Automated semantic versioning and publishing using semantic-release
+**Purpose:** Automated release creation and publishing when version tags are pushed
 
 **Features:**
 
-- **Semantic versioning**: Automatic version bumping based on conventional commits
-- **Changelog generation**: Automatic CHANGELOG.md updates
+- **Tag-based releases**: Triggered only when version tags are pushed
+- **Automatic version extraction**: Extracts version from git tag
 - **GitHub releases**: Automatic GitHub release creation with release notes
 - **NPM publishing**: Automatic package publishing to npm registry
-- **Provenance**: NPM package provenance for supply chain security
+- **NPM provenance**: Supply chain security
+- **Full testing**: Runs complete test suite before release
 
 ### 3. Manual Release Workflow (`.github/workflows/manual-release.yml`)
 
 **Triggers:** Manual dispatch from GitHub Actions UI
 
-**Purpose:** Manual release control with dry-run capability
+**Purpose:** Manual release control with version specification and dry-run capability
 
 **Features:**
 
 - **Manual control**: Trigger releases manually when needed
+- **Version specification**: Enter exact version number (e.g., 1.0.0)
 - **Dry run mode**: Test release process without actually releasing
-- **Release type selection**: Choose patch, minor, or major release
+- **Version validation**: Ensures proper semantic versioning format
+- **Tag conflict detection**: Prevents duplicate version tags
 - **Full testing**: Runs complete test suite before release
 
 ## Setup Instructions
@@ -84,14 +87,48 @@ Configure branch protection rules for `main` branch:
    - Select the CI workflow checks
    - Require pull request reviews before merging
 
-### 3. Semantic Release Configuration
+### 3. Release Process
 
-The project uses conventional commits for semantic versioning:
+This project uses **tag-based releases** instead of semantic versioning automation:
 
-- `feat:` → Minor version bump (1.0.0 → 1.1.0)
-- `fix:` → Patch version bump (1.0.0 → 1.0.1)
-- `BREAKING CHANGE:` → Major version bump (1.0.0 → 2.0.0)
-- `docs:`, `style:`, `test:`, `chore:` → No version bump
+#### Creating Releases
+
+**Option 1: Using npm scripts (Recommended)**
+
+```bash
+# Patch release (1.0.0 → 1.0.1)
+npm run release:patch
+
+# Minor release (1.0.0 → 1.1.0)
+npm run release:minor
+
+# Major release (1.0.0 → 2.0.0)
+npm run release:major
+```
+
+**Option 2: Manual tagging**
+
+```bash
+# Update version in package.json
+npm version 1.2.3 --no-git-tag-version
+
+# Commit the version change
+git add package.json package-lock.json
+git commit -m "chore: bump version to 1.2.3"
+
+# Create and push tag
+git tag -a v1.2.3 -m "Release v1.2.3"
+git push origin main
+git push origin v1.2.3
+```
+
+**Option 3: GitHub Actions Manual Release**
+
+1. Go to Actions → Manual Release
+2. Click "Run workflow"
+3. Enter version number (e.g., 1.2.3)
+4. Choose dry-run option if testing
+5. Click "Run workflow"
 
 ### 4. Package.json Configuration
 
@@ -123,11 +160,13 @@ The `.github/dependabot.yml` file configures automatic dependency updates:
 
 ### Automatic Releases
 
-1. Make changes using conventional commit messages
-2. Push to `main` branch or merge PR
+1. Make changes and commit to main branch
+2. When ready to release, create a version tag:
+   ```bash
+   npm run release:patch  # or minor/major
+   ```
 3. Release workflow automatically:
-   - Determines next version
-   - Updates CHANGELOG.md
+   - Runs full test suite
    - Creates GitHub release
    - Publishes to npm
 
@@ -135,8 +174,9 @@ The `.github/dependabot.yml` file configures automatic dependency updates:
 
 1. Go to Actions → Manual Release
 2. Click "Run workflow"
-3. Choose release type and dry-run option
-4. Click "Run workflow"
+3. Enter version number (e.g., 1.2.3)
+4. Choose dry-run option if testing
+5. Click "Run workflow"
 
 ### Integration Tests
 
@@ -148,13 +188,14 @@ Integration tests run automatically if Autotask credentials are configured as se
 
 1. **NPM Token Issues**: Verify `NPM_TOKEN` secret is valid and has publish permissions
 2. **Permission Issues**: Ensure workflow has `contents: write` permission
-3. **Branch Protection**: Verify branch protection rules allow the workflow to push
+3. **Tag Format**: Ensure tags follow `v*` format (e.g., v1.0.0, v1.2.3)
+4. **Version Conflicts**: Check if version already exists on npm
 
-### Integration Tests Fail
+### Manual Release Issues
 
-1. **Missing Credentials**: Add Autotask credentials as repository secrets
-2. **API Limits**: Integration tests may hit rate limits; they include retry logic
-3. **Test Data**: Verify test account/contact/project IDs exist in your Autotask instance
+1. **Version Format**: Use semantic versioning format (x.y.z)
+2. **Duplicate Tags**: Check if tag already exists with `git tag -l`
+3. **Permission Issues**: Ensure GitHub token has push permissions
 
 ### CI Workflow Issues
 
@@ -168,3 +209,16 @@ Integration tests run automatically if Autotask credentials are configured as se
 - **Permissions**: Workflows use minimal required permissions
 - **Provenance**: NPM packages include provenance for supply chain security
 - **Audit**: Dependencies are automatically audited for vulnerabilities
+
+## Release Workflow
+
+```mermaid
+graph TD
+    A[Create Version Tag] --> B[Release Workflow Triggered]
+    B --> C[Run Tests]
+    C --> D[Build Project]
+    D --> E[Extract Version from Tag]
+    E --> F[Update package.json]
+    F --> G[Create GitHub Release]
+    G --> H[Publish to NPM]
+```
