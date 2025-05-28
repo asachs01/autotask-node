@@ -6,11 +6,11 @@ const config = {
 
   // Only run integration tests
   testMatch: ['<rootDir>/test/integration/**/*.test.ts'],
-  
+
   // Global setup and teardown
   globalSetup: '<rootDir>/test/integration/setup.ts',
   globalTeardown: '<rootDir>/test/integration/teardown.ts',
-  
+
   // Setup after environment
   setupFilesAfterEnv: ['<rootDir>/test/integration/setupAfterEnv.ts'],
 
@@ -19,17 +19,20 @@ const config = {
 
   // Coverage settings
   collectCoverage: false, // Disable coverage for integration tests
-  
+
   // Module resolution
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
 
   // Transform settings
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
-    }],
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.json',
+      },
+    ],
   },
 
   // Verbose output for integration tests
@@ -54,12 +57,15 @@ const config = {
   // Reporters
   reporters: [
     'default',
-    ['jest-junit', {
-      outputDirectory: './test/integration/reports',
-      outputName: 'integration-test-results.xml',
-      suiteName: 'Autotask API Integration Tests',
-    }],
+    [
+      'jest-junit',
+      {
+        outputDirectory: './test/integration/reports',
+        outputName: 'integration-test-results.xml',
+        suiteName: 'Autotask API Integration Tests',
+      },
+    ],
   ],
 };
 
-module.exports = config; 
+module.exports = config;

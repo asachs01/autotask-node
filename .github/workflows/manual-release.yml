@@ -1,0 +1,76 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      dry_run:
+        description: 'Dry run (no actual release)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  manual-release:
+    name: Manual Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm clean-install
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests (if credentials available)
+        env:
+          AUTOTASK_USERNAME: ${{ secrets.AUTOTASK_USERNAME }}
+          AUTOTASK_INTEGRATION_CODE: ${{ secrets.AUTOTASK_INTEGRATION_CODE }}
+          AUTOTASK_SECRET: ${{ secrets.AUTOTASK_SECRET }}
+          TEST_ACCOUNT_ID: ${{ secrets.TEST_ACCOUNT_ID }}
+          TEST_CONTACT_ID: ${{ secrets.TEST_CONTACT_ID }}
+          TEST_PROJECT_ID: ${{ secrets.TEST_PROJECT_ID }}
+        run: npm run test:integration
+
+      - name: Build project
+        run: npm run build --if-present
+
+      - name: Manual Release (Dry Run)
+        if: ${{ inputs.dry_run }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release --dry-run
+
+      - name: Manual Release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release 

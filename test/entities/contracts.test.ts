@@ -1,6 +1,11 @@
 import { Contracts, Contract } from '../../src/entities/contracts';
 import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createMockAxios,
+  createMockLogger,
+  createTestRequestHandler,
+} from '../utils/testHelpers';
 
 describe('Contracts', () => {
   let contracts: Contracts;
@@ -8,20 +13,10 @@ describe('Contracts', () => {
   let mockLogger: jest.Mocked<winston.Logger>;
 
   beforeEach(() => {
-    mockAxios = {
-      post: jest.fn(),
-      get: jest.fn(),
-      put: jest.fn(),
-      delete: jest.fn(),
-    } as any;
-
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-    } as any;
-
-    contracts = new Contracts(mockAxios, mockLogger);
+    mockAxios = createMockAxios();
+    mockLogger = createMockLogger();
+    const testRequestHandler = createTestRequestHandler(mockAxios, mockLogger);
+    contracts = new Contracts(mockAxios, mockLogger, testRequestHandler);
   });
 
   describe('create', () => {
@@ -55,7 +50,9 @@ describe('Contracts', () => {
   describe('get', () => {
     it('should get a contract by id', async () => {
       const contractId = 1;
-      const expectedResponse = { data: { id: contractId, contractName: 'Test Contract' } };
+      const expectedResponse = {
+        data: { id: contractId, contractName: 'Test Contract' },
+      };
       mockAxios.get.mockResolvedValue(expectedResponse);
 
       const result = await contracts.get(contractId);
@@ -74,7 +71,9 @@ describe('Contracts', () => {
   describe('update', () => {
     it('should update a contract', async () => {
       const contractId = 1;
-      const updateData: Partial<Contract> = { contractName: 'Updated Contract' };
+      const updateData: Partial<Contract> = {
+        contractName: 'Updated Contract',
+      };
       const expectedResponse = { data: { id: contractId, ...updateData } };
       mockAxios.put.mockResolvedValue(expectedResponse);
 
@@ -110,13 +109,15 @@ describe('Contracts', () => {
 
   describe('list', () => {
     it('should list contracts with default filter', async () => {
-      const expectedResponse = { data: [{ id: 1, contractName: 'Contract 1' }] };
+      const expectedResponse = {
+        data: [{ id: 1, contractName: 'Contract 1' }],
+      };
       mockAxios.post.mockResolvedValue(expectedResponse);
 
       const result = await contracts.list();
 
       expect(mockAxios.post).toHaveBeenCalledWith('/Contracts/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
       expect(result.data).toEqual(expectedResponse.data);
     });
@@ -131,7 +132,7 @@ describe('Contracts', () => {
       expect(mockAxios.post).toHaveBeenCalledWith('/Contracts/query', {
         filter: [{ op: 'eq', field: 'accountId', value: 123 }],
         page: 1,
-        pageSize: 10
+        pageSize: 10,
       });
       expect(result.data).toEqual(expectedResponse.data);
     });
@@ -146,15 +147,15 @@ describe('Contracts', () => {
   describe('getMetadata', () => {
     it('should return metadata for all operations', () => {
       const metadata = Contracts.getMetadata();
-      
+
       expect(metadata).toHaveLength(5);
       expect(metadata.map(m => m.operation)).toEqual([
         'createContract',
         'getContract',
         'updateContract',
         'deleteContract',
-        'listContracts'
+        'listContracts',
       ]);
     });
   });
-}); 
+});

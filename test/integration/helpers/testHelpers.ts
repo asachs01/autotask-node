@@ -14,7 +14,7 @@ export class IntegrationTestHelpers {
    * Skip test if integration tests are disabled
    */
   static skipIfDisabled() {
-    if (globalThis.__INTEGRATION_CONFIG__?.skipIntegrationTests) {
+    if ((globalThis as any).__INTEGRATION_CONFIG__?.skipIntegrationTests) {
       return test.skip;
     }
     return test;
@@ -24,7 +24,7 @@ export class IntegrationTestHelpers {
    * Skip describe block if integration tests are disabled
    */
   static describeIfEnabled(name: string, fn: () => void) {
-    if (globalThis.__INTEGRATION_CONFIG__?.skipIntegrationTests) {
+    if ((globalThis as any).__INTEGRATION_CONFIG__?.skipIntegrationTests) {
       return describe.skip(name, fn);
     }
     return describe(name, fn);
@@ -37,7 +37,7 @@ export class IntegrationTestHelpers {
     const testData = {
       title: `Integration Test Ticket - ${Date.now()}`,
       description: 'This is a test ticket created by integration tests',
-      accountId: globalThis.__INTEGRATION_CONFIG__.testAccountId || 1,
+      accountId: (globalThis as any).__INTEGRATION_CONFIG__.testAccountId || 1,
       status: 1, // New
       priority: 3, // Normal
       issueType: 1,
@@ -74,7 +74,10 @@ export class IntegrationTestHelpers {
       firstName: 'Test',
       lastName: `Contact-${Date.now()}`,
       emailAddress: `test.contact.${Date.now()}@example.com`,
-      accountId: accountId || globalThis.__INTEGRATION_CONFIG__.testAccountId || 1,
+      accountId:
+        accountId ||
+        (globalThis as any).__INTEGRATION_CONFIG__.testAccountId ||
+        1,
       isActive: true,
       ...overrides,
     };
@@ -88,7 +91,10 @@ export class IntegrationTestHelpers {
   async createTestProject(accountId?: number, overrides: any = {}) {
     const testData = {
       projectName: `Test Project - ${Date.now()}`,
-      accountId: accountId || globalThis.__INTEGRATION_CONFIG__.testAccountId || 1,
+      accountId:
+        accountId ||
+        (globalThis as any).__INTEGRATION_CONFIG__.testAccountId ||
+        1,
       type: 1, // Project
       status: 1, // New
       startDateTime: new Date().toISOString(),
@@ -155,7 +161,7 @@ export class IntegrationTestHelpers {
         return await operation();
       } catch (error) {
         lastError = error as Error;
-        
+
         if (attempt === maxRetries) {
           throw lastError;
         }
@@ -174,10 +180,12 @@ export class IntegrationTestHelpers {
  * Get integration test helpers instance
  */
 export function getIntegrationHelpers(): IntegrationTestHelpers {
-  if (!globalThis.__AUTOTASK_CLIENT__) {
-    throw new Error('Integration test client not initialized. Make sure global setup ran successfully.');
+  if (!(globalThis as any).__AUTOTASK_CLIENT__) {
+    throw new Error(
+      'Integration test client not initialized. Make sure global setup ran successfully.'
+    );
   }
-  return new IntegrationTestHelpers(globalThis.__AUTOTASK_CLIENT__);
+  return new IntegrationTestHelpers((globalThis as any).__AUTOTASK_CLIENT__);
 }
 
 /**
@@ -187,15 +195,18 @@ export const integrationMatchers = {
   toHaveValidId: (received: any) => {
     const pass = received && typeof received.id === 'number' && received.id > 0;
     return {
-      message: () => `expected ${received} to have a valid ID (positive number)`,
+      message: () =>
+        `expected ${received} to have a valid ID (positive number)`,
       pass,
     };
   },
 
   toHaveTimestamps: (received: any) => {
-    const hasCreated = received.createDate || received.createdDate || received.createDateTime;
-    const hasModified = received.lastModifiedDate || received.lastModifiedDateTime;
-    
+    const hasCreated =
+      received.createDate || received.createdDate || received.createDateTime;
+    const hasModified =
+      received.lastModifiedDate || received.lastModifiedDateTime;
+
     const pass = Boolean(hasCreated);
     return {
       message: () => `expected ${received} to have timestamp fields`,
@@ -204,12 +215,15 @@ export const integrationMatchers = {
   },
 
   toBeValidAutotaskEntity: (received: any) => {
-    const hasId = received && typeof received.id === 'number' && received.id > 0;
-    const hasTimestamp = received.createDate || received.createdDate || received.createDateTime;
-    
+    const hasId =
+      received && typeof received.id === 'number' && received.id > 0;
+    const hasTimestamp =
+      received.createDate || received.createdDate || received.createDateTime;
+
     const pass = hasId && hasTimestamp;
     return {
-      message: () => `expected ${received} to be a valid Autotask entity with ID and timestamps`,
+      message: () =>
+        `expected ${received} to be a valid Autotask entity with ID and timestamps`,
       pass,
     };
   },
@@ -224,4 +238,4 @@ declare global {
       toBeValidAutotaskEntity(): R;
     }
   }
-} 
+}

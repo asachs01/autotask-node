@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run lint-staged to check and fix code style
+npx lint-staged
+
+# Run unit tests to ensure they pass before commit
+npm run test:unit

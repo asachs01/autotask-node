@@ -1,6 +1,14 @@
-import { ContractBlocks, ContractBlock } from '../../src/entities/contractBlocks';
+import {
+  ContractBlocks,
+  ContractBlock,
+} from '../../src/entities/contractBlocks';
 import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createMockAxios,
+  createMockLogger,
+  createTestRequestHandler,
+} from '../utils/testHelpers';
 
 describe('ContractBlocks', () => {
   let contractBlocks: ContractBlocks;
@@ -8,20 +16,14 @@ describe('ContractBlocks', () => {
   let mockLogger: jest.Mocked<winston.Logger>;
 
   beforeEach(() => {
-    mockAxios = {
-      post: jest.fn(),
-      get: jest.fn(),
-      put: jest.fn(),
-      delete: jest.fn(),
-    } as any;
-
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-    } as any;
-
-    contractBlocks = new ContractBlocks(mockAxios, mockLogger);
+    mockAxios = createMockAxios();
+    mockLogger = createMockLogger();
+    const testRequestHandler = createTestRequestHandler(mockAxios, mockLogger);
+    contractBlocks = new ContractBlocks(
+      mockAxios,
+      mockLogger,
+      testRequestHandler
+    );
   });
 
   describe('create', () => {
@@ -39,7 +41,10 @@ describe('ContractBlocks', () => {
 
       const result = await contractBlocks.create(contractBlockData);
 
-      expect(mockAxios.post).toHaveBeenCalledWith('/ContractBlocks', contractBlockData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractBlocks',
+        contractBlockData
+      );
       expect(result.data).toEqual(expectedResponse.data);
     });
   });
@@ -53,7 +58,7 @@ describe('ContractBlocks', () => {
       const result = await contractBlocks.getByContract(contractId);
 
       expect(mockAxios.post).toHaveBeenCalledWith('/ContractBlocks/query', {
-        filter: [{ op: 'eq', field: 'contractId', value: contractId }]
+        filter: [{ op: 'eq', field: 'contractId', value: contractId }],
       });
       expect(result.data).toEqual(expectedResponse.data);
     });
@@ -63,7 +68,9 @@ describe('ContractBlocks', () => {
     it('should get contract blocks by date range', async () => {
       const startDate = '2024-01-01';
       const endDate = '2024-01-31';
-      const expectedResponse = { data: [{ id: 1, dateBegin: startDate, dateEnd: endDate }] };
+      const expectedResponse = {
+        data: [{ id: 1, dateBegin: startDate, dateEnd: endDate }],
+      };
       mockAxios.post.mockResolvedValue(expectedResponse);
 
       const result = await contractBlocks.getByDateRange(startDate, endDate);
@@ -71,8 +78,8 @@ describe('ContractBlocks', () => {
       expect(mockAxios.post).toHaveBeenCalledWith('/ContractBlocks/query', {
         filter: [
           { op: 'gte', field: 'dateBegin', value: startDate },
-          { op: 'lte', field: 'dateEnd', value: endDate }
-        ]
+          { op: 'lte', field: 'dateEnd', value: endDate },
+        ],
       });
       expect(result.data).toEqual(expectedResponse.data);
     });
@@ -81,15 +88,15 @@ describe('ContractBlocks', () => {
   describe('getMetadata', () => {
     it('should return metadata for all operations', () => {
       const metadata = ContractBlocks.getMetadata();
-      
+
       expect(metadata).toHaveLength(5);
       expect(metadata.map(m => m.operation)).toEqual([
         'createContractBlock',
         'getContractBlock',
         'updateContractBlock',
         'deleteContractBlock',
-        'listContractBlocks'
+        'listContractBlocks',
       ]);
     });
   });
-}); 
+});

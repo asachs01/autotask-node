@@ -39,13 +39,16 @@ export default async function globalSetup() {
   console.log('🚀 Setting up integration test environment...');
 
   // Check if integration tests should be skipped
-  const skipTests = process.env.SKIP_INTEGRATION_TESTS === 'true' || 
-                   !process.env.AUTOTASK_USERNAME ||
-                   !process.env.AUTOTASK_INTEGRATION_CODE ||
-                   !process.env.AUTOTASK_SECRET;
+  const skipTests =
+    process.env.SKIP_INTEGRATION_TESTS === 'true' ||
+    !process.env.AUTOTASK_USERNAME ||
+    !process.env.AUTOTASK_INTEGRATION_CODE ||
+    !process.env.AUTOTASK_SECRET;
 
   if (skipTests) {
-    console.log('⚠️  Skipping integration tests - missing credentials or SKIP_INTEGRATION_TESTS=true');
+    console.log(
+      '⚠️  Skipping integration tests - missing credentials or SKIP_INTEGRATION_TESTS=true'
+    );
     globalThis.__INTEGRATION_CONFIG__ = {
       auth: {} as AutotaskAuth,
       testAccountId: 0,
@@ -79,24 +82,25 @@ export default async function globalSetup() {
           winston.format.simple()
         ),
       }),
-      new winston.transports.File({ 
+      new winston.transports.File({
         filename: 'test/integration/logs/integration-tests.log',
-        level: 'debug'
+        level: 'debug',
       }),
     ],
   });
 
   try {
-    // Initialize Autotask client
-    const client = new AutotaskClient(auth, logger);
-    
+    // Initialize Autotask client using the static create method
+    console.log('🔍 Creating Autotask client...');
+    const client = await AutotaskClient.create(auth);
+
     // Test basic connectivity
     console.log('🔍 Testing API connectivity...');
-    const testTickets = await client.tickets.list({ 
-      filter: { id: 1 }, 
-      pageSize: 1 
+    const testTickets = await client.tickets.list({
+      filter: { id: 1 },
+      pageSize: 1,
     });
-    
+
     console.log('✅ API connectivity confirmed');
 
     // Store global references
@@ -110,9 +114,8 @@ export default async function globalSetup() {
     };
 
     console.log('✅ Integration test environment ready');
-
   } catch (error) {
     console.error('❌ Failed to setup integration test environment:', error);
     throw error;
   }
-} 
+}
