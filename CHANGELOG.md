@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2025-05-27
+## [Unreleased]
+
+## [1.0.0] - 2025-05-28
 
 ### Added
 
@@ -20,10 +22,25 @@ This is the first stable release of the Autotask API wrapper, providing a comple
   - Contracts, Contract Services, Contract Blocks, Contract Adjustments, Contract Exclusions
   - Invoices, Quotes, Purchase Orders, Expenses
   - Configuration Items, Attachments, Notes
+  - Service Desk entities: Ticket Categories, Statuses, Priorities, Sources
 - **Advanced Request Handling**: Robust retry logic with exponential backoff, rate limiting, and error handling
 - **TypeScript Support**: Full type definitions for all entities and API responses
 - **CLI Tool**: Command-line interface for all supported entities with CRUD operations
-- **Comprehensive Testing**: Both unit tests (121 tests) and integration tests with real API validation
+- **Comprehensive Testing**: 460 tests total including unit tests and integration tests with real API validation
+
+**🚀 Revolutionary Query Builder System (Phase 3.1):**
+
+- **Type-Safe Fluent API**: Build complex queries with full TypeScript intellisense and compile-time validation
+- **Comprehensive Operators**: All comparison operators (eq, ne, gt, gte, lt, lte, contains, startsWith, endsWith, in, notIn, isNull, isNotNull, between)
+- **Logical Grouping**: Complex AND/OR operations with unlimited nesting
+- **Advanced Sorting**: Multi-field sorting with ascending/descending directions
+- **Field Selection**: Optimize performance by selecting only needed fields
+- **Related Entity Includes**: Fetch related data in a single query with field specification
+- **Comprehensive Pagination**: Both offset-based and cursor-based pagination support
+- **Query Execution Methods**: execute(), first(), count(), exists()
+- **Query Utilities**: clone(), reset(), toQuerySpec() for debugging
+- **QueryableEntity Base Class**: Extensible foundation for entities to inherit query capabilities
+- **Enhanced Tickets Entity**: Demonstrates full query builder integration with 20+ specialized methods
 
 **Developer Experience:**
 
@@ -32,6 +49,8 @@ This is the first stable release of the Autotask API wrapper, providing a comple
 - **Test Helpers**: Utilities for creating test data and managing test environments
 - **CI/CD Ready**: Automatic test skipping when credentials are unavailable
 - **Logging & Monitoring**: Winston-based logging with configurable levels
+- **Memory Optimization**: PaginationHandler and memory management utilities
+- **Performance Monitoring**: Built-in performance tracking and optimization
 
 **API Features:**
 
@@ -39,78 +58,26 @@ This is the first stable release of the Autotask API wrapper, providing a comple
 - **Rate Limiting**: Built-in respect for API rate limits with intelligent retry
 - **Error Handling**: Comprehensive error types and handling for all API scenarios
 - **Pagination Support**: Automatic handling of paginated responses
-- **Filtering & Querying**: Advanced query capabilities with type-safe filters
+- **Advanced Querying**: Revolutionary query builder with type-safe filters and complex operations
 
 **Documentation:**
 
 - Complete API documentation with examples
+- Query Builder documentation with comprehensive usage examples
 - Integration test documentation and setup guides
 - CLI usage documentation
 - TypeScript type definitions for all entities
 
-This release provides a production-ready foundation for building applications that integrate with the Autotask platform, with robust error handling, comprehensive testing, and excellent developer experience.
+**Test Coverage:**
 
-## [Unreleased]
+- **460 total tests** with 100% passing rate
+- **46 query builder tests** covering all functionality
+- **30 enhanced tickets entity tests**
+- **384 entity and utility tests** for comprehensive coverage
+- Full TypeScript compilation success
+- Integration testing with mock API responses
 
-### Added
-
-- Complete Contracts entity implementation with full CRUD operations
-- Contracts support in CLI with create, get, update, delete, and list commands
-- Contracts test suite with Jest
-- TypeScript type definitions for Contract interface
-- AI-aware metadata for all contract operations
-- Comprehensive integration testing infrastructure
-  - Global setup and teardown for integration tests
-  - Integration test helpers with CRUD operations and test data factories
-  - Custom Jest matchers for Autotask entity validation
-  - Separate Jest configuration for integration tests
-  - Skip mechanisms for CI/CD environments without API credentials
-  - Real API connectivity testing with proper error handling
-  - Rate limiting and retry logic validation
-  - Zone detection verification
-  - Performance testing capabilities
-
-**Phase 1.3 - Missing Unit Tests (COMPLETE):**
-
-- Added comprehensive unit tests for all missing entities:
-  - Expenses entity with full CRUD and business logic testing
-  - Purchase Orders entity with validation and error handling
-  - Ticket Categories with activation/deactivation and filtering
-  - Ticket Statuses with system vs custom status management
-  - Ticket Priorities with priority level ordering and validation
-  - Ticket Sources with system vs custom source management
-- Added memory optimization utility tests with comprehensive coverage
-- Fixed all TypeScript compilation issues and Jest type mismatches
-- Total test coverage: 384 tests passing
-
-**Phase 3.1 - Advanced Query & Filtering System (COMPLETE):**
-
-- **Revolutionary Query Builder Implementation:**
-  - Type-safe fluent API for building complex queries
-  - Support for all comparison operators (eq, ne, gt, gte, lt, lte, contains, startsWith, endsWith, in, notIn, isNull, isNotNull, between)
-  - Logical grouping with AND/OR operations and nested conditions
-  - Advanced sorting with multiple fields and directions
-  - Field selection for optimized data retrieval
-  - Related entity includes with field specification and aliases
-  - Comprehensive pagination support (offset-based and cursor-based)
-  - Query execution methods: execute(), first(), count(), exists()
-  - Query utility methods: clone(), reset(), toQuerySpec()
-  - Robust error handling and value formatting
-- **QueryableEntity Base Class:**
-  - Extensible base class for entities to inherit query capabilities
-  - Seamless integration with existing CRUD operations
-  - Convenience methods for common query patterns
-- **Enhanced Tickets Entity (TicketsEnhanced):**
-  - Demonstrates full query builder integration
-  - 20+ specialized query methods for common ticket operations
-  - Advanced features like ticket statistics and complex filtering
-  - Backward compatibility with traditional CRUD operations
-- **Comprehensive Test Coverage:**
-  - 46 query builder tests covering all functionality
-  - 30 enhanced tickets entity tests
-  - Total test suite: 460 tests passing (76 new tests added)
-  - 100% TypeScript compilation success
-  - Full integration testing with mock API responses
+This release provides a production-ready foundation for building applications that integrate with the Autotask platform, with robust error handling, comprehensive testing, revolutionary query capabilities, and excellent developer experience.
 
 ### Changed
 
@@ -120,7 +87,6 @@ This release provides a production-ready foundation for building applications th
 - CLI support for invoices and quotes entities with full CRUD operations
 - Updated Jest configuration to properly separate unit and integration tests
 - Enhanced test helpers with proper mock setup for unit tests
-- Fixed TypeScript errors in integration test files
 
 ### Fixed
 
@@ -129,6 +95,8 @@ This release provides a production-ready foundation for building applications th
 - Unit test timeout issues caused by retry logic in RequestHandler
 - Jest configuration issues with module name mapping
 - TypeScript compilation errors in test files
+- All TypeScript compilation errors in entity and utility tests
+- Jest type system compatibility issues
 
 ## [0.1.0] - 2024-01-XX
 
