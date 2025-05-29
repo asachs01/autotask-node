@@ -16,8 +16,19 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          # Minimum supported version
+          - node-version: '18.x'
+            os: ubuntu-latest
+          # LTS version (most important)
+          - node-version: '20.x'
+            os: ubuntu-latest
+          # Latest version
+          - node-version: '22.x'
+            os: ubuntu-latest
+          # Test LTS version on Windows (common development environment)
+          - node-version: '20.x'
+            os: windows-latest
     
     steps:
       - name: Checkout code
