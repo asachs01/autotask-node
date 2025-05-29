@@ -1,5 +1,5 @@
 {
-  "name": "@asachs01/autotask-api-wrapper",
+  "name": "autotask-node",
   "version": "1.0.0",
   "description": "Feature-complete NodeJS client for Kaseya Autotask PSA REST API with TypeScript support, comprehensive testing, and CLI tools.",
   "type": "commonjs",
