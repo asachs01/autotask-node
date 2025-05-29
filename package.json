@@ -1,5 +1,5 @@
 {
-  "name": "autotask-node",
+  "name": "@asachs01/autotask-api-wrapper",
   "version": "1.0.0",
   "description": "Feature-complete NodeJS client for Kaseya Autotask PSA REST API with TypeScript support, comprehensive testing, and CLI tools.",
   "type": "commonjs",
@@ -47,11 +47,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/autotask-api-wrapper.git"
+    "url": "https://github.com/asachs01/autotask-node.git"
   },
-  "homepage": "https://github.com/your-username/autotask-api-wrapper#readme",
+  "homepage": "https://github.com/asachs01/autotask-node#readme",
   "bugs": {
-    "url": "https://github.com/your-username/autotask-api-wrapper/issues"
+    "url": "https://github.com/asachs01/autotask-node/issues"
   },
   "keywords": [
     "autotask",
