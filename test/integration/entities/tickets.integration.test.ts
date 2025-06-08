@@ -177,6 +177,11 @@ describe('Tickets Integration Tests', () => {
 
   describe('CRUD Operations', () => {
     it('should create a new ticket', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       console.log('✨ Testing ticket creation...');
 
       if (!config.testAccountId) {
@@ -211,6 +216,11 @@ describe('Tickets Integration Tests', () => {
     });
 
     it('should update an existing ticket', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       console.log('🔄 Testing ticket update...');
 
       if (!config.testAccountId) {
@@ -261,6 +271,11 @@ describe('Tickets Integration Tests', () => {
     });
 
     it('should handle update validation errors', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       const invalidUpdateData: Partial<Ticket> = {
         status: 999, // Invalid status
       };
@@ -273,6 +288,11 @@ describe('Tickets Integration Tests', () => {
     });
 
     it('should delete a ticket', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       console.log('🗑️ Testing ticket deletion...');
 
       if (!config.testAccountId) {
@@ -309,6 +329,11 @@ describe('Tickets Integration Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle non-existent ticket requests', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       const nonExistentId = 999999999;
 
       await expect(config.client.tickets.get(nonExistentId)).rejects.toThrow();
@@ -317,6 +342,11 @@ describe('Tickets Integration Tests', () => {
     });
 
     it('should handle invalid filter syntax', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       await expect(
         config.client.tickets.list({
           filter: 'invalid filter syntax' as any,
@@ -327,6 +357,11 @@ describe('Tickets Integration Tests', () => {
     });
 
     it('should handle rate limiting gracefully', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       console.log('⏱️ Testing rate limiting behavior...');
 
       // Make multiple rapid requests to test rate limiting
@@ -349,24 +384,39 @@ describe('Tickets Integration Tests', () => {
 
   describe('Performance Monitoring', () => {
     it('should track performance metrics', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       console.log('📊 Testing performance monitoring...');
+
+      // Get initial request count
+      const initialReport = config.client
+        .getRequestHandler()
+        .getPerformanceReport();
+      const initialRequestCount = initialReport.metrics.requestCount || 0;
 
       // Make a few requests to generate metrics
       await config.client.tickets.list({ pageSize: 5 });
       await delay(100);
       await config.client.tickets.list({ pageSize: 3 });
 
-      // Get performance report
-      const report = config.client.getRequestHandler().getPerformanceReport();
+      // Get updated performance report
+      const finalReport = config.client
+        .getRequestHandler()
+        .getPerformanceReport();
 
-      expect(report).toBeDefined();
-      expect(report.metrics).toBeDefined();
-      expect(report.metrics.requestCount).toBeGreaterThan(0);
+      expect(finalReport).toBeDefined();
+      expect(finalReport.metrics).toBeDefined();
+
+      const finalRequestCount = finalReport.metrics.requestCount || 0;
+      expect(finalRequestCount).toBeGreaterThan(initialRequestCount);
 
       console.log('📊 Performance monitoring working correctly');
-      console.log(`📈 Total requests: ${report.metrics.requestCount}`);
+      console.log(`📈 Total requests: ${finalRequestCount}`);
       console.log(
-        `⚡ Average response time: ${report.metrics.averageResponseTime}ms`
+        `⚡ Average response time: ${finalReport.metrics.averageResponseTime}ms`
       );
     });
   });

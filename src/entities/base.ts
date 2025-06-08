@@ -9,12 +9,13 @@ export abstract class BaseEntity {
   protected requestHandler: RequestHandler;
 
   constructor(
-    protected axios: AxiosInstance, 
+    protected axios: AxiosInstance,
     protected logger: winston.Logger,
     requestHandler?: RequestHandler
   ) {
     // If no request handler is provided, create a basic one
-    this.requestHandler = requestHandler || new RequestHandler(this.axios, this.logger);
+    this.requestHandler =
+      requestHandler || new RequestHandler(this.axios, this.logger);
   }
 
   /**
@@ -32,7 +33,29 @@ export abstract class BaseEntity {
       method,
       options
     );
-    
+
+    // Handle Autotask API's behavior of returning {item: null} for non-existent resources
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'item' in response.data
+    ) {
+      if (response.data.item === null) {
+        // Import and throw NotFoundError
+        const { NotFoundError } = await import('../utils/errors');
+        const resourceType = endpoint.split('/')[1] || 'resource';
+        throw new NotFoundError(
+          `Resource not found`,
+          resourceType,
+          undefined,
+          404,
+          undefined,
+          { endpoint, method }
+        );
+      }
+      return { data: response.data.item as T };
+    }
+
     return { data: response.data as T };
   }
 
@@ -51,12 +74,16 @@ export abstract class BaseEntity {
       method,
       options
     );
-    
+
     // Autotask API returns list data in { items: [...], pageDetails: {...} } format
-    if (response.data && typeof response.data === 'object' && 'items' in response.data) {
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'items' in response.data
+    ) {
       return { data: response.data.items as T[] };
     }
-    
+
     // Fallback for direct array responses or other formats
     return { data: response.data as T[] };
   }
@@ -65,8 +92,8 @@ export abstract class BaseEntity {
    * Legacy method for backward compatibility - enhanced with new error handling
    */
   protected async requestWithRetry<T>(
-    fn: () => Promise<T>, 
-    retries = 3, 
+    fn: () => Promise<T>,
+    retries = 3,
     delay = 500,
     endpoint = 'unknown',
     method = 'unknown'
@@ -79,14 +106,14 @@ export abstract class BaseEntity {
       },
       endpoint,
       method,
-      { 
-        retries, 
+      {
+        retries,
         baseDelay: delay,
         enableRequestLogging: false, // Disable for legacy compatibility
-        enableResponseLogging: false 
+        enableResponseLogging: false,
       }
     );
-    
+
     return response.data as T;
   }
-} 
+}

@@ -1,5 +1,9 @@
 import { Contact } from '../../../src/entities/contacts';
-import { setupIntegrationTest, generateTestId } from '../setup';
+import {
+  setupIntegrationTest,
+  generateTestId,
+  shouldSkipIntegrationTests,
+} from '../setup';
 
 describe('Contacts Integration Tests', () => {
   let config: any;
