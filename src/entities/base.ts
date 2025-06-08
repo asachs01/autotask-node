@@ -37,6 +37,31 @@ export abstract class BaseEntity {
   }
 
   /**
+   * Execute a query request (for list operations) with special handling for Autotask API structure
+   */
+  protected async executeQueryRequest<T>(
+    requestFn: () => Promise<any>,
+    endpoint: string,
+    method: string,
+    options: RequestOptions = {}
+  ): Promise<ApiResponse<T[]>> {
+    const response = await this.requestHandler.executeRequest(
+      requestFn,
+      endpoint,
+      method,
+      options
+    );
+    
+    // Autotask API returns list data in { items: [...], pageDetails: {...} } format
+    if (response.data && typeof response.data === 'object' && 'items' in response.data) {
+      return { data: response.data.items as T[] };
+    }
+    
+    // Fallback for direct array responses or other formats
+    return { data: response.data as T[] };
+  }
+
+  /**
    * Legacy method for backward compatibility - enhanced with new error handling
    */
   protected async requestWithRetry<T>(

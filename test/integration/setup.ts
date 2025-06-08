@@ -95,12 +95,12 @@ export async function setupIntegrationTest(): Promise<IntegrationTestConfig> {
 
   // Create client with performance monitoring enabled
   const client = await AutotaskClient.create(auth, {
-    timeout: 30000,
-    maxConcurrentRequests: 5,
+    timeout: 10000,
+    maxConcurrentRequests: 10,
     enableConnectionPooling: true,
     enableCompression: true,
-    requestsPerSecond: 3, // Conservative rate limiting for tests
-    keepAliveTimeout: 30000,
+    requestsPerSecond: 10,
+    keepAliveTimeout: 15000,
   });
 
   // Test IDs for cleanup (if provided in env)

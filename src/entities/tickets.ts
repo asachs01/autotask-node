@@ -143,7 +143,7 @@ export class Tickets extends BaseEntity {
     
     this.logger.info('Listing tickets with search body', { searchBody });
     
-    return this.executeRequest(
+    return this.executeQueryRequest(
       async () => this.axios.post(`${this.endpoint}/query`, searchBody),
       `${this.endpoint}/query`,
       'POST'

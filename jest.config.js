@@ -10,6 +10,9 @@ const config = {
     '<rootDir>/node_modules/',
   ],
 
+  // Setup files
+  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
+
   // Coverage settings
   collectCoverage: false,
   collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts', '!src/**/*.test.ts'],

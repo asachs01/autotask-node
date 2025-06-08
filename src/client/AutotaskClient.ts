@@ -224,6 +224,14 @@ export class AutotaskClient {
     config?: AutotaskAuth,
     performanceConfig?: PerformanceConfig
   ): Promise<AutotaskClient> {
+    // Create a logger for this static method
+    const logger = winston.createLogger({
+      level: process.env.NODE_ENV === 'test' ? 'error' : 'info',
+      format: winston.format.simple(),
+      transports: [new winston.transports.Console()],
+      silent: process.env.NODE_ENV === 'test' && !process.env.DEBUG_TESTS && !process.env.DEBUG_INTEGRATION_TESTS
+    });
+
     // If no config is provided, try to use environment variables
     if (!config) {
       config = {
@@ -264,31 +272,31 @@ export class AutotaskClient {
     if (!apiUrl) {
       // Zone detection
       try {
-        console.log('Getting zone information for username:', config.username);
+        logger.debug('Getting zone information for username:', config.username);
 
         // Try format 1 - URL query parameter
         const zoneInfoUrl = `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`;
-        console.log('Trying zone info URL:', zoneInfoUrl);
+        logger.debug('Trying zone info URL:', zoneInfoUrl);
 
         // Make a GET request
         const response = await axios.get(zoneInfoUrl);
-        console.log('Zone info response:', response.data);
+        logger.debug('Zone info response:', response.data);
 
         if (response.data && response.data.url) {
           apiUrl = response.data.url;
-          console.log('Got API URL:', apiUrl);
+          logger.debug('Got API URL:', apiUrl);
         } else if (response.data && response.data.URL) {
           apiUrl = response.data.URL;
-          console.log('Got API URL (upper case):', apiUrl);
+          logger.debug('Got API URL (upper case):', apiUrl);
         } else if (response.data && response.data.zoneUrl) {
           apiUrl = response.data.zoneUrl;
-          console.log('Got API URL (zoneUrl):', apiUrl);
+          logger.debug('Got API URL (zoneUrl):', apiUrl);
         } else {
           // Try extracting the API URL from any property that looks like a URL
           for (const [key, value] of Object.entries(response.data)) {
             if (typeof value === 'string' && value.includes('autotask.net')) {
               apiUrl = value;
-              console.log(`Found API URL in field ${key}:`, apiUrl);
+              logger.debug(`Found API URL in field ${key}:`, apiUrl);
               break;
             }
           }
@@ -301,11 +309,11 @@ export class AutotaskClient {
           );
         }
       } catch (err: any) {
-        console.error('Error getting zone information:', err.message);
+        logger.warn('Error getting zone information:', err.message);
 
         // Try a fallback method
         try {
-          console.log('Trying fallback zone detection method');
+          logger.debug('Trying fallback zone detection method');
           const fallbackUrl =
             'https://webservices.autotask.net/atservicesrest/v1.0/zoneInformation';
 
@@ -321,24 +329,24 @@ export class AutotaskClient {
             }
           );
 
-          console.log('Fallback response:', fallbackResponse.data);
+          logger.debug('Fallback response:', fallbackResponse.data);
 
           if (fallbackResponse.data && fallbackResponse.data.url) {
             apiUrl = fallbackResponse.data.url;
-            console.log('Got API URL from fallback:', apiUrl);
+            logger.debug('Got API URL from fallback:', apiUrl);
           } else {
             throw new ConfigurationError(
               'Could not determine API zone URL from fallback method'
             );
           }
         } catch (fallbackErr: any) {
-          console.error('Fallback method also failed:', fallbackErr.message);
+          logger.error('Fallback method also failed:', fallbackErr.message);
           if (err.response) {
-            console.error(
+            logger.error(
               'Original error - Response Status:',
               err.response.status
             );
-            console.error(
+            logger.error(
               'Original error - Response Data:',
               JSON.stringify(err.response.data)
             );
@@ -369,7 +377,7 @@ export class AutotaskClient {
       apiUrl += 'v1.0/';
     }
 
-    console.log('Creating Autotask client with API URL:', apiUrl);
+    logger.info('Creating Autotask client with API URL:', apiUrl);
 
     // Set default performance configuration for axios instance creation
     const defaultPerformanceConfig: Required<PerformanceConfig> = {

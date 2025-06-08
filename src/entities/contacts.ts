@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios';
 import winston from 'winston';
-import { MethodMetadata, ApiResponse } from '../types';
+import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
+import { BaseEntity } from './base';
 
 export interface Contact {
   id?: number;
@@ -57,13 +58,16 @@ export interface ContactQuery {
   pageSize?: number;
 }
 
-export class Contacts {
+export class Contacts extends BaseEntity {
   private readonly endpoint = '/Contacts';
 
   constructor(
-    private axios: AxiosInstance,
-    private logger: winston.Logger
-  ) {}
+    axios: AxiosInstance,
+    logger: winston.Logger,
+    requestHandler?: RequestHandler
+  ) {
+    super(axios, logger, requestHandler);
+  }
 
   static getMetadata(): MethodMetadata[] {
     return [
@@ -105,40 +109,22 @@ export class Contacts {
     ];
   }
 
-  private async requestWithRetry<T>(
-    fn: () => Promise<T>,
-    retries = 3,
-    delay = 500
-  ): Promise<T> {
-    let attempt = 0;
-    while (true) {
-      try {
-        return await fn();
-      } catch (err) {
-        attempt++;
-        this.logger.warn(`Request failed (attempt ${attempt}): ${err}`);
-        if (attempt > retries) throw err;
-        await new Promise(res =>
-          setTimeout(res, delay * Math.pow(2, attempt - 1))
-        );
-      }
-    }
-  }
-
   async create(contact: Contact): Promise<ApiResponse<Contact>> {
     this.logger.info('Creating contact', { contact });
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.post(this.endpoint, contact);
-      return { data };
-    });
+    return this.executeRequest(
+      async () => this.axios.post(this.endpoint, contact),
+      this.endpoint,
+      'POST'
+    );
   }
 
   async get(id: number): Promise<ApiResponse<Contact>> {
     this.logger.info('Getting contact', { id });
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.get(`${this.endpoint}/${id}`);
-      return { data };
-    });
+    return this.executeRequest(
+      async () => this.axios.get(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'GET'
+    );
   }
 
   async update(
@@ -146,29 +132,62 @@ export class Contacts {
     contact: Partial<Contact>
   ): Promise<ApiResponse<Contact>> {
     this.logger.info('Updating contact', { id, contact });
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.put(`${this.endpoint}/${id}`, contact);
-      return { data };
-    });
+    return this.executeRequest(
+      async () => this.axios.put(`${this.endpoint}/${id}`, contact),
+      `${this.endpoint}/${id}`,
+      'PUT'
+    );
   }
 
   async delete(id: number): Promise<void> {
     this.logger.info('Deleting contact', { id });
-    return this.requestWithRetry(async () => {
-      await this.axios.delete(`${this.endpoint}/${id}`);
-    });
+    await this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
   }
 
   async list(query: ContactQuery = {}): Promise<ApiResponse<Contact[]>> {
     this.logger.info('Listing contacts', { query });
-    const params: Record<string, any> = {};
-    if (query.filter) params['search'] = JSON.stringify(query.filter);
-    if (query.sort) params['sort'] = query.sort;
-    if (query.page) params['page'] = query.page;
-    if (query.pageSize) params['pageSize'] = query.pageSize;
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.get(this.endpoint, { params });
-      return { data };
-    });
+    const searchBody: Record<string, any> = {};
+    
+    // Ensure there's a filter - Autotask API requires a filter
+    if (!query.filter || Object.keys(query.filter).length === 0) {
+      searchBody.filter = [
+        {
+          "op": "gte",
+          "field": "id",
+          "value": 0
+        }
+      ];
+    } else {
+      // If filter is provided as an object, convert to array format expected by API
+      if (!Array.isArray(query.filter)) {
+        const filterArray = [];
+        for (const [field, value] of Object.entries(query.filter)) {
+          filterArray.push({
+            "op": "eq",
+            "field": field,
+            "value": value
+          });
+        }
+        searchBody.filter = filterArray;
+      } else {
+        searchBody.filter = query.filter;
+      }
+    }
+    
+    if (query.sort) searchBody.sort = query.sort;
+    if (query.page) searchBody.page = query.page;
+    if (query.pageSize) searchBody.pageSize = query.pageSize;
+    
+    this.logger.info('Listing contacts with search body', { searchBody });
+    
+    return this.executeQueryRequest(
+      async () => this.axios.post(`${this.endpoint}/query`, searchBody),
+      `${this.endpoint}/query`,
+      'POST'
+    );
   }
 }

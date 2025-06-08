@@ -149,7 +149,7 @@ export class ContractBlocks extends BaseEntity {
     
     this.logger.info('Listing contract blocks with search body', { searchBody });
     
-    return this.executeRequest(
+    return this.executeQueryRequest(
       async () => this.axios.post(`${this.endpoint}/query`, searchBody),
       `${this.endpoint}/query`,
       'POST'

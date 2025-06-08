@@ -14,8 +14,8 @@ const config = {
   // Setup after environment
   setupFilesAfterEnv: ['<rootDir>/test/integration/setupAfterEnv.ts'],
 
-  // Longer timeout for integration tests
-  testTimeout: 30000,
+  // Optimized timeout for integration tests
+  testTimeout: 15000, // Reduced from 30000
 
   // Coverage settings
   collectCoverage: false, // Disable coverage for integration tests
@@ -35,11 +35,12 @@ const config = {
     ],
   },
 
-  // Verbose output for integration tests
-  verbose: true,
+  // Optimize output for integration tests
+  verbose: false, // Reduced verbosity for speed
+  silent: !process.env.DEBUG_INTEGRATION_TESTS,
 
-  // Run tests serially to avoid conflicts
-  maxWorkers: 1,
+  // Allow parallel execution for independent tests
+  maxWorkers: 1, // Force serial execution to avoid circular reference issues
 
   // Clear mocks between tests
   clearMocks: true,
@@ -54,7 +55,7 @@ const config = {
     color: 'blue',
   },
 
-  // Reporters
+  // Optimized reporters
   reporters: [
     'default',
     [
@@ -66,6 +67,11 @@ const config = {
       },
     ],
   ],
+
+  // Performance optimizations
+  cache: true,
+  detectLeaks: false, // Disable for performance
+  forceExit: true, // Force exit after tests complete
 };
 
 module.exports = config;
