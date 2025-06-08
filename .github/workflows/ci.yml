@@ -54,7 +54,24 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-      - name: Run integration tests (if credentials available)
+      - name: Debug environment variables
+        run: |
+          echo "Checking environment variables..."
+          echo "AUTOTASK_USERNAME is set: $([[ -n "$AUTOTASK_USERNAME" ]] && echo "yes" || echo "no")"
+          echo "AUTOTASK_INTEGRATION_CODE is set: $([[ -n "$AUTOTASK_INTEGRATION_CODE" ]] && echo "yes" || echo "no")"
+          echo "AUTOTASK_SECRET is set: $([[ -n "$AUTOTASK_SECRET" ]] && echo "yes" || echo "no")"
+          echo "Username starts with: ${AUTOTASK_USERNAME:0:10}..."
+        env:
+          AUTOTASK_USERNAME: ${{ secrets.AUTOTASK_USERNAME }}
+          AUTOTASK_INTEGRATION_CODE: ${{ secrets.AUTOTASK_INTEGRATION_CODE }}
+          AUTOTASK_SECRET: ${{ secrets.AUTOTASK_SECRET }}
+
+      - name: Skip integration tests (credentials not available)
+        if: ${{ !secrets.AUTOTASK_USERNAME || !secrets.AUTOTASK_INTEGRATION_CODE || !secrets.AUTOTASK_SECRET }}
+        run: echo "⚠️ Skipping integration tests - Autotask credentials not configured"
+
+      - name: Run integration tests
+        if: ${{ secrets.AUTOTASK_USERNAME && secrets.AUTOTASK_INTEGRATION_CODE && secrets.AUTOTASK_SECRET }}
         env:
           AUTOTASK_USERNAME: ${{ secrets.AUTOTASK_USERNAME }}
           AUTOTASK_INTEGRATION_CODE: ${{ secrets.AUTOTASK_INTEGRATION_CODE }}
