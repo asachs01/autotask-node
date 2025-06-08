@@ -56,6 +56,7 @@ jobs:
         run: npm run test:unit
 
       - name: Debug environment variables
+        shell: bash
         run: |
           echo "Checking environment variables..."
           echo "AUTOTASK_USERNAME is set: $([[ -n "$AUTOTASK_USERNAME" ]] && echo "yes" || echo "no")"
