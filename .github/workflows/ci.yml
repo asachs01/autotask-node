@@ -13,6 +13,7 @@ jobs:
   test:
     name: Test on Node.js ${{ matrix.node-version }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    environment: Default
     
     strategy:
       matrix:
@@ -82,6 +83,7 @@ jobs:
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
+    environment: Default
     
     steps:
       - name: Checkout code
