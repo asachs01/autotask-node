@@ -12,14 +12,11 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-// Ensure logs directory exists
-import { mkdirSync } from 'fs';
-import { dirname } from 'path';
-
-const logDir = dirname('./test/integration/logs/integration-tests.log');
+// Create logs directory if it doesn't exist
 try {
-  mkdirSync(logDir, { recursive: true });
-} catch (error) {
+  const fs = require('fs');
+  fs.mkdirSync('./test/integration/logs', { recursive: true });
+} catch {
   // Directory might already exist
 }
 
@@ -28,7 +25,7 @@ try {
 // Skip all tests if integration tests are disabled
 if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
   beforeEach(() => {
-    pending('Integration tests are disabled');
+    test.skip('Integration tests are disabled', () => {});
   });
 }
 
@@ -36,17 +33,21 @@ if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
 if (!process.env.DEBUG_INTEGRATION_TESTS) {
   // Configure the default winston logger to be silent
   winston.configure({
-    level: 'silent',
-    transports: []
+    level: 'error', // Only show errors and above
+    transports: [
+      new winston.transports.Console({
+        format: winston.format.simple(),
+      }),
+    ],
   });
-  
+
   // Override winston.createLogger to always return silent loggers during tests
   const originalCreateLogger = winston.createLogger;
-  winston.createLogger = (options?: winston.LoggerOptions) => {
+  winston.createLogger = () => {
     return originalCreateLogger({
       level: 'silent',
       transports: [],
-      silent: true
+      silent: true,
     });
   };
 }
@@ -56,4 +57,4 @@ beforeAll(() => {
   // Reduce rate limiting for tests
   process.env.AUTOTASK_REQUESTS_PER_SECOND = '10'; // Faster than default 3
   process.env.AUTOTASK_TIMEOUT = '10000'; // Reduced timeout
-}); 
+});

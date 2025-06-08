@@ -1,6 +1,5 @@
-import { AutotaskClient } from '../../../src/client/AutotaskClient';
 import { Ticket } from '../../../src/entities/tickets';
-import { setupIntegrationTest, delay, generateTestId } from '../setup';
+import { setupIntegrationTest, generateTestId, delay } from '../setup';
 import { IntegrationTestConfig } from '../setup';
 
 describe('Tickets Integration Tests', () => {
@@ -103,11 +102,15 @@ describe('Tickets Integration Tests', () => {
       console.log(
         `📅 Retrieved ${result.data.length} tickets with sort parameter`
       );
-      
+
       if (result.data.length > 1) {
         const firstDate = new Date(result.data[0].createDate);
-        const lastDate = new Date(result.data[result.data.length - 1].createDate);
-        console.log(`📅 Date range: ${firstDate.toISOString()} to ${lastDate.toISOString()}`);
+        const lastDate = new Date(
+          result.data[result.data.length - 1].createDate
+        );
+        console.log(
+          `📅 Date range: ${firstDate.toISOString()} to ${lastDate.toISOString()}`
+        );
       }
     });
   });

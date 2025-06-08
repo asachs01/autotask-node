@@ -1,10 +1,9 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import { AxiosInstance } from 'axios';
+import winston from 'winston';
 import { QueryBuilder } from '../../src/utils/queryBuilder';
-import {
-  IQueryBuilder,
-  ComparisonOperator,
-  SortDirection,
-} from '../../src/types/queryBuilder';
+import { ComparisonOperator } from '../../src/types/queryBuilder';
+import { IQueryBuilder, SortDirection } from '../../src/types/queryBuilder';
 import { createMockAxios, createMockLogger } from '../utils/testHelpers';
 
 describe('QueryBuilder', () => {

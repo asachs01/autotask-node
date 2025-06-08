@@ -1,19 +1,12 @@
-import {
-  jest,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-} from '@jest/globals';
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import axios from 'axios';
+import winston from 'winston';
 import {
   PaginationHandler,
+  MemoryOptimizationConfig,
   estimateObjectSize,
   chunkArray,
-  MemoryOptimizationConfig,
 } from '../../src/utils/memoryOptimization';
-import { AxiosInstance } from 'axios';
-import winston from 'winston';
 import { createMockAxios, createMockLogger } from '../utils/testHelpers';
 
 describe('Memory Optimization Utils', () => {
@@ -171,7 +164,7 @@ describe('Memory Optimization Utils', () => {
         mockAxios.get.mockResolvedValue({ data: [{ id: 1 }, { id: 2 }] });
 
         const batchError = new Error('Batch processing failed');
-        const batchProcessor = jest.fn(async (batch: any[]) => {
+        const batchProcessor = jest.fn(async (_batch: any[]) => {
           throw batchError;
         });
 

@@ -7,12 +7,8 @@ import {
   jest,
 } from '@jest/globals';
 import axios, { AxiosInstance } from 'axios';
-import winston from 'winston';
-import {
-  AutotaskClient,
-  PerformanceConfig,
-} from '../../src/client/AutotaskClient';
-import { AutotaskAuth } from '../../src/types';
+import { AutotaskClient } from '../../src/client/AutotaskClient';
+import { AutotaskAuth, PerformanceConfig } from '../../src/types';
 import { ConfigurationError } from '../../src/utils/errors';
 
 // Mock axios

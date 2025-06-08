@@ -8,29 +8,27 @@ import {
 } from '@jest/globals';
 import axios, { AxiosInstance } from 'axios';
 import winston from 'winston';
-import {
-  AutotaskClient,
-  PerformanceConfig,
-} from '../../src/client/AutotaskClient';
+import { AutotaskClient } from '../../src/client/AutotaskClient';
+import { PerformanceConfig } from '../../src/types';
 import {
   PerformanceMonitor,
   RequestTiming,
 } from '../../src/utils/performanceMonitor';
-import {
-  PaginationHandler,
-  MemoryOptimizationConfig,
-} from '../../src/utils/memoryOptimization';
+import { PaginationHandler } from '../../src/utils/memoryOptimization';
 import { RequestHandler } from '../../src/utils/requestHandler';
 
 describe('Performance & Reliability Improvements', () => {
-  let logger: winston.Logger;
   let mockAxios: jest.Mocked<AxiosInstance>;
+  let mockLogger: jest.Mocked<winston.Logger>;
+  let _mockPerformanceMonitor: jest.Mocked<PerformanceMonitor>;
 
   beforeEach(() => {
-    logger = winston.createLogger({
-      level: 'error', // Reduce noise in tests
-      transports: [new winston.transports.Console({ silent: true })],
-    });
+    mockLogger = {
+      info: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+    } as any;
 
     mockAxios = {
       get: jest.fn(),
@@ -60,7 +58,7 @@ describe('Performance & Reliability Improvements', () => {
     let performanceMonitor: PerformanceMonitor;
 
     beforeEach(() => {
-      performanceMonitor = new PerformanceMonitor(logger);
+      performanceMonitor = new PerformanceMonitor(mockLogger);
     });
 
     it('should track request metrics correctly', () => {
@@ -163,7 +161,7 @@ describe('Performance & Reliability Improvements', () => {
     let paginationHandler: PaginationHandler;
 
     beforeEach(() => {
-      paginationHandler = new PaginationHandler(mockAxios, logger);
+      paginationHandler = new PaginationHandler(mockAxios, mockLogger);
     });
 
     it('should handle streaming pagination correctly', async () => {
@@ -244,7 +242,7 @@ describe('Performance & Reliability Improvements', () => {
     let requestHandler: RequestHandler;
 
     beforeEach(() => {
-      requestHandler = new RequestHandler(mockAxios, logger, {
+      requestHandler = new RequestHandler(mockAxios, mockLogger, {
         enablePerformanceMonitoring: true,
       });
     });

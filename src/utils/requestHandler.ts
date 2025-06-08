@@ -1,9 +1,4 @@
-import {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  AxiosError,
-} from 'axios';
+import { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import winston from 'winston';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -11,7 +6,6 @@ import {
   createAutotaskError,
   isRetryableError,
   getRetryDelay,
-  ConfigurationError,
 } from './errors';
 import { PerformanceMonitor } from './performanceMonitor';
 

@@ -6,8 +6,7 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-import winston from 'winston';
+import { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { RequestHandler, RequestOptions } from '../../src/utils/requestHandler';
 import {
   AutotaskError,

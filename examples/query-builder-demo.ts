@@ -15,19 +15,30 @@
 
 import { AutotaskClient } from '../src/client/autotaskClient';
 import { TicketsEnhanced } from '../src/entities/ticketsEnhanced';
+import { QueryBuilder } from '../src/utils/queryBuilder';
 
 async function demonstrateQueryBuilder() {
   console.log('🚀 Advanced Query Builder Demonstration\n');
 
   // Initialize client (credentials would come from environment)
-  const client = new AutotaskClient({
+  const client = await AutotaskClient.create({
     username: process.env.AUTOTASK_USERNAME || 'demo',
     integrationCode: process.env.AUTOTASK_INTEGRATION_CODE || 'demo',
     secret: process.env.AUTOTASK_SECRET || 'demo',
   });
 
   // Get enhanced tickets entity with query capabilities
-  const tickets = new TicketsEnhanced(client.axios, client.logger);
+  // Note: This is a conceptual demo showing query builder API
+  // In practice, you would use client.tickets or extend entities appropriately
+  console.log(
+    'Note: This is a conceptual demonstration of the Query Builder API'
+  );
+
+  // For demo purposes, we'll create a mock tickets object with query methods
+  const tickets = {
+    query: () =>
+      new QueryBuilder(null as any, client.getLogger(), '/Tickets', 'Ticket'),
+  };
 
   console.log('📋 1. Basic Query Building');
   console.log('==========================');
@@ -120,8 +131,8 @@ async function demonstrateQueryBuilder() {
         2
       )
     );
-  } catch (error) {
-    console.log('Note: Actual API calls would require valid credentials');
+  } catch (_error) {
+    console.error('❌ Failed to execute enhanced queries');
   }
 
   console.log('\n⚡ 5. Performance Features');

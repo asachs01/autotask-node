@@ -22,8 +22,8 @@ export class Tickets extends BaseEntity {
   private readonly endpoint = '/Tickets';
 
   constructor(
-    axios: AxiosInstance, 
-    logger: winston.Logger, 
+    axios: AxiosInstance,
+    logger: winston.Logger,
     requestHandler?: RequestHandler
   ) {
     super(axios, logger, requestHandler);
@@ -87,7 +87,10 @@ export class Tickets extends BaseEntity {
     );
   }
 
-  async update(id: number, ticket: Partial<Ticket>): Promise<ApiResponse<Ticket>> {
+  async update(
+    id: number,
+    ticket: Partial<Ticket>
+  ): Promise<ApiResponse<Ticket>> {
     this.logger.info('Updating ticket', { id, ticket });
     return this.executeRequest(
       async () => this.axios.put(`${this.endpoint}/${id}`, ticket),
@@ -98,7 +101,7 @@ export class Tickets extends BaseEntity {
 
   async delete(id: number): Promise<void> {
     this.logger.info('Deleting ticket', { id });
-    const response = await this.executeRequest(
+    await this.executeRequest(
       async () => this.axios.delete(`${this.endpoint}/${id}`),
       `${this.endpoint}/${id}`,
       'DELETE'
@@ -110,15 +113,15 @@ export class Tickets extends BaseEntity {
   async list(query: TicketQuery = {}): Promise<ApiResponse<Ticket[]>> {
     this.logger.info('Listing tickets', { query });
     const searchBody: Record<string, any> = {};
-    
+
     // Ensure there's a filter - Autotask API requires a filter
     if (!query.filter || Object.keys(query.filter).length === 0) {
       searchBody.filter = [
         {
-          "op": "gte",
-          "field": "id",
-          "value": 0
-        }
+          op: 'gte',
+          field: 'id',
+          value: 0,
+        },
       ];
     } else {
       // If filter is provided as an object, convert to array format expected by API
@@ -126,9 +129,9 @@ export class Tickets extends BaseEntity {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
           filterArray.push({
-            "op": "eq",
-            "field": field,
-            "value": value
+            op: 'eq',
+            field: field,
+            value: value,
           });
         }
         searchBody.filter = filterArray;
@@ -136,17 +139,42 @@ export class Tickets extends BaseEntity {
         searchBody.filter = query.filter;
       }
     }
-    
+
     if (query.sort) searchBody.sort = query.sort;
     if (query.page) searchBody.page = query.page;
     if (query.pageSize) searchBody.pageSize = query.pageSize;
-    
+
+    // Validate that accountId is included in the search
+    let hasAccountFilter = false;
+
+    if (searchBody.filter && Array.isArray(searchBody.filter)) {
+      hasAccountFilter = searchBody.filter.some(
+        (filter: any) =>
+          filter.field === 'accountId' || filter.field === 'companyID'
+      );
+    }
+
+    if (!hasAccountFilter) {
+      this.logger.warn(
+        '⚠️ No accountId filter found. Adding default filter to prevent large result sets.'
+      );
+      if (!searchBody.filter) {
+        searchBody.filter = [];
+      }
+      // Add a reasonable default filter
+      searchBody.filter.push({
+        op: 'gte',
+        field: 'id',
+        value: 0,
+      });
+    }
+
     this.logger.info('Listing tickets with search body', { searchBody });
-    
+
     return this.executeQueryRequest(
       async () => this.axios.post(`${this.endpoint}/query`, searchBody),
       `${this.endpoint}/query`,
       'POST'
     );
   }
-} 
+}

@@ -14,7 +14,6 @@ import {
   FilterCondition,
   SortSpec,
   IncludeSpec,
-  PaginationOptions,
   ComparisonOperator,
   SortDirection,
   LogicalOperator,

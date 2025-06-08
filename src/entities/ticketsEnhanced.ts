@@ -5,58 +5,14 @@
 
 import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import { Tickets, Ticket } from './tickets';
+import { QueryBuilder } from '../utils/queryBuilder';
 import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
 import { QueryableEntity } from '../utils/queryableEntity';
-import { IQueryBuilder, QueryResult } from '../types/queryBuilder';
+import { QueryResult } from '../types/queryBuilder';
 
-export interface Ticket {
-  id?: number;
-  accountId?: number;
-  title?: string;
-  description?: string;
-  status?: number;
-  priority?: number;
-  ticketType?: number;
-  issueType?: number;
-  subIssueType?: number;
-  source?: number;
-  assignedResourceId?: number;
-  createdDate?: string;
-  lastActivityDate?: string;
-  dueDateTime?: string;
-  estimatedHours?: number;
-  hoursToBeScheduled?: number;
-  completedDate?: string;
-  createDate?: string;
-  createdBy?: number;
-  lastActivityBy?: number;
-  changeApprovalBoard?: number;
-  changeApprovalType?: number;
-  changeApprovalStatus?: number;
-  changeInfoField1?: string;
-  changeInfoField2?: string;
-  changeInfoField3?: string;
-  changeInfoField4?: string;
-  changeInfoField5?: string;
-  configurationItemId?: number;
-  contractId?: number;
-  projectId?: number;
-  problemTicketId?: number;
-  opportunityId?: number;
-  ticketNumber?: string;
-  externalID?: string;
-  purchaseOrderNumber?: string;
-  ticketCategory?: number;
-  firstResponseDateTime?: string;
-  resolutionPlanDateTime?: string;
-  resolvedDateTime?: string;
-  firstResponseDueDateTime?: string;
-  resolutionPlanDueDateTime?: string;
-  resolvedDueDateTime?: string;
-  serviceLevelAgreementId?: number;
-  resolution?: string;
-  [key: string]: any;
-}
+// Re-export Ticket interface for external use
+export { Ticket } from './tickets';
 
 export interface TicketQuery {
   filter?: Record<string, any>;

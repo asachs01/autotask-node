@@ -1,6 +1,5 @@
-import { AutotaskClient } from '../../../src/client/AutotaskClient';
 import { Account } from '../../../src/entities/accounts';
-import { setupIntegrationTest, delay, generateTestId } from '../setup';
+import { setupIntegrationTest, generateTestId } from '../setup';
 import { IntegrationTestConfig } from '../setup';
 
 describe('Accounts Integration Tests', () => {

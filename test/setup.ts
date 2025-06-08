@@ -9,23 +9,23 @@ if (!process.env.DEBUG_TESTS) {
   // Configure the default winston logger to be silent
   winston.configure({
     level: 'silent',
-    transports: []
+    transports: [],
   });
-  
+
   // Override winston.createLogger to always return silent loggers during tests
   const originalCreateLogger = winston.createLogger;
-  winston.createLogger = (options?: winston.LoggerOptions) => {
+  winston.createLogger = (_options?: winston.LoggerOptions) => {
     return originalCreateLogger({
       level: 'silent',
       transports: [],
-      silent: true
+      silent: true,
     });
   };
-  
+
   // Also suppress any console output during tests
   jest.spyOn(console, 'log').mockImplementation(() => {});
   jest.spyOn(console, 'debug').mockImplementation(() => {});
   jest.spyOn(console, 'info').mockImplementation(() => {});
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   // Keep console.error for actual test failures
-} 
+}

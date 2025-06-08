@@ -219,15 +219,19 @@ export function createAutotaskError(
     requestId?: string;
   }
 ): AutotaskError {
-  const status = error.response?.status;
-  const statusText = error.response?.statusText;
+  const status = error.response?.status || 0;
   const responseData = error.response?.data as any;
-  const message = responseData?.message || responseData?.error || error.message || 'Unknown error occurred';
+  const message =
+    responseData?.message ||
+    error.response?.statusText ||
+    error.message ||
+    'Request failed';
 
   // Extract additional error details from response
-  const validationErrors = responseData?.errors || responseData?.validationErrors;
-  const retryAfter = error.response?.headers['retry-after'] 
-    ? parseInt(error.response.headers['retry-after'], 10) 
+  const validationErrors =
+    responseData?.errors || responseData?.validationErrors;
+  const retryAfter = error.response?.headers['retry-after']
+    ? parseInt(error.response.headers['retry-after'], 10)
     : undefined;
 
   switch (status) {
@@ -298,7 +302,8 @@ export function createAutotaskError(
     default:
       // Handle network errors (no response)
       if (!error.response) {
-        const isTimeout = error.code === 'ECONNABORTED' || error.message.includes('timeout');
+        const isTimeout =
+          error.code === 'ECONNABORTED' || error.message.includes('timeout');
         return new NetworkError(
           `Network error: ${error.message}`,
           isTimeout,
@@ -348,7 +353,11 @@ export function isRetryableError(error: AutotaskError): boolean {
 /**
  * Utility function to get retry delay for rate limit errors
  */
-export function getRetryDelay(error: AutotaskError, attempt: number, baseDelay: number = 1000): number {
+export function getRetryDelay(
+  error: AutotaskError,
+  attempt: number,
+  baseDelay: number = 1000
+): number {
   // For rate limit errors, use the retry-after header if available
   if (error instanceof RateLimitError && error.retryAfter) {
     return error.retryAfter * 1000; // Convert to milliseconds
@@ -363,4 +372,4 @@ export function getRetryDelay(error: AutotaskError, attempt: number, baseDelay: 
 
   // Default exponential backoff
   return Math.min(baseDelay * Math.pow(2, attempt - 1), 30000);
-} 
+}

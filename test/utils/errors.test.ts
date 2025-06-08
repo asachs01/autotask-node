@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 import { AxiosError, AxiosResponse } from 'axios';
 import {
   AutotaskError,

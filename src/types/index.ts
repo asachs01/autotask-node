@@ -5,6 +5,28 @@ export interface AutotaskAuth {
   apiUrl?: string; // Optional override
 }
 
+/**
+ * Performance and reliability configuration options
+ */
+export interface PerformanceConfig {
+  /** Request timeout in milliseconds (default: 30000) */
+  timeout?: number;
+  /** Maximum number of concurrent requests (default: 10) */
+  maxConcurrentRequests?: number;
+  /** Enable connection pooling (default: true) */
+  enableConnectionPooling?: boolean;
+  /** Maximum content length for responses in bytes (default: 50MB) */
+  maxContentLength?: number;
+  /** Maximum body length for requests in bytes (default: 10MB) */
+  maxBodyLength?: number;
+  /** Enable request/response compression (default: true) */
+  enableCompression?: boolean;
+  /** Rate limiting - requests per second (default: 5) */
+  requestsPerSecond?: number;
+  /** Connection keep-alive timeout in milliseconds (default: 30000) */
+  keepAliveTimeout?: number;
+}
+
 export interface MethodMetadata {
   operation: string;
   requiredParams: string[];

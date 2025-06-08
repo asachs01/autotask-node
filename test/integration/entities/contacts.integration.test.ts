@@ -1,7 +1,5 @@
-import { AutotaskClient } from '../../../src/client/AutotaskClient';
 import { Contact } from '../../../src/entities/contacts';
-import { setupIntegrationTest, delay, generateTestId } from '../setup';
-import { IntegrationTestConfig } from '../setup';
+import { setupIntegrationTest, generateTestId } from '../setup';
 
 describe('Contacts Integration Tests', () => {
   let config: any;
@@ -236,11 +234,13 @@ describe('Contacts Integration Tests', () => {
       console.log(
         `📅 Retrieved ${sortedContacts.data.length} contacts with sort parameter`
       );
-      
+
       if (sortedContacts.data.length > 1) {
         const firstContact = sortedContacts.data[0];
         const lastContact = sortedContacts.data[sortedContacts.data.length - 1];
-        console.log(`📅 Name range: ${firstContact.lastName || 'N/A'} to ${lastContact.lastName || 'N/A'}`);
+        console.log(
+          `📅 Name range: ${firstContact.lastName || 'N/A'} to ${lastContact.lastName || 'N/A'}`
+        );
       }
     });
   });

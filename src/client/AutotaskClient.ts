@@ -1,11 +1,8 @@
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
+import axios from 'axios';
 import winston from 'winston';
-import {
-  AutotaskAuth,
-  RequestHandler,
-  ConfigurationError,
-  createAutotaskError,
-} from '../types';
+import { RequestHandler } from '../utils/requestHandler';
+import { AutotaskAuth, PerformanceConfig, ConfigurationError } from '../types';
 import {
   Tickets,
   Accounts,
@@ -35,36 +32,11 @@ import {
 import * as http from 'http';
 import * as https from 'https';
 
-// Optional import of dotenv for loading environment variables when used programmatically
-let dotenv: any;
+// Load environment variables if available
 try {
-  dotenv = require('dotenv');
-  // Load environment variables from .env file
-  dotenv.config();
-} catch (err) {
+  require('dotenv').config();
+} catch {
   // dotenv is optional, do nothing if not available
-}
-
-/**
- * Performance and reliability configuration options
- */
-export interface PerformanceConfig {
-  /** Request timeout in milliseconds (default: 30000) */
-  timeout?: number;
-  /** Maximum number of concurrent requests (default: 10) */
-  maxConcurrentRequests?: number;
-  /** Enable connection pooling (default: true) */
-  enableConnectionPooling?: boolean;
-  /** Maximum content length for responses in bytes (default: 50MB) */
-  maxContentLength?: number;
-  /** Maximum body length for requests in bytes (default: 10MB) */
-  maxBodyLength?: number;
-  /** Enable request/response compression (default: true) */
-  enableCompression?: boolean;
-  /** Rate limiting - requests per second (default: 5) */
-  requestsPerSecond?: number;
-  /** Connection keep-alive timeout in milliseconds (default: 30000) */
-  keepAliveTimeout?: number;
 }
 
 /**
@@ -229,7 +201,10 @@ export class AutotaskClient {
       level: process.env.NODE_ENV === 'test' ? 'error' : 'info',
       format: winston.format.simple(),
       transports: [new winston.transports.Console()],
-      silent: process.env.NODE_ENV === 'test' && !process.env.DEBUG_TESTS && !process.env.DEBUG_INTEGRATION_TESTS
+      silent:
+        process.env.NODE_ENV === 'test' &&
+        !process.env.DEBUG_TESTS &&
+        !process.env.DEBUG_INTEGRATION_TESTS,
     });
 
     // If no config is provided, try to use environment variables
@@ -314,19 +289,25 @@ export class AutotaskClient {
         // Try a fallback method
         try {
           logger.debug('Trying fallback zone detection method');
-          const fallbackUrl =
-            'https://webservices.autotask.net/atservicesrest/v1.0/zoneInformation';
+
+          // Try format 2 - POST request
+          const fallbackBody = {
+            integrationCode:
+              config.integrationCode || process.env.AUTOTASK_INTEGRATION_CODE,
+            username: config.username,
+          };
+
+          const fallbackHeaders = {
+            APIIntegrationcode:
+              config.integrationCode || process.env.AUTOTASK_INTEGRATION_CODE,
+            UserName: config.username,
+            'Content-Type': 'application/json',
+          };
 
           const fallbackResponse = await axios.post(
-            fallbackUrl,
-            {
-              UserName: config.username,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
+            'https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation',
+            fallbackBody,
+            { headers: fallbackHeaders }
           );
 
           logger.debug('Fallback response:', fallbackResponse.data);
@@ -334,27 +315,14 @@ export class AutotaskClient {
           if (fallbackResponse.data && fallbackResponse.data.url) {
             apiUrl = fallbackResponse.data.url;
             logger.debug('Got API URL from fallback:', apiUrl);
-          } else {
-            throw new ConfigurationError(
-              'Could not determine API zone URL from fallback method'
-            );
           }
-        } catch (fallbackErr: any) {
-          logger.error('Fallback method also failed:', fallbackErr.message);
-          if (err.response) {
-            logger.error(
-              'Original error - Response Status:',
-              err.response.status
-            );
-            logger.error(
-              'Original error - Response Data:',
-              JSON.stringify(err.response.data)
-            );
-          }
-          throw new ConfigurationError(
-            'Failed to detect Autotask API zone: ' + err.message,
-            'apiUrl',
-            err
+        } catch {
+          logger.error('Fallback method also failed');
+          logger.error(
+            'Could not determine zone automatically. Please provide apiUrl in configuration.'
+          );
+          logger.error(
+            'Visit https://ww1.autotask.net/help/DeveloperHelp/Content/APIs/REST/API_Calls/REST_Basic_Query_Calls.htm for more information.'
           );
         }
       }
