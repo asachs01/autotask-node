@@ -66,12 +66,7 @@ jobs:
           AUTOTASK_INTEGRATION_CODE: ${{ secrets.AUTOTASK_INTEGRATION_CODE }}
           AUTOTASK_SECRET: ${{ secrets.AUTOTASK_SECRET }}
 
-      - name: Skip integration tests (credentials not available)
-        if: ${{ !secrets.AUTOTASK_USERNAME || !secrets.AUTOTASK_INTEGRATION_CODE || !secrets.AUTOTASK_SECRET }}
-        run: echo "⚠️ Skipping integration tests - Autotask credentials not configured"
-
       - name: Run integration tests
-        if: ${{ secrets.AUTOTASK_USERNAME && secrets.AUTOTASK_INTEGRATION_CODE && secrets.AUTOTASK_SECRET }}
         env:
           AUTOTASK_USERNAME: ${{ secrets.AUTOTASK_USERNAME }}
           AUTOTASK_INTEGRATION_CODE: ${{ secrets.AUTOTASK_INTEGRATION_CODE }}

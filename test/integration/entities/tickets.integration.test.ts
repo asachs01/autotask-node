@@ -1,5 +1,10 @@
 import { Ticket } from '../../../src/entities/tickets';
-import { setupIntegrationTest, generateTestId, delay } from '../setup';
+import {
+  setupIntegrationTest,
+  generateTestId,
+  delay,
+  shouldSkipIntegrationTests,
+} from '../setup';
 import { IntegrationTestConfig } from '../setup';
 
 describe('Tickets Integration Tests', () => {
@@ -7,8 +12,28 @@ describe('Tickets Integration Tests', () => {
   const createdTicketIds: number[] = [];
 
   beforeAll(async () => {
-    config = await setupIntegrationTest();
-    console.log('🎫 Starting Tickets integration tests...');
+    if (shouldSkipIntegrationTests()) {
+      console.log(
+        '⚠️ Skipping Tickets integration tests - credentials not available'
+      );
+      return;
+    }
+
+    try {
+      config = await setupIntegrationTest();
+      console.log('🎫 Starting Tickets integration tests...');
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === 'SKIP_INTEGRATION_TESTS'
+      ) {
+        console.log(
+          '⚠️ Skipping Tickets integration tests - credentials not available'
+        );
+        return;
+      }
+      throw error;
+    }
   });
 
   afterAll(async () => {
@@ -35,6 +60,11 @@ describe('Tickets Integration Tests', () => {
 
   describe('Authentication and Connectivity', () => {
     it('should authenticate and connect to Autotask API', async () => {
+      if (shouldSkipIntegrationTests() || !config) {
+        console.log('⏭️ Skipping test - integration tests disabled');
+        return;
+      }
+
       expect(config.client).toBeDefined();
       expect(config.client.tickets).toBeDefined();
       console.log('✅ Successfully connected to Autotask API');

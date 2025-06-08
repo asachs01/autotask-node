@@ -26,7 +26,7 @@ export default async function globalSetup() {
   // Validate that we're not running in production
   validateTestEnvironment();
 
-  // Validate required environment variables
+  // Check for required environment variables
   const requiredVars = [
     'AUTOTASK_USERNAME',
     'AUTOTASK_INTEGRATION_CODE',
@@ -35,10 +35,22 @@ export default async function globalSetup() {
 
   const missing = requiredVars.filter(varName => !process.env[varName]);
   if (missing.length > 0) {
-    throw new Error(
-      `Missing required test environment variables: ${missing.join(', ')}\n` +
-        'Please copy env.test.example to env.test and configure your test credentials.'
+    console.warn(
+      `⚠️ Missing required test environment variables: ${missing.join(', ')}\n` +
+        'Integration tests will be skipped.'
     );
+    // Set skip flag instead of throwing error
+    (globalThis as any).__INTEGRATION_CONFIG__ = {
+      skipIntegrationTests: true,
+      testAccountId: undefined,
+      testContactId: undefined,
+      testProjectId: undefined,
+      testTicketId: undefined,
+    };
+    console.log(
+      '✅ Integration test environment setup complete (tests will be skipped)'
+    );
+    return;
   }
 
   // Store configuration globally for tests to access
@@ -71,6 +83,13 @@ export default async function globalSetup() {
  * This creates a real AutotaskClient instance for testing against live API
  */
 export async function setupIntegrationTest(): Promise<IntegrationTestConfig> {
+  // Check if integration tests should be skipped
+  const globalConfig = (globalThis as any).__INTEGRATION_CONFIG__;
+  if (globalConfig?.skipIntegrationTests) {
+    console.warn('⚠️ Integration tests are configured to be skipped');
+    throw new Error('SKIP_INTEGRATION_TESTS');
+  }
+
   // Validate required environment variables
   const requiredVars = [
     'AUTOTASK_USERNAME',
@@ -180,6 +199,14 @@ export async function setupIntegrationTest(): Promise<IntegrationTestConfig> {
  */
 export function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Check if integration tests should be skipped
+ */
+export function shouldSkipIntegrationTests(): boolean {
+  const globalConfig = (globalThis as any).__INTEGRATION_CONFIG__;
+  return globalConfig?.skipIntegrationTests === true;
 }
 
 /**
