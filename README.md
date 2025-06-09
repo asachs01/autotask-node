@@ -1,8 +1,9 @@
 # Autotask API Wrapper
 
-A feature-complete, production-ready NodeJS client library for the Kaseya Autotask PSA REST API. Designed for automation, AI agent integration (MCP), and modern developer experience.
+A comprehensive TypeScript/Node.js client library for the Autotask REST API with optimized testing infrastructure.
 
 ## Features
+
 - Full CRUD for all Autotask REST API entities (Tickets, Accounts, Projects, Contracts, etc.)
 - Automatic API zone detection (no region configuration needed)
 - Filtering, sorting, pagination, batch operations
@@ -69,6 +70,7 @@ AUTOTASK_SECRET=YOUR_SECRET
 ```
 
 Place this file:
+
 - In the root of your project when using the library
 - In the directory where you run the CLI command
 
