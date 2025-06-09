@@ -197,9 +197,9 @@ export async function setupIntegrationTest(): Promise<IntegrationTestConfig> {
  * Utility function to wait for a specified amount of time
  * Useful for rate limiting and API delays
  */
-export function delay(ms: number): Promise<void> {
+export const delay = (ms: number = 1500): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
 
 /**
  * Check if integration tests should be skipped
