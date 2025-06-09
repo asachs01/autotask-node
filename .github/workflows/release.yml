@@ -58,14 +58,42 @@ jobs:
             echo "Version is already correct ($TARGET_VERSION), skipping update"
           fi
 
+      - name: Extract release notes from CHANGELOG.md
+        id: extract_release_notes
+        run: |
+          # Extract the release notes for this version from CHANGELOG.md
+          version="${{ steps.extract_version.outputs.VERSION }}"
+          echo "Extracting release notes for version $version"
+          
+          # Find the section for this version and extract until the next version or end
+          awk -v version="$version" '
+          BEGIN { found=0; content="" }
+          /^## [0-9]+\.[0-9]+\.[0-9]+ release notes/ {
+            if (found) exit
+            if ($2 == version) found=1
+            next
+          }
+          /^## [0-9]+\.[0-9]+\.[0-9]+ release notes/ && found { exit }
+          found && !/^#/ { 
+            if (content == "" && $0 == "") next  # Skip leading empty lines
+            content = content $0 "\n" 
+          }
+          END { 
+            # Remove trailing newlines
+            gsub(/\n+$/, "", content)
+            print content 
+          }' CHANGELOG.md > release-notes.md
+          
+          echo "Release notes extracted to release-notes.md"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}: First Stable Release"
+          body_path: release-notes.md
           draft: false
           prerelease: false
-          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
