@@ -15,6 +15,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: Default
     
     steps:
       - name: Checkout
