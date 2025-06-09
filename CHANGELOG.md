@@ -2,78 +2,78 @@
 
 ## 1.0.0 release notes
 
-**January 20, 2025** — We're excited to announce the first stable release of the Autotask API Wrapper! This comprehensive TypeScript/Node.js client library provides complete integration with the Autotask REST API, featuring revolutionary query capabilities, robust error handling, and excellent developer experience.
+**June 9, 2025** — First stable release of the Autotask API Wrapper, a TypeScript/Node.js client library for the Autotask REST API.
 
 **IMPORTANT:**
 
 - This is a major release that establishes the foundational API and behavior patterns. Future releases will maintain backward compatibility within the 1.x series.
 - The `region` parameter has been removed from configuration. The client now automatically detects the correct API zone using Autotask's zone detection endpoint.
-- All entity operations support the new Query Builder system for advanced filtering and data retrieval.
+- All entity operations support the Query Builder system for filtering and data retrieval.
 
 **NEW FEATURES:**
 
-**Complete Autotask API Integration:**
+**Autotask API Integration:**
 
 - **Automatic Zone Detection**: Client automatically discovers the correct API endpoint using provided credentials, eliminating manual region configuration.
-- **Full Entity Support**: Comprehensive CRUD operations for all major Autotask entities including Tickets, Accounts, Contacts, Projects, Tasks, Time Entries, Contracts, Invoices, Quotes, Purchase Orders, and more.
-- **Advanced Request Handling**: Built-in retry logic with exponential backoff, intelligent rate limiting, and comprehensive error handling.
-- **TypeScript First**: Complete type definitions for all entities, API responses, and query operations with full IntelliSense support.
+- **Entity Support**: CRUD operations for major Autotask entities including Tickets, Accounts, Contacts, Projects, Tasks, Time Entries, Contracts, Invoices, Quotes, Purchase Orders, and others.
+- **Request Handling**: Built-in retry logic with exponential backoff, rate limiting, and error handling.
+- **TypeScript Support**: Type definitions for entities, API responses, and query operations with IntelliSense support.
 
-**Revolutionary Query Builder System (Phase 3.1):**
+**Query Builder System:**
 
-- **Type-Safe Fluent API**: Build complex queries with full TypeScript validation and compile-time error checking.
-- **Comprehensive Operators**: Support for all comparison operators including `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `contains`, `startsWith`, `endsWith`, `in`, `notIn`, `isNull`, `isNotNull`, and `between`.
-- **Logical Grouping**: Complex AND/OR operations with unlimited nesting capabilities for sophisticated query construction.
-- **Advanced Sorting**: Multi-field sorting with ascending/descending directions and chainable sort operations.
-- **Field Selection**: Performance optimization through selective field retrieval using `select()` operations.
+- **Type-Safe Fluent API**: Build queries with TypeScript validation and compile-time error checking.
+- **Comparison Operators**: Support for `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `contains`, `startsWith`, `endsWith`, `in`, `notIn`, `isNull`, `isNotNull`, and `between`.
+- **Logical Grouping**: AND/OR operations with nesting capabilities for complex query construction.
+- **Sorting**: Multi-field sorting with ascending/descending directions and chainable sort operations.
+- **Field Selection**: Selective field retrieval using `select()` operations for performance optimization.
 - **Related Entity Includes**: Fetch related data in single queries with field specification using `include()` operations.
-- **Flexible Pagination**: Both offset-based and cursor-based pagination support with automatic page traversal.
+- **Pagination**: Both offset-based and cursor-based pagination support with automatic page traversal.
 - **Query Execution Methods**: Multiple execution patterns including `execute()`, `first()`, `count()`, and `exists()`.
-- **Query Utilities**: Developer-friendly utilities including `clone()`, `reset()`, and `toQuerySpec()` for debugging.
+- **Query Utilities**: Utilities including `clone()`, `reset()`, and `toQuerySpec()` for debugging.
 
 **Enhanced Entity System:**
 
-- **QueryableEntity Base Class**: Extensible foundation allowing all entities to inherit advanced query capabilities.
-- **Enhanced Tickets Entity**: Fully integrated query builder with 20+ specialized query methods for common ticket operations.
-- **Standardized CRUD Operations**: Consistent interface patterns across all entity types with full error handling.
+- **QueryableEntity Base Class**: Base class allowing entities to inherit query capabilities.
+- **Enhanced Tickets Entity**: Integrated query builder with specialized query methods for common ticket operations.
+- **Standardized CRUD Operations**: Consistent interface patterns across entity types with error handling.
 
 **Command Line Interface:**
 
-- **Complete CLI Tool**: Full-featured command-line interface supporting all entities with CRUD operations.
-- **Interactive Mode**: User-friendly prompts for creating and updating entities with input validation.
-- **Flexible Output**: Support for JSON output and formatted table display of results.
-- **Environment Integration**: Seamless integration with environment variables and configuration files.
+- **CLI Tool**: Command-line interface supporting entities with CRUD operations.
+- **Interactive Mode**: Prompts for creating and updating entities with input validation.
+- **Output Options**: Support for JSON output and formatted table display of results.
+- **Environment Integration**: Integration with environment variables and configuration files.
 
 **IMPROVEMENTS:**
 
 **Developer Experience:**
 
-- **Comprehensive Testing**: 460 total tests with 100% pass rate, including 46 query builder tests and full integration test suite.
-- **Integration Test Infrastructure**: Complete test framework for validating against real Autotask API endpoints.
-- **Custom Jest Matchers**: Specialized test assertions for Autotask entity validation and API response testing.
-- **Performance Monitoring**: Built-in performance tracking with detailed metrics and optimization utilities.
-- **Memory Management**: Advanced pagination handling and memory optimization for large dataset operations.
+- **Testing**: 460 unit tests with 100% pass rate, including 46 query builder tests and optimized integration test suite (11 tests).
+- **Integration Test Infrastructure**: Test framework for validating against real Autotask API endpoints, optimized to respect API rate limits.
+- **Custom Jest Matchers**: Test assertions for Autotask entity validation and API response testing.
+- **Performance Monitoring**: Built-in performance tracking with metrics and optimization utilities.
+- **Memory Management**: Pagination handling and memory optimization for large dataset operations.
 
 **API Robustness:**
 
-- **Intelligent Error Handling**: Comprehensive error types and recovery strategies for all API scenarios including rate limiting, authentication failures, and network issues.
-- **Rate Limiting Respect**: Built-in throttling and backoff strategies that respect Autotask API rate limits automatically.
+- **Error Handling**: Error types and recovery strategies for API scenarios including rate limiting, authentication failures, and network issues.
+- **Rate Limiting**: Throttling and backoff strategies that respect Autotask API rate limits.
 - **Connection Resilience**: Automatic retry mechanisms with exponential backoff for transient failures.
-- **Request Optimization**: Intelligent batching and caching strategies for improved performance.
+- **Request Optimization**: Batching and caching strategies for improved performance.
 
 **Documentation and Tooling:**
 
-- **Complete API Documentation**: Comprehensive guides with practical examples for all features and entity operations.
-- **Query Builder Guide**: Detailed documentation with usage patterns and best practices for the query system.
-- **Integration Setup**: Step-by-step guides for integrating with various development environments and CI/CD systems.
-- **TypeScript Definitions**: Full type coverage enabling excellent IDE support and compile-time validation.
+- **API Documentation**: Guides with examples for features and entity operations.
+- **Query Builder Guide**: Documentation with usage patterns and best practices for the query system.
+- **Integration Setup**: Guides for integrating with development environments and CI/CD systems.
+- **TypeScript Definitions**: Type coverage enabling IDE support and compile-time validation.
 
 **SECURITY:**
 
-- **Secure Authentication**: Robust credential handling with support for environment variables and secure configuration storage.
+- **Secure Authentication**: Credential handling with support for environment variables and secure configuration storage.
 - **Token Management**: Automatic token refresh and secure storage of authentication credentials.
-- **Request Validation**: Input validation and sanitization for all API operations to prevent injection attacks.
-- **Error Information Protection**: Careful handling of sensitive information in error messages and logs.
+- **Request Validation**: Input validation and sanitization for API operations to prevent injection attacks.
+- **Error Information Protection**: Handling of sensitive information in error messages and logs.
 
 **FIXES:**
 
@@ -81,7 +81,7 @@
 
 - **Jest Configuration**: Resolved TypeScript compilation issues and module resolution problems in test environments.
 - **Winston Logger Setup**: Fixed console noise in test environments with proper logger configuration.
-- **Type System Compatibility**: Resolved all TypeScript compilation errors across entity classes and utility functions.
+- **Type System Compatibility**: Resolved TypeScript compilation errors across entity classes and utility functions.
 - **Module Dependencies**: Fixed import/export issues and circular dependency problems.
 
 **Test Infrastructure:**
@@ -96,30 +96,6 @@
 - **Type Inference**: Resolved TypeScript type inference issues in complex query chains and method chaining.
 - **Runtime Validation**: Fixed validation of query parameters and operator combinations.
 - **Error Handling**: Improved error messages for invalid query construction and execution failures.
-
----
-
-## 0.1.0 release notes
-
-**December 2024** — Initial development release establishing the project foundation and core API client implementation.
-
-**NEW FEATURES:**
-
-- **Basic API Client**: Initial implementation of Autotask REST API client with authentication support.
-- **Core Entity Classes**: Foundation classes for major Autotask objects including basic CRUD operations.
-- **Request Handling**: Initial retry logic and error handling for API requests.
-- **TypeScript Support**: Basic type definitions and TypeScript compilation support.
-
-**IMPROVEMENTS:**
-
-- **Project Structure**: Established modular project organization with separation of concerns.
-- **Error Handling**: Basic error types and logging infrastructure using Winston.
-- **Test Infrastructure**: Initial unit test setup with Jest and basic test utilities.
-
-**FIXES:**
-
-- **Initial Build Issues**: Resolved basic TypeScript compilation and dependency management issues.
-- **Test Configuration**: Fixed initial Jest setup and test discovery problems.
 
 ---
 
