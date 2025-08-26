@@ -3,21 +3,27 @@ import winston from 'winston';
 import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
 import { BaseEntity } from './base';
 
-export interface Ticket {
+export interface ITickets {
   id?: number;
-  accountId?: number;
-  title?: string;
-  status?: number;
   [key: string]: any;
 }
 
-export interface TicketQuery {
+export interface ITicketsQuery {
   filter?: Record<string, any>;
   sort?: string;
   page?: number;
   pageSize?: number;
 }
 
+/**
+ * Tickets entity class for Autotask API
+ *
+ * Service tickets and support requests
+ * Supported Operations: GET, POST, PATCH, PUT
+ * Category: core
+ *
+ * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/TicketsEntity.htm}
+ */
 export class Tickets extends BaseEntity {
   private readonly endpoint = '/Tickets';
 
@@ -32,54 +38,57 @@ export class Tickets extends BaseEntity {
   static getMetadata(): MethodMetadata[] {
     return [
       {
-        operation: 'createTicket',
-        requiredParams: ['ticket'],
+        operation: 'createTickets',
+        requiredParams: ['tickets'],
         optionalParams: [],
-        returnType: 'Ticket',
+        returnType: 'ITickets',
         endpoint: '/Tickets',
       },
       {
-        operation: 'getTicket',
+        operation: 'getTickets',
         requiredParams: ['id'],
         optionalParams: [],
-        returnType: 'Ticket',
+        returnType: 'ITickets',
         endpoint: '/Tickets/{id}',
       },
       {
-        operation: 'updateTicket',
-        requiredParams: ['id', 'ticket'],
+        operation: 'updateTickets',
+        requiredParams: ['id', 'tickets'],
         optionalParams: [],
-        returnType: 'Ticket',
-        endpoint: '/Tickets/{id}',
-      },
-      {
-        operation: 'deleteTicket',
-        requiredParams: ['id'],
-        optionalParams: [],
-        returnType: 'void',
+        returnType: 'ITickets',
         endpoint: '/Tickets/{id}',
       },
       {
         operation: 'listTickets',
         requiredParams: [],
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
-        returnType: 'Ticket[]',
+        returnType: 'ITickets[]',
         endpoint: '/Tickets',
       },
     ];
   }
 
-  async create(ticket: Ticket): Promise<ApiResponse<Ticket>> {
-    this.logger.info('Creating ticket', { ticket });
+  /**
+   * Create a new tickets
+   * @param tickets - The tickets data to create
+   * @returns Promise with the created tickets
+   */
+  async create(tickets: ITickets): Promise<ApiResponse<ITickets>> {
+    this.logger.info('Creating tickets', { tickets });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, ticket),
+      async () => this.axios.post(this.endpoint, tickets),
       this.endpoint,
       'POST'
     );
   }
 
-  async get(id: number): Promise<ApiResponse<Ticket>> {
-    this.logger.info('Getting ticket', { id });
+  /**
+   * Get a tickets by ID
+   * @param id - The tickets ID
+   * @returns Promise with the tickets data
+   */
+  async get(id: number): Promise<ApiResponse<ITickets>> {
+    this.logger.info('Getting tickets', { id });
     return this.executeRequest(
       async () => this.axios.get(`${this.endpoint}/${id}`),
       `${this.endpoint}/${id}`,
@@ -87,34 +96,52 @@ export class Tickets extends BaseEntity {
     );
   }
 
+  /**
+   * Update a tickets
+   * @param id - The tickets ID
+   * @param tickets - The updated tickets data
+   * @returns Promise with the updated tickets
+   */
   async update(
     id: number,
-    ticket: Partial<Ticket>
-  ): Promise<ApiResponse<Ticket>> {
-    this.logger.info('Updating ticket', { id, ticket });
+    tickets: Partial<ITickets>
+  ): Promise<ApiResponse<ITickets>> {
+    this.logger.info('Updating tickets', { id, tickets });
     return this.executeRequest(
-      async () => this.axios.put(`${this.endpoint}/${id}`, ticket),
+      async () => this.axios.put(`${this.endpoint}/${id}`, tickets),
       `${this.endpoint}/${id}`,
       'PUT'
     );
   }
 
-  async delete(id: number): Promise<void> {
-    this.logger.info('Deleting ticket', { id });
-    await this.executeRequest(
-      async () => this.axios.delete(`${this.endpoint}/${id}`),
+  /**
+   * Partially update a tickets
+   * @param id - The tickets ID
+   * @param tickets - The partial tickets data to update
+   * @returns Promise with the updated tickets
+   */
+  async patch(
+    id: number,
+    tickets: Partial<ITickets>
+  ): Promise<ApiResponse<ITickets>> {
+    this.logger.info('Patching tickets', { id, tickets });
+    return this.executeRequest(
+      async () => this.axios.patch(`${this.endpoint}/${id}`, tickets),
       `${this.endpoint}/${id}`,
-      'DELETE'
+      'PATCH'
     );
-    // Return void for delete operations
-    return;
   }
 
-  async list(query: TicketQuery = {}): Promise<ApiResponse<Ticket[]>> {
+  /**
+   * List tickets with optional filtering
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns Promise with array of tickets
+   */
+  async list(query: ITicketsQuery = {}): Promise<ApiResponse<ITickets[]>> {
     this.logger.info('Listing tickets', { query });
     const searchBody: Record<string, any> = {};
 
-    // Ensure there's a filter - Autotask API requires a filter
+    // Set up basic filter if none provided
     if (!query.filter || Object.keys(query.filter).length === 0) {
       searchBody.filter = [
         {
@@ -124,7 +151,7 @@ export class Tickets extends BaseEntity {
         },
       ];
     } else {
-      // If filter is provided as an object, convert to array format expected by API
+      // Convert object filter to array format
       if (!Array.isArray(query.filter)) {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
@@ -144,37 +171,11 @@ export class Tickets extends BaseEntity {
     if (query.page) searchBody.page = query.page;
     if (query.pageSize) searchBody.pageSize = query.pageSize;
 
-    // Validate that accountId is included in the search
-    let hasAccountFilter = false;
-
-    if (searchBody.filter && Array.isArray(searchBody.filter)) {
-      hasAccountFilter = searchBody.filter.some(
-        (filter: any) =>
-          filter.field === 'accountId' || filter.field === 'companyID'
-      );
-    }
-
-    if (!hasAccountFilter) {
-      this.logger.warn(
-        '⚠️ No accountId filter found. Adding default filter to prevent large result sets.'
-      );
-      if (!searchBody.filter) {
-        searchBody.filter = [];
-      }
-      // Add a reasonable default filter
-      searchBody.filter.push({
-        op: 'gte',
-        field: 'id',
-        value: 0,
-      });
-    }
-
-    this.logger.info('Listing tickets with search body', { searchBody });
-
     return this.executeQueryRequest(
-      async () => this.axios.post(`${this.endpoint}/query`, searchBody),
+      async () =>
+        this.axios.get(`${this.endpoint}/query`, { params: searchBody }),
       `${this.endpoint}/query`,
-      'POST'
+      'GET'
     );
   }
 }

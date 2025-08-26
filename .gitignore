@@ -34,3 +34,8 @@ plans/
 # OS files
 .DS_Store 
 ww2*
+
+memory*
+claude*
+agent*
+reference_docs*

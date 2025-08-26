@@ -3,59 +3,33 @@ import winston from 'winston';
 import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
 import { BaseEntity } from './base';
 
-export interface Invoice {
+export interface IInvoices {
   id?: number;
-  accountId?: number;
-  invoiceNumber?: string;
-  invoiceDate?: string;
-  dueDate?: string;
-  payDate?: string;
-  invoiceTotal?: number;
-  taxTotal?: number;
-  totalAmount?: number;
-  amountDue?: number;
-  amountPaid?: number;
-  status?: number;
-  paymentTerms?: number;
-  description?: string;
-  comments?: string;
-  purchaseOrderNumber?: string;
-  invoiceEditorTemplateId?: number;
-  createdDate?: string;
-  createdBy?: number;
-  lastModifiedDate?: string;
-  lastModifiedBy?: number;
-  webServiceDate?: string;
-  fromDate?: string;
-  toDate?: string;
-  isVoided?: boolean;
-  voidedDate?: string;
-  voidedBy?: number;
-  taxGroup?: number;
-  taxRegion?: number;
-  currencyId?: number;
-  exchangeRate?: number;
-  internalCurrencyInvoiceTotal?: number;
-  internalCurrencyTaxTotal?: number;
-  internalCurrencyTotalAmount?: number;
-  internalCurrencyAmountDue?: number;
-  internalCurrencyAmountPaid?: number;
   [key: string]: any;
 }
 
-export interface InvoiceQuery {
+export interface IInvoicesQuery {
   filter?: Record<string, any>;
   sort?: string;
   page?: number;
   pageSize?: number;
 }
 
+/**
+ * Invoices entity class for Autotask API
+ *
+ * Customer invoices and billing
+ * Supported Operations: GET, POST, PATCH, PUT
+ * Category: financial
+ *
+ * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/InvoicesEntity.htm}
+ */
 export class Invoices extends BaseEntity {
   private readonly endpoint = '/Invoices';
 
   constructor(
-    axios: AxiosInstance, 
-    logger: winston.Logger, 
+    axios: AxiosInstance,
+    logger: winston.Logger,
     requestHandler?: RequestHandler
   ) {
     super(axios, logger, requestHandler);
@@ -64,54 +38,57 @@ export class Invoices extends BaseEntity {
   static getMetadata(): MethodMetadata[] {
     return [
       {
-        operation: 'createInvoice',
-        requiredParams: ['invoice'],
+        operation: 'createInvoices',
+        requiredParams: ['invoices'],
         optionalParams: [],
-        returnType: 'Invoice',
+        returnType: 'IInvoices',
         endpoint: '/Invoices',
       },
       {
-        operation: 'getInvoice',
+        operation: 'getInvoices',
         requiredParams: ['id'],
         optionalParams: [],
-        returnType: 'Invoice',
+        returnType: 'IInvoices',
         endpoint: '/Invoices/{id}',
       },
       {
-        operation: 'updateInvoice',
-        requiredParams: ['id', 'invoice'],
+        operation: 'updateInvoices',
+        requiredParams: ['id', 'invoices'],
         optionalParams: [],
-        returnType: 'Invoice',
-        endpoint: '/Invoices/{id}',
-      },
-      {
-        operation: 'deleteInvoice',
-        requiredParams: ['id'],
-        optionalParams: [],
-        returnType: 'void',
+        returnType: 'IInvoices',
         endpoint: '/Invoices/{id}',
       },
       {
         operation: 'listInvoices',
         requiredParams: [],
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
-        returnType: 'Invoice[]',
+        returnType: 'IInvoices[]',
         endpoint: '/Invoices',
       },
     ];
   }
 
-  async create(invoice: Invoice): Promise<ApiResponse<Invoice>> {
-    this.logger.info('Creating invoice', { invoice });
+  /**
+   * Create a new invoices
+   * @param invoices - The invoices data to create
+   * @returns Promise with the created invoices
+   */
+  async create(invoices: IInvoices): Promise<ApiResponse<IInvoices>> {
+    this.logger.info('Creating invoices', { invoices });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, invoice),
+      async () => this.axios.post(this.endpoint, invoices),
       this.endpoint,
       'POST'
     );
   }
 
-  async get(id: number): Promise<ApiResponse<Invoice>> {
-    this.logger.info('Getting invoice', { id });
+  /**
+   * Get a invoices by ID
+   * @param id - The invoices ID
+   * @returns Promise with the invoices data
+   */
+  async get(id: number): Promise<ApiResponse<IInvoices>> {
+    this.logger.info('Getting invoices', { id });
     return this.executeRequest(
       async () => this.axios.get(`${this.endpoint}/${id}`),
       `${this.endpoint}/${id}`,
@@ -119,46 +96,69 @@ export class Invoices extends BaseEntity {
     );
   }
 
-  async update(id: number, invoice: Partial<Invoice>): Promise<ApiResponse<Invoice>> {
-    this.logger.info('Updating invoice', { id, invoice });
+  /**
+   * Update a invoices
+   * @param id - The invoices ID
+   * @param invoices - The updated invoices data
+   * @returns Promise with the updated invoices
+   */
+  async update(
+    id: number,
+    invoices: Partial<IInvoices>
+  ): Promise<ApiResponse<IInvoices>> {
+    this.logger.info('Updating invoices', { id, invoices });
     return this.executeRequest(
-      async () => this.axios.put(`${this.endpoint}/${id}`, invoice),
+      async () => this.axios.put(`${this.endpoint}/${id}`, invoices),
       `${this.endpoint}/${id}`,
       'PUT'
     );
   }
 
-  async delete(id: number): Promise<void> {
-    this.logger.info('Deleting invoice', { id });
-    await this.executeRequest(
-      async () => this.axios.delete(`${this.endpoint}/${id}`),
+  /**
+   * Partially update a invoices
+   * @param id - The invoices ID
+   * @param invoices - The partial invoices data to update
+   * @returns Promise with the updated invoices
+   */
+  async patch(
+    id: number,
+    invoices: Partial<IInvoices>
+  ): Promise<ApiResponse<IInvoices>> {
+    this.logger.info('Patching invoices', { id, invoices });
+    return this.executeRequest(
+      async () => this.axios.patch(`${this.endpoint}/${id}`, invoices),
       `${this.endpoint}/${id}`,
-      'DELETE'
+      'PATCH'
     );
   }
 
-  async list(query: InvoiceQuery = {}): Promise<ApiResponse<Invoice[]>> {
+  /**
+   * List invoices with optional filtering
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns Promise with array of invoices
+   */
+  async list(query: IInvoicesQuery = {}): Promise<ApiResponse<IInvoices[]>> {
     this.logger.info('Listing invoices', { query });
     const searchBody: Record<string, any> = {};
-    
-    // Ensure there's a filter - Autotask API requires a filter
+
+    // Set up basic filter if none provided
     if (!query.filter || Object.keys(query.filter).length === 0) {
       searchBody.filter = [
         {
-          "op": "gte",
-          "field": "id",
-          "value": 0
-        }
+          op: 'gte',
+          field: 'id',
+          value: 0,
+        },
       ];
     } else {
-      // If filter is provided as an object, convert to array format expected by API
+      // Convert object filter to array format
       if (!Array.isArray(query.filter)) {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
           filterArray.push({
-            "op": "eq",
-            "field": field,
-            "value": value
+            op: 'eq',
+            field: field,
+            value: value,
           });
         }
         searchBody.filter = filterArray;
@@ -166,86 +166,16 @@ export class Invoices extends BaseEntity {
         searchBody.filter = query.filter;
       }
     }
-    
+
     if (query.sort) searchBody.sort = query.sort;
     if (query.page) searchBody.page = query.page;
     if (query.pageSize) searchBody.pageSize = query.pageSize;
-    
-    this.logger.info('Listing invoices with search body', { searchBody });
-    
+
     return this.executeQueryRequest(
-      async () => this.axios.post(`${this.endpoint}/query`, searchBody),
+      async () =>
+        this.axios.get(`${this.endpoint}/query`, { params: searchBody }),
       `${this.endpoint}/query`,
-      'POST'
+      'GET'
     );
   }
-
-  /**
-   * Get all invoices for a specific account
-   */
-  async getByAccount(accountId: number): Promise<ApiResponse<Invoice[]>> {
-    this.logger.info('Getting invoices by account ID', { accountId });
-    return this.list({
-      filter: { accountId }
-    });
-  }
-
-  /**
-   * Get invoices by status
-   */
-  async getByStatus(status: number): Promise<ApiResponse<Invoice[]>> {
-    this.logger.info('Getting invoices by status', { status });
-    return this.list({
-      filter: { status }
-    });
-  }
-
-  /**
-   * Get unpaid invoices
-   */
-  async getUnpaid(): Promise<ApiResponse<Invoice[]>> {
-    this.logger.info('Getting unpaid invoices');
-    return this.list({
-      filter: [
-        { "op": "gt", "field": "amountDue", "value": 0 }
-      ]
-    });
-  }
-
-  /**
-   * Get overdue invoices
-   */
-  async getOverdue(): Promise<ApiResponse<Invoice[]>> {
-    this.logger.info('Getting overdue invoices');
-    const today = new Date().toISOString().split('T')[0];
-    return this.list({
-      filter: [
-        { "op": "gt", "field": "amountDue", "value": 0 },
-        { "op": "lt", "field": "dueDate", "value": today }
-      ]
-    });
-  }
-
-  /**
-   * Get invoices within a date range
-   */
-  async getByDateRange(startDate: string, endDate: string): Promise<ApiResponse<Invoice[]>> {
-    this.logger.info('Getting invoices by date range', { startDate, endDate });
-    return this.list({
-      filter: [
-        { "op": "gte", "field": "invoiceDate", "value": startDate },
-        { "op": "lte", "field": "invoiceDate", "value": endDate }
-      ]
-    });
-  }
-
-  /**
-   * Get invoices by invoice number pattern
-   */
-  async getByInvoiceNumber(invoiceNumber: string): Promise<ApiResponse<Invoice[]>> {
-    this.logger.info('Getting invoices by invoice number', { invoiceNumber });
-    return this.list({
-      filter: { invoiceNumber }
-    });
-  }
-} 
+}

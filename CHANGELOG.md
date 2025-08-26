@@ -1,6 +1,87 @@
-# Autotask API Wrapper Release Notes
+# Autotask Node SDK Release Notes
 
-## 1.0.0 release notes
+## 1.1.0 - Documentation Release
+
+**August 25, 2025** — Comprehensive documentation update with professional SDK documentation suite.
+
+### NEW FEATURES
+
+**Complete Documentation Suite:**
+
+- **API Reference**: Complete documentation for all 178 entities with TypeScript interfaces, usage examples, and query patterns
+- **Entity Reference**: Detailed guide to all supported entities organized by category with descriptions and relationships
+- **Advanced Examples**: Real-world scenarios including customer onboarding, ticket escalation, reporting, and integration patterns
+- **Professional README**: Enhanced with comprehensive feature overview, usage examples, and getting started guide
+
+**Enhanced Developer Experience:**
+
+- **Entity Categorization**: Logical organization of all 178 entities into 17 functional categories
+- **Usage Patterns**: Common operation patterns and best practices for each entity type
+- **Error Handling Guide**: Comprehensive error handling examples with recovery strategies
+- **Performance Optimization**: Memory management and query optimization techniques
+- **Integration Examples**: Webhook handling, batch processing, and enterprise patterns
+
+**Updated Branding:**
+
+- **Renamed to "Autotask Node SDK"**: More professional and descriptive branding
+- **Enhanced Feature Descriptions**: Clear articulation of enterprise capabilities
+- **Professional Documentation Structure**: Industry-standard documentation format
+
+### DOCUMENTATION IMPROVEMENTS
+
+**API Documentation (docs/API.md):**
+
+- Complete method signatures for all client operations
+- TypeScript interface definitions for core entities
+- Query builder operator reference with 14 comparison operators
+- Authentication and configuration examples
+- Error handling patterns and recovery strategies
+- Performance configuration options
+
+**Entity Documentation (docs/ENTITIES.md):**
+
+- Comprehensive reference for all 178 supported entities
+- Organized by 17 functional categories (Core Business, Contract Management, Financial, etc.)
+- Entity relationship descriptions and common usage patterns
+- CRUD operation availability matrix
+- Query examples for each major entity category
+
+**Usage Examples (docs/EXAMPLES.md):**
+
+- Real-world integration scenarios and workflows
+- Advanced query patterns with complex filtering
+- Batch processing and performance optimization techniques
+- Error handling with specific error types and recovery
+- CLI usage examples and shell scripting patterns
+- Enterprise integration patterns (webhooks, queues, caching)
+
+**Query Builder Documentation (docs/QUERY_BUILDER.md):**
+
+- Enhanced with additional examples and use cases
+- Performance considerations and optimization tips
+- Memory management for large datasets
+- Advanced filtering techniques
+
+### IMPROVEMENTS
+
+**README Enhancements:**
+
+- Professional presentation with badges and feature highlights
+- Comprehensive feature matrix showing 178 entity support
+- Clear authentication setup with multiple configuration options
+- Advanced usage examples with real-world scenarios
+- Performance configuration options and monitoring
+- Community support information and contribution guidelines
+
+**Professional Presentation:**
+
+- Consistent documentation formatting and styling
+- Clear navigation between different documentation sections
+- Enterprise-focused feature descriptions and capabilities
+- Professional code examples with proper error handling
+- Comprehensive table of contents and cross-references
+
+## 1.0.0 - Initial Release
 
 **June 9, 2025** — First stable release of the Autotask API Wrapper, a TypeScript/Node.js client library for the Autotask REST API.
 
