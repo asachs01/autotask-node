@@ -84,6 +84,9 @@
     "async": "^3.2.6",
     "axios": "^1.6.0",
     "bull": "^4.16.5",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "csv-parse": "^5.5.0",
     "crypto-js": "^4.2.0",
     "dompurify": "^3.2.6",
     "dotenv": "^16.5.0",
@@ -92,9 +95,11 @@
     "ioredis": "^5.7.0",
     "joi": "^18.0.1",
     "jsdom": "^26.1.0",
+    "ora": "^5.4.1",
     "uuid": "^11.1.0",
     "validator": "^13.15.15",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",

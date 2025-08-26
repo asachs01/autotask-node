@@ -47,3 +47,21 @@ export {
   SynchronizationEngine,
   WebhookSimulator,
 } from './webhooks';
+
+// PSA Migration Framework
+export * from './migration';
+export {
+  MigrationEngine,
+  ConnectorFactory,
+  MappingEngine,
+  PreMigrationValidator,
+  BaseConnector,
+  ConnectWiseManageConnector,
+  ServiceNowConnector,
+  KaseyaVSAConnector,
+  CSVImportConnector,
+  createSimpleMigration,
+  createCSVImport,
+  MigrationConfigBuilder,
+  DEFAULT_MAPPINGS,
+} from './migration';

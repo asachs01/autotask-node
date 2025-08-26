@@ -1,5 +1,49 @@
 # Autotask Node SDK Release Notes
 
+## 1.2.0 - PSA Migration Framework Release
+
+**August 26, 2025** — Revolutionary PSA migration framework for seamless data migration from various PSA systems to Autotask.
+
+### 🚀 NEW MAJOR FEATURES
+
+**Complete PSA Migration Framework:**
+
+- **Universal Migration Engine**: Single framework supporting multiple PSA source systems
+- **Multi-PSA Connectors**: Full support for ConnectWise Manage, ServiceNow, Kaseya VSA, FreshService, ServiceDesk Plus, and CSV/Excel imports
+- **Intelligent Data Mapping**: AI-assisted field mapping with transformation rules and validation
+- **Enterprise-Grade Scaling**: Parallel processing, checkpoints, rollback capabilities, and progress tracking
+- **Comprehensive Validation**: Pre/post-migration validation with data quality scoring and integrity checks
+- **CLI Tools & Wizards**: Interactive setup wizards and command-line utilities for streamlined migrations
+
+**Migration Capabilities:**
+
+- **Data Transformation Engine**: Advanced field mapping with custom transformation rules and business logic
+- **Quality Assessment**: Automated data quality scoring with recommendations for improvement
+- **Progress Monitoring**: Real-time progress tracking with detailed reporting and metrics
+- **Error Handling**: Sophisticated error recovery with configurable retry policies and checkpoint resume
+- **Validation Suite**: Comprehensive pre/post-migration validation ensuring data integrity
+
+**Developer Experience:**
+
+- **Simple API**: Easy-to-use APIs for quick migration setup and execution
+- **Configuration Builder**: Fluent configuration API for complex migration scenarios  
+- **Default Mappings**: Pre-built field mappings for common PSA systems
+- **Extensive Documentation**: Complete migration guide with examples and best practices
+
+### 📚 DOCUMENTATION
+
+- **Migration Guide**: Complete documentation for PSA migration framework (`docs/MIGRATION.md`)
+- **API Examples**: Practical examples for all supported PSA systems
+- **Configuration Samples**: Ready-to-use configuration templates
+- **CLI Reference**: Comprehensive command-line tool documentation
+
+### 🛠️ TECHNICAL ADDITIONS
+
+- New `src/migration/` module with complete migration framework
+- Enhanced CLI with migration commands
+- Added dependencies: `commander`, `chalk`, `ora`, `csv-parse`, `xlsx`
+- TypeScript interfaces for all migration types and configurations
+
 ## 1.1.0 - Documentation Release
 
 **August 25, 2025** — Comprehensive documentation update with professional SDK documentation suite.
