@@ -34,22 +34,49 @@ import { Logger } from 'winston';
 import { createLogger } from '../../utils/logger';
 
 export class MigrationEngine extends EventEmitter {
-  private state: MigrationState;
-  private config: MigrationConfig;
-  private sourceConnector: BaseConnector;
-  private targetClient: AutotaskClient;
-  private mappingEngine: MappingEngine;
-  private preValidator: PreMigrationValidator;
-  private postValidator: PostMigrationValidator;
-  private progressTracker: ProgressTracker;
-  private checkpointManager: CheckpointManager;
-  private parallelProcessor: ParallelProcessor;
+  private state!: MigrationState;
+  private config!: MigrationConfig;
+  private sourceConnector!: BaseConnector;
+  private targetClient!: AutotaskClient;
+  private mappingEngine!: MappingEngine;
+  private preValidator!: PreMigrationValidator;
+  private postValidator!: PostMigrationValidator;
+  private progressTracker!: ProgressTracker;
+  private checkpointManager!: CheckpointManager;
+  private parallelProcessor!: ParallelProcessor;
   private logger: Logger;
-  private stateFile: string;
+  private stateFile!: string;
 
   constructor() {
     super();
     this.logger = createLogger('MigrationEngine');
+    // Initialize default state
+    this.state = {
+      id: uuidv4(),
+      status: MigrationStatus.INITIALIZING,
+      startTime: new Date(),
+      progress: {
+        totalEntities: 0,
+        processedEntities: 0,
+        successfulEntities: 0,
+        failedEntities: 0,
+        skippedEntities: 0,
+        percentComplete: 0
+      },
+      checkpoints: [],
+      errors: [],
+      metrics: {
+        recordsProcessed: 0,
+        recordsMigrated: 0,
+        recordsFailed: 0,
+        averageProcessingTime: 0,
+        peakMemoryUsage: 0,
+        networkRequests: 0,
+        cacheHitRate: 0,
+        dataTransferred: 0
+      },
+      config: {} as MigrationConfig
+    };
   }
 
   /**
@@ -60,33 +87,11 @@ export class MigrationEngine extends EventEmitter {
       this.config = config;
       this.stateFile = path.join(process.cwd(), 'migration-state.json');
 
-      // Initialize migration state
-      this.state = {
-        id: uuidv4(),
-        status: MigrationStatus.INITIALIZING,
-        startTime: new Date(),
-        progress: {
-          totalEntities: 0,
-          processedEntities: 0,
-          successfulEntities: 0,
-          failedEntities: 0,
-          skippedEntities: 0,
-          percentComplete: 0
-        },
-        checkpoints: [],
-        errors: [],
-        metrics: {
-          recordsProcessed: 0,
-          recordsMigrated: 0,
-          recordsFailed: 0,
-          averageProcessingTime: 0,
-          peakMemoryUsage: 0,
-          networkRequests: 0,
-          cacheHitRate: 0,
-          dataTransferred: 0
-        },
-        config
-      };
+      // Update state with provided config
+      this.state.id = uuidv4();
+      this.state.status = MigrationStatus.INITIALIZING;
+      this.state.startTime = new Date();
+      this.state.config = config;
 
       // Initialize components
       await this.initializeComponents();
@@ -214,7 +219,7 @@ export class MigrationEngine extends EventEmitter {
     );
 
     // Initialize target Autotask client
-    this.targetClient = new AutotaskClient(this.config.target.autotaskConfig);
+    this.targetClient = await AutotaskClient.create(this.config.target.autotaskConfig);
 
     // Initialize mapping engine
     this.mappingEngine = new MappingEngine(this.config.mapping);
@@ -233,7 +238,7 @@ export class MigrationEngine extends EventEmitter {
 
     // Connect to systems
     await this.sourceConnector.connect();
-    await this.targetClient.initialize();
+    await this.targetClient.initializeAllSubClients();
 
     this.logger.info('All components initialized successfully');
   }

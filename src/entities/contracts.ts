@@ -133,6 +133,20 @@ export class Contracts extends BaseEntity {
   }
 
   /**
+   * Delete a contracts
+   * @param id - The contracts ID to delete
+   * @returns Promise with void response
+   */
+  async delete(id: number): Promise<void> {
+    this.logger.info('Deleting contracts', { id });
+    await this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
+  }
+
+  /**
    * List contracts with optional filtering
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of contracts

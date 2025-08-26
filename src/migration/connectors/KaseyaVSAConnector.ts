@@ -12,7 +12,7 @@ import {
 } from '../types/MigrationTypes';
 
 export class KaseyaVSAConnector extends BaseConnector {
-  private apiClient: AxiosInstance;
+  private apiClient!: AxiosInstance;
   private accessToken?: string;
   private tokenExpiry?: Date;
 

@@ -12,7 +12,7 @@ import {
 } from '../types/MigrationTypes';
 
 export class ServiceNowConnector extends BaseConnector {
-  private apiClient: AxiosInstance;
+  private apiClient!: AxiosInstance;
 
   constructor(
     system: PSASystem,

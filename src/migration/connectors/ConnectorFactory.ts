@@ -12,14 +12,14 @@ import { ServiceDeskPlusConnector } from './ServiceDeskPlusConnector';
 import { CSVImportConnector } from './CSVImportConnector';
 
 export class ConnectorFactory {
-  private static connectorRegistry = new Map<PSASystem, typeof BaseConnector>([
-    [PSASystem.CONNECTWISE_MANAGE, ConnectWiseManageConnector],
-    [PSASystem.SERVICENOW, ServiceNowConnector],
-    [PSASystem.KASEYA_VSA, KaseyaVSAConnector],
-    [PSASystem.FRESHSERVICE, FreshServiceConnector],
-    [PSASystem.SERVICEDESK_PLUS, ServiceDeskPlusConnector],
-    [PSASystem.CSV_IMPORT, CSVImportConnector],
-    [PSASystem.EXCEL_IMPORT, CSVImportConnector] // Uses same connector as CSV
+  private static connectorRegistry = new Map<PSASystem, new (system: PSASystem, config: SourceConnectionConfig, options?: ConnectorOptions) => BaseConnector>([
+    [PSASystem.CONNECTWISE_MANAGE, ConnectWiseManageConnector as any],
+    [PSASystem.SERVICENOW, ServiceNowConnector as any],
+    [PSASystem.KASEYA_VSA, KaseyaVSAConnector as any],
+    [PSASystem.FRESHSERVICE, FreshServiceConnector as any],
+    [PSASystem.SERVICEDESK_PLUS, ServiceDeskPlusConnector as any],
+    [PSASystem.CSV_IMPORT, CSVImportConnector as any],
+    [PSASystem.EXCEL_IMPORT, CSVImportConnector as any] // Uses same connector as CSV
   ]);
 
   /**
@@ -42,7 +42,7 @@ export class ConnectorFactory {
   /**
    * Register a custom connector
    */
-  static registerConnector(system: PSASystem, connectorClass: typeof BaseConnector): void {
+  static registerConnector(system: PSASystem, connectorClass: new (system: PSASystem, config: SourceConnectionConfig, options?: ConnectorOptions) => BaseConnector): void {
     this.connectorRegistry.set(system, connectorClass);
   }
 

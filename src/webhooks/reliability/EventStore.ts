@@ -131,7 +131,6 @@ export class EventStore extends EventEmitter implements IEventStore {
       port: this.config.redis.port,
       password: this.config.redis.password,
       db: this.config.redis.db || 0,
-      retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,
       lazyConnect: true,
     });

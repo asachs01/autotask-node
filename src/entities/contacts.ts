@@ -133,6 +133,20 @@ export class Contacts extends BaseEntity {
   }
 
   /**
+   * Delete a contacts
+   * @param id - The contacts ID to delete
+   * @returns Promise with void response
+   */
+  async delete(id: number): Promise<void> {
+    this.logger.info('Deleting contacts', { id });
+    await this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
+  }
+
+  /**
    * List contacts with optional filtering
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of contacts

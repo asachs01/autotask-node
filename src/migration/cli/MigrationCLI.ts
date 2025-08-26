@@ -71,8 +71,8 @@ program
         console.log(chalk.green('✓ Basic migration configuration created'));
         console.log(chalk.yellow('  Run with --interactive for detailed configuration'));
       }
-    } catch (error) {
-      console.error(chalk.red('✗ Failed to initialize configuration:'), error.message);
+    } catch (error: unknown) {
+      console.error(chalk.red('✗ Failed to initialize configuration:'), error instanceof Error ? error.message : 'Unknown error');
       process.exit(1);
     }
   });
@@ -104,8 +104,8 @@ program
       console.log(chalk.green('\n✓ Migration configuration is valid'));
       console.log(chalk.blue('  Ready to proceed with migration'));
 
-    } catch (error) {
-      console.error(chalk.red('✗ Validation failed:'), error.message);
+    } catch (error: unknown) {
+      console.error(chalk.red('✗ Validation failed:'), error instanceof Error ? error.message : 'Unknown error');
       process.exit(1);
     }
   });
@@ -152,7 +152,7 @@ program
       await connector.disconnect();
 
     } catch (error) {
-      console.error(chalk.red('✗ Preview failed:'), error.message);
+      console.error(chalk.red('✗ Preview failed:'), (error as Error).message);
       process.exit(1);
     }
   });
@@ -213,7 +213,7 @@ program
 
       engine.on('failed', (state, error) => {
         reporter.complete();
-        console.error(chalk.red('\n✗ Migration failed:'), error.message);
+        console.error(chalk.red('\n✗ Migration failed:'), (error as Error).message);
         process.exit(1);
       });
 
@@ -238,9 +238,9 @@ program
       console.log(chalk.blue(`📊 Migration report saved to: ${reportPath}`));
 
     } catch (error) {
-      console.error(chalk.red('✗ Migration failed:'), error.message);
+      console.error(chalk.red('✗ Migration failed:'), (error as Error).message);
       if (verbose) {
-        console.error(error.stack);
+        console.error((error as Error).stack);
       }
       process.exit(1);
     }
@@ -315,7 +315,7 @@ program
       }
 
     } catch (error) {
-      console.error(chalk.red('✗ Failed to load report:'), error.message);
+      console.error(chalk.red('✗ Failed to load report:'), (error as Error).message);
       process.exit(1);
     }
   });
@@ -375,7 +375,7 @@ program
       await connector.disconnect();
 
     } catch (error) {
-      console.error(chalk.red('✗ Export failed:'), error.message);
+      console.error(chalk.red('✗ Export failed:'), (error as Error).message);
       process.exit(1);
     }
   });
@@ -397,7 +397,7 @@ async function saveConfig(config: MigrationConfig, force = false): Promise<void>
       await fs.access(configPath);
       throw new Error(`Configuration file already exists at ${configPath}. Use --force to overwrite.`);
     } catch (error) {
-      if (error.code !== 'ENOENT') {
+      if ((error as any).code !== 'ENOENT') {
         throw error;
       }
     }
@@ -455,7 +455,7 @@ function displayStatus(state: MigrationState): void {
   }
 }
 
-function getStatusColor(status: MigrationStatus): string {
+function getStatusColor(status: MigrationStatus): (text: string) => string {
   switch (status) {
     case MigrationStatus.COMPLETED:
       return chalk.green.bold;

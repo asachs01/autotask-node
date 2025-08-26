@@ -19,7 +19,8 @@ import {
   DataType,
   TransformationType,
   ConditionOperator,
-  MappingAction
+  MappingAction,
+  ErrorSeverity
 } from '../types/MigrationTypes';
 
 export interface MappingConfig {
@@ -362,7 +363,7 @@ export class MappingEngine extends EventEmitter {
               field: 'unknown',
               message: 'Field is required',
               code: 'REQUIRED',
-              severity: 'high'
+              severity: ErrorSeverity.HIGH
             });
           }
           break;
@@ -373,7 +374,7 @@ export class MappingEngine extends EventEmitter {
               field: 'unknown',
               message: 'Invalid email format',
               code: 'INVALID_EMAIL',
-              severity: 'medium'
+              severity: ErrorSeverity.MEDIUM
             });
           }
           break;
@@ -384,7 +385,7 @@ export class MappingEngine extends EventEmitter {
               field: 'unknown',
               message: 'Invalid phone format',
               code: 'INVALID_PHONE',
-              severity: 'medium'
+              severity: ErrorSeverity.MEDIUM
             });
           }
           break;
@@ -398,7 +399,7 @@ export class MappingEngine extends EventEmitter {
                 field: 'unknown',
                 message: 'Invalid URL format',
                 code: 'INVALID_URL',
-                severity: 'medium'
+                severity: ErrorSeverity.MEDIUM
               });
             }
           }
@@ -410,7 +411,7 @@ export class MappingEngine extends EventEmitter {
               field: 'unknown',
               message: 'Invalid date format',
               code: 'INVALID_DATE',
-              severity: 'medium'
+              severity: ErrorSeverity.MEDIUM
             });
           }
           break;
@@ -436,7 +437,7 @@ export class MappingEngine extends EventEmitter {
           field: 'entity',
           message: `No mapping rule found for entity type: ${entityType}`,
           code: 'NO_MAPPING_RULE',
-          severity: 'critical'
+          severity: ErrorSeverity.CRITICAL
         }],
         warnings: []
       };
@@ -453,7 +454,7 @@ export class MappingEngine extends EventEmitter {
             field: fieldMapping.targetField,
             message: `Required field is missing or empty`,
             code: 'REQUIRED_FIELD_MISSING',
-            severity: 'high'
+            severity: ErrorSeverity.HIGH
           });
         }
       }

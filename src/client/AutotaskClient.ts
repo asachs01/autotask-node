@@ -1425,4 +1425,35 @@ export class AutotaskClient {
   get ticketSources() {
     return this.tickets;
   }
+
+  /**
+   * Generic entity creation method for migration purposes
+   * Routes to appropriate sub-client based on entity type
+   */
+  async createEntity(entityType: string, data: any): Promise<any> {
+    // Map entity types to their appropriate sub-clients and collections
+    const entityMapping: Record<string, { client: string, collection: string }> = {
+      'Company': { client: 'core', collection: 'companies' },
+      'Contact': { client: 'core', collection: 'contacts' },
+      'Ticket': { client: 'core', collection: 'tickets' },
+      'Project': { client: 'core', collection: 'projects' },
+      'Task': { client: 'core', collection: 'tasks' },
+      'Opportunity': { client: 'core', collection: 'opportunities' },
+      'Resource': { client: 'core', collection: 'resources' },
+      'Contract': { client: 'contracts', collection: 'contracts' }
+    };
+
+    const mapping = entityMapping[entityType];
+    if (!mapping) {
+      throw new Error(`Unsupported entity type for creation: ${entityType}`);
+    }
+
+    // Get the appropriate collection
+    const collection = (this as any)[mapping.collection];
+    if (!collection || !collection.create) {
+      throw new Error(`Entity collection ${mapping.collection} not available or does not support creation`);
+    }
+
+    return await collection.create(data);
+  }
 }

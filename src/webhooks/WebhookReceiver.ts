@@ -235,7 +235,7 @@ export class WebhookReceiver {
       this.app.use((req: WebhookRequest, res: Response, next: NextFunction) => {
         const clientIp = req.ip;
 
-        if (!this.securityOptions.allowedIps!.includes(clientIp)) {
+        if (!clientIp || !this.securityOptions.allowedIps!.includes(clientIp)) {
           this.logger.warn('Unauthorized IP address', {
             ip: clientIp,
             webhookId: req.webhookId,

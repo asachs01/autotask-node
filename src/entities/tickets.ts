@@ -133,6 +133,20 @@ export class Tickets extends BaseEntity {
   }
 
   /**
+   * Delete a tickets
+   * @param id - The tickets ID to delete
+   * @returns Promise with void response
+   */
+  async delete(id: number): Promise<void> {
+    this.logger.info('Deleting tickets', { id });
+    await this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
+  }
+
+  /**
    * List tickets with optional filtering
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of tickets

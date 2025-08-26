@@ -6,6 +6,7 @@
 import { EventEmitter } from 'events';
 import { Logger } from 'winston';
 import { createLogger } from '../../utils/logger';
+import { URL } from 'url';
 
 import {
   SourceConnectionConfig,
@@ -41,7 +42,7 @@ export interface FieldSchema {
 
 export interface RelationshipSchema {
   name: string;
-  type: 'one-to-one' | 'one-to-many' | 'many-to-many';
+  type: 'one-to-one' | 'one-to-many' | 'many-to-many' | 'many-to-one';
   targetEntity: string;
   foreignKey: string;
   required: boolean;
@@ -313,7 +314,7 @@ export abstract class BaseConnector extends EventEmitter {
         status: 'unhealthy',
         latency,
         details: {
-          error: error.message,
+          error: (error as Error).message,
           system: this.system
         }
       };
@@ -382,7 +383,7 @@ export abstract class BaseConnector extends EventEmitter {
     for (const field of schema.fields) {
       if (field.format) {
         const invalidRecords = records.filter(r => 
-          r[field.name] && !this.validateFieldFormat(r[field.name], field.format)
+          r[field.name] && !this.validateFieldFormat(r[field.name], field.format!)
         );
         
         if (invalidRecords.length > 0) {
@@ -433,7 +434,7 @@ export abstract class BaseConnector extends EventEmitter {
 
   protected calculateCompleteness(schema: EntitySchema, records: any[]): number {
     const requiredFields = schema.fields.filter(f => f.required);
-    let totalRequired = requiredFields.length * records.length;
+    const totalRequired = requiredFields.length * records.length;
     let filled = 0;
     
     for (const record of records) {
@@ -485,7 +486,7 @@ export abstract class BaseConnector extends EventEmitter {
       case 'email':
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
       case 'phone':
-        return /^[\+]?[1-9][\d]{0,15}$/.test(str.replace(/\D/g, ''));
+        return /^[+]?[1-9][\d]{0,15}$/.test(str.replace(/\D/g, ''));
       case 'url':
         try {
           new URL(str);

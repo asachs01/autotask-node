@@ -5,6 +5,7 @@
 
 import { Logger } from 'winston';
 import { createLogger } from '../../utils/logger';
+import { URL } from 'url';
 
 import {
   ValidationResult,
@@ -14,7 +15,8 @@ import {
   DataQualityReport,
   DataQualityIssue,
   QualityIssueType,
-  IssueSeverity
+  IssueSeverity,
+  ErrorSeverity
 } from '../types/MigrationTypes';
 
 import { BaseConnector } from '../connectors/BaseConnector';
@@ -140,11 +142,12 @@ export class PreMigrationValidator {
             score -= (100 - qualityReport.qualityScore) * 0.3;
           } catch (error) {
             this.logger.warn('Data quality assessment failed for entity', { entity, error });
+            const errorMessage = error instanceof Error ? error.message : String(error);
             errors.push({
               field: entity,
-              message: `Data quality assessment failed: ${error.message}`,
+              message: `Data quality assessment failed: ${errorMessage}`,
               code: 'QUALITY_ASSESSMENT_FAILED',
-              severity: 'medium'
+              severity: ErrorSeverity.MEDIUM
             });
           }
         }
@@ -176,9 +179,9 @@ export class PreMigrationValidator {
         isValid: false,
         errors: [{
           field: 'validation',
-          message: `Validation process failed: ${error.message}`,
+          message: `Validation process failed: ${error instanceof Error ? error.message : String(error)}`,
           code: 'VALIDATION_FAILED',
-          severity: 'critical'
+          severity: ErrorSeverity.CRITICAL
         }],
         warnings: []
       };
@@ -200,7 +203,7 @@ export class PreMigrationValidator {
       result.source = await this.sourceConnector.testConnection();
       result.sourceLatency = Date.now() - startTime;
     } catch (error) {
-      result.sourceError = error.message;
+      result.sourceError = error instanceof Error ? error.message : String(error);
     }
 
     // Test target connectivity (would need target client)
@@ -281,7 +284,7 @@ export class PreMigrationValidator {
       } catch (error) {
         result.incompatibleEntities.push({
           entity,
-          issues: [`Schema validation failed: ${error.message}`]
+          issues: [`Schema validation failed: ${error instanceof Error ? error.message : String(error)}`]
         });
       }
     }
@@ -423,7 +426,7 @@ export class PreMigrationValidator {
         field: 'connectivity',
         message: `Source system connectivity failed: ${result.sourceError || 'Unknown error'}`,
         code: 'SOURCE_CONNECTIVITY_FAILED',
-        severity: 'critical'
+        severity: ErrorSeverity.CRITICAL
       });
     }
 
@@ -432,7 +435,7 @@ export class PreMigrationValidator {
         field: 'connectivity',
         message: `Target system connectivity failed: ${result.targetError || 'Unknown error'}`,
         code: 'TARGET_CONNECTIVITY_FAILED',
-        severity: 'critical'
+        severity: ErrorSeverity.CRITICAL
       });
     }
 
@@ -457,7 +460,7 @@ export class PreMigrationValidator {
         field: incompatible.entity,
         message: `Schema incompatibility: ${incompatible.issues.join(', ')}`,
         code: 'SCHEMA_INCOMPATIBLE',
-        severity: 'high'
+        severity: ErrorSeverity.HIGH
       });
     }
 
@@ -466,7 +469,7 @@ export class PreMigrationValidator {
         field: missing.entity,
         message: `Missing source fields: ${missing.fields.join(', ')}`,
         code: 'MISSING_SOURCE_FIELDS',
-        severity: 'high'
+        severity: ErrorSeverity.HIGH
       });
     }
 
@@ -491,7 +494,7 @@ export class PreMigrationValidator {
         field: 'dependencies',
         message: missing,
         code: 'MISSING_DEPENDENCY',
-        severity: 'high'
+        severity: ErrorSeverity.HIGH
       });
     }
 
@@ -516,7 +519,7 @@ export class PreMigrationValidator {
         field: report.entityType,
         message: `Poor data quality score: ${report.qualityScore}%`,
         code: 'POOR_DATA_QUALITY',
-        severity: 'high',
+        severity: ErrorSeverity.HIGH,
         context: report
       });
     } else if (report.qualityScore < 80) {
@@ -535,7 +538,7 @@ export class PreMigrationValidator {
           field: `${report.entityType}.${issue.field}`,
           message: `${issue.type}: ${issue.percentage.toFixed(1)}% of records affected`,
           code: issue.type.toUpperCase(),
-          severity: issue.severity === IssueSeverity.CRITICAL ? 'critical' : 'high'
+          severity: issue.severity === IssueSeverity.CRITICAL ? ErrorSeverity.CRITICAL : ErrorSeverity.HIGH
         });
       } else {
         warnings.push({
@@ -643,7 +646,7 @@ export class PreMigrationValidator {
       case 'email':
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
       case 'phone':
-        return /^[\+]?[1-9][\d]{0,15}$/.test(str.replace(/\D/g, ''));
+        return /^[+]?[1-9][\d]{0,15}$/.test(str.replace(/\D/g, ''));
       case 'url':
         try {
           new URL(str);
@@ -662,7 +665,7 @@ export class PreMigrationValidator {
     const requiredFields = schema.fields.filter((f: any) => f.required);
     if (requiredFields.length === 0) return 100;
 
-    let totalRequired = requiredFields.length * records.length;
+    const totalRequired = requiredFields.length * records.length;
     let filled = 0;
 
     for (const record of records) {

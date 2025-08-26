@@ -133,6 +133,20 @@ export class Tasks extends BaseEntity {
   }
 
   /**
+   * Delete a tasks
+   * @param id - The tasks ID to delete
+   * @returns Promise with void response
+   */
+  async delete(id: number): Promise<void> {
+    this.logger.info('Deleting tasks', { id });
+    await this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
+  }
+
+  /**
    * List tasks with optional filtering
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of tasks

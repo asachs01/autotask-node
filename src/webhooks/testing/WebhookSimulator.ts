@@ -382,7 +382,7 @@ export class WebhookSimulator {
   private generateTicketPayload(action: string, overrides: any = {}): any {
     const ticketData: Partial<TicketEventData> = {
       id: this.randomId(),
-      ticketNumber: `T${this.randomId().padStart(8, '0')}`,
+      ticketNumber: `T${this.randomId().toString().padStart(8, '0')}`,
       title: this.randomChoice([
         'Server Down - Critical Issue',
         'Email not working',
@@ -435,7 +435,7 @@ export class WebhookSimulator {
   private generateProjectPayload(action: string, overrides: any = {}): any {
     const projectData: Partial<ProjectEventData> = {
       id: this.randomId(),
-      projectNumber: `P${this.randomId().padStart(6, '0')}`,
+      projectNumber: `P${this.randomId().toString().padStart(6, '0')}`,
       projectName: this.randomChoice([
         'Website Redesign',
         'Server Migration',

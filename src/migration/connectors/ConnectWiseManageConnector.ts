@@ -12,7 +12,7 @@ import {
 } from '../types/MigrationTypes';
 
 export class ConnectWiseManageConnector extends BaseConnector {
-  private apiClient: AxiosInstance;
+  private apiClient!: AxiosInstance;
   private apiVersion: string = 'v4_6_release';
 
   constructor(

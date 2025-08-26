@@ -133,6 +133,20 @@ export class Projects extends BaseEntity {
   }
 
   /**
+   * Delete a projects
+   * @param id - The projects ID to delete
+   * @returns Promise with void response
+   */
+  async delete(id: number): Promise<void> {
+    this.logger.info('Deleting projects', { id });
+    await this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
+  }
+
+  /**
    * List projects with optional filtering
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of projects

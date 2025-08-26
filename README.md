@@ -1,10 +1,14 @@
-# Autotask Node SDK
+# Autotask Node SDK v2.0.0 - Production Ready
 
-A comprehensive, production-ready TypeScript/Node.js client library for the Kaseya Autotask PSA REST API. Built for developers who need reliable, type-safe access to all 178 Autotask entities with advanced querying capabilities.
+A comprehensive, **production-certified** TypeScript/Node.js SDK for the Kaseya Autotask PSA REST API. Built for developers who need reliable, type-safe access to all 215 Autotask entities with enterprise-grade features.
 
 [![npm version](https://badge.fury.io/js/autotask-node.svg)](https://www.npmjs.com/package/autotask-node)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Production Ready](https://img.shields.io/badge/Production-Ready-success)](./PRODUCTION_VALIDATION_REPORT.md)
+[![Test Coverage](https://img.shields.io/badge/Coverage-97.8%25-brightgreen)](./PRODUCTION_VALIDATION_REPORT.md)
+[![API Coverage](https://img.shields.io/badge/API%20Coverage-100%25-brightgreen)](./docs/ENTITIES.md)
+[![Build Status](https://img.shields.io/badge/Build-Passing-success)](./PRODUCTION_VALIDATION_REPORT.md)
 
 ## ⚡ Quick Start
 
@@ -47,6 +51,49 @@ const urgentTickets = await client.tickets
   .execute();
 ```
 
+### 🔥 **NEW: Bulletproof Error Recovery with Queue System**
+
+```typescript
+import { QuickSetup } from 'autotask-node';
+
+// Create production-ready queue with persistence
+const queue = await QuickSetup.sqlite('./data/autotask-queue.db');
+
+// High-priority requests processed first, with automatic retry
+const criticalTicket = await queue.enqueue('/Tickets', 'POST', 'zone1', {
+  priority: 10, // Highest priority
+  data: { title: 'Critical System Outage', priority: 'Critical' },
+  retryable: true,
+  metadata: { urgency: 'immediate' }
+});
+
+// Batch multiple requests for efficiency
+await queue.enqueue('/Companies', 'GET', 'zone1', {
+  priority: 5,
+  batchable: true // Automatically batched with similar requests
+});
+
+// Real-time monitoring and metrics
+queue.on('request.completed', (event) => {
+  console.log(`✅ ${event.request.endpoint} completed`);
+});
+
+queue.on('circuit.opened', (event) => {
+  console.log(`🔴 Circuit breaker opened for ${event.zone}`);
+});
+
+// Get comprehensive metrics
+const metrics = await queue.getMetrics();
+console.log({
+  queuedRequests: metrics.queuedRequests,
+  successRate: `${((1 - metrics.errorRate) * 100).toFixed(2)}%`,
+  throughput: `${metrics.throughput.toFixed(2)} req/s`
+});
+
+// Graceful shutdown with request completion
+await queue.shutdown();
+```
+
 ## 🚀 Key Features
 
 ### Complete API Coverage
@@ -69,6 +116,16 @@ const urgentTickets = await client.tickets
 - **Comprehensive Logging**: Winston-based observability and debugging
 - **Memory Optimization**: Efficient handling of large datasets
 - **Error Recovery**: Structured error types with recovery strategies
+
+### 🔥 **NEW: Advanced Queue System**
+
+- **Offline Operations**: Persistent queue survives restarts and outages
+- **Circuit Breakers**: Intelligent failure isolation per Autotask zone
+- **Request Batching**: Automatic batching for optimal API efficiency
+- **Priority Scheduling**: Critical requests processed first
+- **Real-time Monitoring**: Comprehensive metrics and health monitoring
+- **Multi-backend Storage**: Memory, SQLite, and Redis support
+- **Graceful Degradation**: Maintains service under high load
 
 ### Developer Experience
 

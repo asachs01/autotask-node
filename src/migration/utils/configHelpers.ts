@@ -422,6 +422,7 @@ export function createConfigFromEnv(): Partial<MigrationConfig> {
           clientSecret: process.env.MIGRATION_SOURCE_CLIENT_SECRET
         }
       },
+      entities: (process.env.MIGRATION_ENTITIES || 'Company,Contact,Ticket').split(','),
       batchSize: parseInt(process.env.MIGRATION_BATCH_SIZE || '100', 10),
       parallelism: parseInt(process.env.MIGRATION_PARALLELISM || '3', 10)
     },

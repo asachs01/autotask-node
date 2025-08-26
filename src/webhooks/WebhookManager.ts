@@ -661,7 +661,15 @@ export class WebhookManager extends EventEmitter {
 
     return {
       ...this.metrics,
-      router: routerMetrics,
+      router: {
+        totalEvents: routerMetrics.totalEvents,
+        processedEvents: routerMetrics.routedEvents,
+        failedEvents: routerMetrics.failedRoutings,
+        averageProcessingTime: routerMetrics.averageExecutionTime,
+        eventsByType: {},
+        eventsByAction: {},
+        handlerMetrics: {}
+      },
       delivery: deliveryMetrics
         ? {
             totalJobs: deliveryMetrics.totalJobs,

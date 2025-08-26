@@ -25,7 +25,7 @@ export interface CSVImportConfig extends SourceConnectionConfig {
 }
 
 export class CSVImportConnector extends BaseConnector {
-  private config: CSVImportConfig;
+  protected config: CSVImportConfig;
   private records: any[] = [];
   private headers: string[] = [];
   private totalRecords: number = 0;
@@ -178,7 +178,7 @@ export class CSVImportConnector extends BaseConnector {
       result = result.map(record => {
         const filtered: any = {};
         for (const field of options.fields!) {
-          if (record.hasOwnProperty(field)) {
+          if (Object.prototype.hasOwnProperty.call(record, field)) {
             filtered[field] = record[field];
           }
         }
@@ -194,7 +194,7 @@ export class CSVImportConnector extends BaseConnector {
 
   private async loadCSVData(): Promise<void> {
     const fileContent = await fs.readFile(this.config.filePath, 
-      { encoding: this.config.encoding as BufferEncoding || 'utf8' }
+      { encoding: (this.config.encoding || 'utf8') as any }
     );
 
     return new Promise((resolve, reject) => {
@@ -336,7 +336,7 @@ export class CSVImportConnector extends BaseConnector {
     }
 
     // Phone (basic pattern)
-    if (/^[\+]?[1-9][\d]{0,15}$/.test(stringValue.replace(/\D/g, ''))) {
+    if (/^[+]?[1-9][\d]{0,15}$/.test(stringValue.replace(/\D/g, ''))) {
       return stringValue;
     }
 
@@ -373,7 +373,7 @@ export class CSVImportConnector extends BaseConnector {
         if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) return 'datetime';
         if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'date';
         if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'email';
-        if (/^[\+]?[1-9][\d]{0,15}$/.test(value.replace(/\D/g, ''))) return 'phone';
+        if (/^[+]?[1-9][\d]{0,15}$/.test(value.replace(/\D/g, ''))) return 'phone';
       }
       return 'string';
     });
@@ -438,7 +438,7 @@ export class CSVImportConnector extends BaseConnector {
       const mapped: any = {};
       
       for (const [sourceField, targetField] of Object.entries(this.config.mapping!)) {
-        if (record.hasOwnProperty(sourceField)) {
+        if (Object.prototype.hasOwnProperty.call(record, sourceField)) {
           mapped[targetField] = record[sourceField];
         }
       }

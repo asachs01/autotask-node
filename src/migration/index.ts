@@ -25,8 +25,7 @@ export { MappingEngine } from './mapping/MappingEngine';
 // Validation
 export { PreMigrationValidator } from './validation/PreMigrationValidator';
 
-// CLI Components
-export { MigrationCLI } from './cli/MigrationCLI';
+// CLI Components are executable scripts, not exports
 
 // Utility Functions
 export { createMigrationConfig, validateMigrationConfig } from './utils/configHelpers';
@@ -244,6 +243,11 @@ export const SUPPORTED_SYSTEMS = [
   'csv_import',
   'excel_import'
 ];
+
+// Import for default export
+import { MigrationEngine } from './core/MigrationEngine';
+import { ConnectorFactory } from './connectors/ConnectorFactory';
+import { MappingEngine } from './mapping/MappingEngine';
 
 export default {
   MigrationEngine,

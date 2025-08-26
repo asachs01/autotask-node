@@ -56,10 +56,10 @@ export interface DeliveryJob {
 export class DeliveryManager extends EventEmitter {
   private config: DeliveryManagerConfig;
   private logger: winston.Logger;
-  private redis: Redis;
-  private mainQueue: Queue;
-  private retryQueue: Queue;
-  private deadLetterQueue: Queue;
+  private redis!: Redis;
+  private mainQueue!: Queue;
+  private retryQueue!: Queue;
+  private deadLetterQueue!: Queue;
   private metrics: DeliveryMetrics;
   private idempotencyCache: Map<string, boolean> = new Map();
   private cleanupTimer?: ReturnType<typeof setTimeout>;
@@ -113,7 +113,6 @@ export class DeliveryManager extends EventEmitter {
       port: this.config.redis.port,
       password: this.config.redis.password,
       db: this.config.redis.db || 0,
-      retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,
       lazyConnect: true,
     });

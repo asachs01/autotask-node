@@ -4,7 +4,7 @@
 
 import winston from 'winston';
 import { EventEmitter } from 'events';
-import { WebhookHandlerResult, WebhookHandler } from '../types/WebhookTypes';
+import { WebhookHandlerResult, WebhookHandler, WebhookEvent } from '../types/WebhookTypes';
 import { AutotaskWebhookEvent } from '../../events/types/AutotaskEvents';
 
 export interface SyncConfig {
@@ -919,10 +919,10 @@ export class SynchronizationEngine extends EventEmitter {
       name: `Synchronization Handler${syncId ? ` (${syncId})` : ''}`,
       description: 'Handles webhook events for data synchronization',
       handle: async (
-        event: AutotaskWebhookEvent
+        event: WebhookEvent<any>
       ): Promise<WebhookHandlerResult> => {
         try {
-          const results = await this.syncFromAutotask(event, syncId);
+          const results = await this.syncFromAutotask(event as AutotaskWebhookEvent, syncId);
 
           const successfulSyncs = results.filter(r => r.success);
           const failedSyncs = results.filter(r => !r.success);

@@ -96,7 +96,7 @@ export class EventParser {
   private logger: winston.Logger;
   private schemaValidator: Joi.Root;
 
-  constructor(config: ParserConfig = {}, logger?: winston.Logger) {
+  constructor(config: Partial<ParserConfig> = {}, logger?: winston.Logger) {
     this.config = {
       validateSchema: true,
       enrichEvents: true,

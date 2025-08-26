@@ -4,11 +4,16 @@ export { AutotaskAuth } from './types';
 export * from './entities';
 
 // Enterprise Performance System
-export * from './performance';
 export { AutotaskPerformanceIntegration } from './performance/integration/AutotaskPerformanceIntegration';
+// Note: Use individual exports instead of wildcard to avoid conflicts
+export { 
+  PerformanceMetrics,
+  PerformanceReport,
+  BatchProcessor
+} from './performance';
 
 // Entity Relationship and Cascade Operations System
-export * from './relationships';
+// Note: Use individual exports instead of wildcard to avoid conflicts
 export {
   AutotaskRelationshipSystem,
   RelationshipMapper,
@@ -17,10 +22,11 @@ export {
   SmartLoadingEngine,
   DataIntegrityManager,
   BatchRelationshipProcessor,
+  IntegrityCheckResult
 } from './relationships';
 
 // Enterprise Validation and Sanitization System
-export * from './validation';
+// Note: Use individual exports instead of wildcard to avoid conflicts
 export {
   ValidationEngine,
   SchemaRegistry,
@@ -33,10 +39,13 @@ export {
   ValidationDecorators,
   validationMiddleware,
   defaultValidationEngine,
+  ValidationError,
+  ValidationResult,
+  ValidationWarning
 } from './validation';
 
 // Webhook and Event Handling System
-export * from './webhooks';
+// Note: Use individual exports instead of wildcard to avoid conflicts
 export {
   WebhookManager,
   WebhookReceiver,
@@ -45,11 +54,12 @@ export {
   DeliveryManager,
   EventStore,
   SynchronizationEngine,
-  WebhookSimulator,
+  FieldMapping,
+  FieldTransformation
 } from './webhooks';
 
 // PSA Migration Framework
-export * from './migration';
+// Note: Use individual exports instead of wildcard to avoid conflicts
 export {
   MigrationEngine,
   ConnectorFactory,
@@ -65,3 +75,18 @@ export {
   MigrationConfigBuilder,
   DEFAULT_MAPPINGS,
 } from './migration';
+
+// Advanced Queue System with Error Recovery
+// Note: Use individual exports instead of wildcard to avoid conflicts
+export {
+  QueueManager,
+  MemoryBackend,
+  SQLiteBackend,
+  RedisBackend,
+  PriorityScheduler,
+  CircuitBreakerManager,
+  BatchManager,
+  QueueMonitor,
+  createQueueManager,
+  createDefaultConfiguration,
+} from './queue';

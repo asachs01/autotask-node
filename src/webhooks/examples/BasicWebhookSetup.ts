@@ -7,6 +7,7 @@ import {
   WebhookHandler,
   WebhookEvent,
   WebhookHandlerResult,
+  WebhookAction,
 } from '../types/WebhookTypes';
 import {
   AutotaskWebhookEvent,
@@ -61,6 +62,21 @@ export async function createBasicWebhookSetup(): Promise<WebhookManager> {
       persistEvents: true,
     },
 
+    // Queue configuration
+    queues: [
+      {
+        name: 'default',
+        concurrency: 5,
+        retryPolicy: {
+          maxAttempts: 3,
+          initialDelayMs: 1000,
+          maxDelayMs: 10000,
+          backoffMultiplier: 2,
+          jitterMs: 100
+        }
+      }
+    ],
+
     // Event store configuration (using Redis)
     eventStore: {
       type: 'redis' as const,
@@ -100,7 +116,7 @@ function setupEventHandlers(webhookManager: WebhookManager): void {
     enabled: true,
     filter: {
       entityType: [AutotaskEntityType.TICKET],
-      action: ['create'],
+      action: [WebhookAction.CREATE],
     },
     handle: async (event: WebhookEvent): Promise<WebhookHandlerResult> => {
       const ticketEvent = event as AutotaskWebhookEvent;
@@ -146,7 +162,7 @@ function setupEventHandlers(webhookManager: WebhookManager): void {
     enabled: true,
     filter: {
       entityType: [AutotaskEntityType.TICKET],
-      action: ['update'],
+      action: [WebhookAction.UPDATE],
       conditions: [
         {
           field: 'changes.status',
