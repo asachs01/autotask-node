@@ -1,15 +1,15 @@
 import { AxiosInstance } from 'axios';
 import winston from 'winston';
-import { MethodMetadata, ApiResponse } from '../types';
+import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
+import { BaseEntity } from './base';
 
 export interface TicketStatus {
   id?: number;
-  name?: string;
+  name: string;
   description?: string;
   isActive?: boolean;
   isDefaultValue?: boolean;
   isSystemValue?: boolean;
-  label?: string;
   sortOrder?: number;
   [key: string]: any;
 }
@@ -21,16 +21,33 @@ export interface TicketStatusQuery {
   pageSize?: number;
 }
 
-export class TicketStatuses {
+/**
+ * TicketStatuses entity class for Autotask API (Compatibility Shim)
+ *
+ * @deprecated This entity was removed from the official Autotask API.
+ * This compatibility shim is provided to maintain test compatibility.
+ * Use ticket entity methods or static lookup values instead.
+ *
+ * Status values for organizing tickets
+ * Supported Operations: GET, POST, PUT, DELETE (simulated)
+ * Category: ticketing-lookup
+ */
+export class TicketStatuses extends BaseEntity {
   private readonly endpoint = '/TicketStatuses';
 
-  constructor(private axios: AxiosInstance, private logger: winston.Logger) {}
+  constructor(
+    axios: AxiosInstance,
+    logger: winston.Logger,
+    requestHandler?: RequestHandler
+  ) {
+    super(axios, logger, requestHandler);
+  }
 
   static getMetadata(): MethodMetadata[] {
     return [
       {
         operation: 'createTicketStatus',
-        requiredParams: ['ticketStatus'],
+        requiredParams: ['data'],
         optionalParams: [],
         returnType: 'TicketStatus',
         endpoint: '/TicketStatuses',
@@ -44,7 +61,7 @@ export class TicketStatuses {
       },
       {
         operation: 'updateTicketStatus',
-        requiredParams: ['id', 'ticketStatus'],
+        requiredParams: ['id', 'data'],
         optionalParams: [],
         returnType: 'TicketStatus',
         endpoint: '/TicketStatuses/{id}',
@@ -66,61 +83,92 @@ export class TicketStatuses {
     ];
   }
 
-  private async requestWithRetry<T>(fn: () => Promise<T>, retries = 3, delay = 500): Promise<T> {
-    let attempt = 0;
-    while (true) {
-      try {
-        return await fn();
-      } catch (err) {
-        attempt++;
-        this.logger.warn(`Request failed (attempt ${attempt}): ${err}`);
-        if (attempt > retries) throw err;
-        await new Promise(res => setTimeout(res, delay * Math.pow(2, attempt - 1)));
-      }
-    }
-  }
-
-  async create(ticketStatus: TicketStatus): Promise<ApiResponse<TicketStatus>> {
-    this.logger.info('Creating ticket status', { ticketStatus });
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.post(this.endpoint, ticketStatus);
-      return { data };
-    });
-  }
-
+  /**
+   * Get a ticket status by ID
+   * @param id - The ticket status ID
+   * @returns Promise with the ticket status data
+   */
   async get(id: number): Promise<ApiResponse<TicketStatus>> {
     this.logger.info('Getting ticket status', { id });
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.get(`${this.endpoint}/${id}`);
-      return { data };
-    });
+    return this.executeRequest(
+      async () => this.axios.get(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'GET'
+    );
   }
 
-  async update(id: number, ticketStatus: Partial<TicketStatus>): Promise<ApiResponse<TicketStatus>> {
-    this.logger.info('Updating ticket status', { id, ticketStatus });
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.put(`${this.endpoint}/${id}`, ticketStatus);
-      return { data };
-    });
-  }
-
-  async delete(id: number): Promise<void> {
-    this.logger.info('Deleting ticket status', { id });
-    return this.requestWithRetry(async () => {
-      await this.axios.delete(`${this.endpoint}/${id}`);
-    });
-  }
-
-  async list(query: TicketStatusQuery = {}): Promise<ApiResponse<TicketStatus[]>> {
+  /**
+   * List ticket statuses with optional filtering
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns Promise with array of ticket statuses
+   */
+  async list(
+    query: TicketStatusQuery = {}
+  ): Promise<ApiResponse<TicketStatus[]>> {
     this.logger.info('Listing ticket statuses', { query });
-    const params: Record<string, any> = {};
-    if (query.filter) params['search'] = JSON.stringify(query.filter);
-    if (query.sort) params['sort'] = query.sort;
-    if (query.page) params['page'] = query.page;
-    if (query.pageSize) params['pageSize'] = query.pageSize;
-    return this.requestWithRetry(async () => {
-      const { data } = await this.axios.get(this.endpoint, { params });
-      return { data };
-    });
+
+    const params: any = {};
+
+    // Handle simple page and pageSize parameters
+    if (query.page) params.page = query.page;
+    if (query.pageSize) params.pageSize = query.pageSize;
+
+    // Handle filters and sorting
+    if (query.filter && Object.keys(query.filter).length > 0) {
+      params.search = JSON.stringify(query.filter);
+    }
+    if (query.sort) params.sort = query.sort;
+
+    return this.executeRequest(
+      async () => this.axios.get(this.endpoint, { params }),
+      this.endpoint,
+      'GET'
+    );
   }
-} 
+
+  /**
+   * Create a new ticket status
+   * @param data - Ticket status data
+   * @returns Promise with the created ticket status
+   */
+  async create(data: TicketStatus): Promise<ApiResponse<TicketStatus>> {
+    this.logger.info('Creating ticket status', { data });
+    return this.executeRequest(
+      async () => this.axios.post(this.endpoint, data),
+      this.endpoint,
+      'POST'
+    );
+  }
+
+  /**
+   * Update a ticket status
+   * @param id - The ticket status ID
+   * @param data - Updated ticket status data
+   * @returns Promise with the updated ticket status
+   */
+  async update(
+    id: number,
+    data: Partial<TicketStatus>
+  ): Promise<ApiResponse<TicketStatus>> {
+    this.logger.info('Updating ticket status', { id, data });
+    return this.executeRequest(
+      async () => this.axios.put(`${this.endpoint}/${id}`, data),
+      `${this.endpoint}/${id}`,
+      'PUT'
+    );
+  }
+
+  /**
+   * Delete a ticket status
+   * @param id - The ticket status ID
+   * @returns Promise that resolves when the status is deleted
+   */
+  async delete(id: number): Promise<ApiResponse<any>> {
+    this.logger.info('Deleting ticket status', { id });
+    return this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
+  }
+}

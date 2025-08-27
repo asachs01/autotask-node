@@ -53,10 +53,11 @@ describe('AutotaskClient', () => {
     // Mock axios.create to return our mock instance
     mockedAxios.create.mockReturnValue(mockAxiosInstance);
 
-    // Mock the zone detection call
+    // Mock the zone detection call and connection test
     mockedAxios.get.mockResolvedValue({
       data: { url: 'https://webservices.autotask.net/atservicesrest/v1.0/' },
     });
+    mockAxiosInstance.get.mockResolvedValue({ data: [] });
   });
 
   afterEach(() => {
@@ -148,20 +149,12 @@ describe('AutotaskClient', () => {
         secret: 'secret123',
       };
 
-      // Mock zone detection failure, then fallback success
-      mockedAxios.get
-        .mockRejectedValueOnce(new Error('Zone detection failed'))
-        .mockResolvedValueOnce({
-          data: { url: 'https://fallback.autotask.net/v1.0/' },
-        });
+      // Mock zone detection failure completely
+      mockedAxios.get.mockRejectedValue(new Error('Zone detection failed'));
 
-      mockedAxios.post.mockResolvedValueOnce({
-        data: { url: 'https://fallback.autotask.net/v1.0/' },
-      });
-
-      const client = await AutotaskClient.create(authWithoutUrl);
-
-      expect(client).toBeInstanceOf(AutotaskClient);
+      await expect(AutotaskClient.create(authWithoutUrl)).rejects.toThrow(
+        ConfigurationError
+      );
     });
 
     it('should handle zone detection complete failure', async () => {
@@ -259,6 +252,7 @@ describe('AutotaskClient', () => {
       expect(metrics).toHaveProperty('connectionPooling');
       expect(metrics).toHaveProperty('timeouts');
       expect(metrics).toHaveProperty('limits');
+      expect(metrics).toHaveProperty('subClients');
 
       expect(metrics.rateLimiter.requestsPerSecond).toBe(8);
       expect(metrics.connectionPooling.enabled).toBe(true);
@@ -267,6 +261,8 @@ describe('AutotaskClient', () => {
       expect(metrics.timeouts.keepAliveTimeout).toBe(45000);
       expect(metrics.limits.maxContentLength).toBe(100 * 1024 * 1024);
       expect(metrics.limits.maxBodyLength).toBe(20 * 1024 * 1024);
+      expect(metrics.subClients.total).toBeGreaterThan(0);
+      expect(metrics.subClients.initialized).toBeGreaterThanOrEqual(0);
     });
 
     it('should allow updating rate limit at runtime', () => {
@@ -311,8 +307,7 @@ describe('AutotaskClient', () => {
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
             ApiIntegrationcode: mockAuth.integrationCode,
-            UserName: mockAuth.username,
-            Secret: mockAuth.secret,
+            Authorization: expect.stringContaining('Basic'),
           }),
         })
       );
@@ -347,26 +342,19 @@ describe('AutotaskClient', () => {
 
       expect(mockedAxios.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          headers: expect.objectContaining({
-            'Accept-Encoding': 'gzip, deflate, br',
-          }),
+          decompress: true,
         })
       );
     });
 
-    it('should validate status codes correctly', async () => {
+    it('should have transform request configured', async () => {
       await AutotaskClient.create(mockAuth);
 
       const createCall = mockedAxios.create.mock.calls[0][0];
-      const validateStatus = createCall?.validateStatus;
+      const transformRequest = createCall?.transformRequest;
 
-      expect(validateStatus).toBeDefined();
-      expect(validateStatus!(200)).toBe(true);
-      expect(validateStatus!(201)).toBe(true);
-      expect(validateStatus!(299)).toBe(true);
-      expect(validateStatus!(300)).toBe(false);
-      expect(validateStatus!(400)).toBe(false);
-      expect(validateStatus!(500)).toBe(false);
+      expect(transformRequest).toBeDefined();
+      expect(Array.isArray(transformRequest)).toBe(true);
     });
   });
 
@@ -398,6 +386,69 @@ describe('AutotaskClient', () => {
       expect(config.requestsPerSecond).toBe(15); // Overridden
       expect(config.maxConcurrentRequests).toBe(10); // Default
       expect(config.enableConnectionPooling).toBe(true); // Default
+    });
+  });
+
+  describe('sub-client architecture', () => {
+    let client: AutotaskClient;
+
+    beforeEach(async () => {
+      client = await AutotaskClient.create(mockAuth);
+    });
+
+    it('should have all sub-clients available', () => {
+      expect(client.core).toBeDefined();
+      expect(client.contractsClient).toBeDefined();
+      expect(client.financial).toBeDefined();
+      expect(client.configuration).toBeDefined();
+      expect(client.timeTracking).toBeDefined();
+      expect(client.knowledge).toBeDefined();
+      expect(client.inventory).toBeDefined();
+      expect(client.reports).toBeDefined();
+    });
+
+    it('should provide sub-client status', () => {
+      const status = client.getSubClientStatus();
+
+      expect(status).toHaveProperty('core');
+      expect(status).toHaveProperty('contracts');
+      expect(status).toHaveProperty('financial');
+      expect(status).toHaveProperty('configuration');
+      expect(status).toHaveProperty('timeTracking');
+      expect(status).toHaveProperty('knowledge');
+      expect(status).toHaveProperty('inventory');
+      expect(status).toHaveProperty('reports');
+
+      expect(status.core.name).toBe('CoreClient');
+      expect(status.contracts.name).toBe('ContractClient');
+    });
+
+    it('should allow getting sub-clients by name', () => {
+      const coreClient = client.getSubClient('core');
+      expect(coreClient).toBeDefined();
+      expect(coreClient?.getName()).toBe('CoreClient');
+
+      const nonExistentClient = client.getSubClient('nonexistent');
+      expect(nonExistentClient).toBeUndefined();
+    });
+
+    it('should support sub-client initialization', async () => {
+      await client.initializeAllSubClients();
+
+      const metrics = client.getPerformanceMetrics();
+      expect(metrics.subClients.initialized).toBe(metrics.subClients.total);
+    });
+
+    it('should support sub-client connection testing', async () => {
+      // Mock successful connection tests
+      mockAxiosInstance.get.mockResolvedValue({ data: [] });
+
+      const results = await client.testAllSubClientConnections();
+
+      expect(results).toHaveProperty('core');
+      expect(results).toHaveProperty('contracts');
+      expect(results).toHaveProperty('financial');
+      expect(results).toHaveProperty('configuration');
     });
   });
 

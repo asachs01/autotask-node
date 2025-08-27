@@ -3,58 +3,33 @@ import winston from 'winston';
 import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
 import { BaseEntity } from './base';
 
-export interface Quote {
+export interface IQuotes {
   id?: number;
-  accountId?: number;
-  quoteNumber?: string;
-  quoteDate?: string;
-  expirationDate?: string;
-  validUntilDate?: string;
-  quoteTotal?: number;
-  taxTotal?: number;
-  totalAmount?: number;
-  status?: number;
-  description?: string;
-  comments?: string;
-  purchaseOrderNumber?: string;
-  quoteTemplateId?: number;
-  createdDate?: string;
-  createdBy?: number;
-  lastModifiedDate?: string;
-  lastModifiedBy?: number;
-  webServiceDate?: string;
-  contactId?: number;
-  opportunityId?: number;
-  projectId?: number;
-  soldDate?: string;
-  isActive?: boolean;
-  taxGroup?: number;
-  taxRegion?: number;
-  currencyId?: number;
-  exchangeRate?: number;
-  internalCurrencyQuoteTotal?: number;
-  internalCurrencyTaxTotal?: number;
-  internalCurrencyTotalAmount?: number;
-  billToLocationId?: number;
-  shipToLocationId?: number;
-  paymentTerms?: number;
-  paymentMethodId?: number;
   [key: string]: any;
 }
 
-export interface QuoteQuery {
+export interface IQuotesQuery {
   filter?: Record<string, any>;
   sort?: string;
   page?: number;
   pageSize?: number;
 }
 
+/**
+ * Quotes entity class for Autotask API
+ *
+ * Customer quotes and estimates
+ * Supported Operations: GET, POST, PATCH, PUT
+ * Category: financial
+ *
+ * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/QuotesEntity.htm}
+ */
 export class Quotes extends BaseEntity {
   private readonly endpoint = '/Quotes';
 
   constructor(
-    axios: AxiosInstance, 
-    logger: winston.Logger, 
+    axios: AxiosInstance,
+    logger: winston.Logger,
     requestHandler?: RequestHandler
   ) {
     super(axios, logger, requestHandler);
@@ -63,54 +38,57 @@ export class Quotes extends BaseEntity {
   static getMetadata(): MethodMetadata[] {
     return [
       {
-        operation: 'createQuote',
-        requiredParams: ['quote'],
+        operation: 'createQuotes',
+        requiredParams: ['quotes'],
         optionalParams: [],
-        returnType: 'Quote',
+        returnType: 'IQuotes',
         endpoint: '/Quotes',
       },
       {
-        operation: 'getQuote',
+        operation: 'getQuotes',
         requiredParams: ['id'],
         optionalParams: [],
-        returnType: 'Quote',
+        returnType: 'IQuotes',
         endpoint: '/Quotes/{id}',
       },
       {
-        operation: 'updateQuote',
-        requiredParams: ['id', 'quote'],
+        operation: 'updateQuotes',
+        requiredParams: ['id', 'quotes'],
         optionalParams: [],
-        returnType: 'Quote',
-        endpoint: '/Quotes/{id}',
-      },
-      {
-        operation: 'deleteQuote',
-        requiredParams: ['id'],
-        optionalParams: [],
-        returnType: 'void',
+        returnType: 'IQuotes',
         endpoint: '/Quotes/{id}',
       },
       {
         operation: 'listQuotes',
         requiredParams: [],
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
-        returnType: 'Quote[]',
+        returnType: 'IQuotes[]',
         endpoint: '/Quotes',
       },
     ];
   }
 
-  async create(quote: Quote): Promise<ApiResponse<Quote>> {
-    this.logger.info('Creating quote', { quote });
+  /**
+   * Create a new quotes
+   * @param quotes - The quotes data to create
+   * @returns Promise with the created quotes
+   */
+  async create(quotes: IQuotes): Promise<ApiResponse<IQuotes>> {
+    this.logger.info('Creating quotes', { quotes });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, quote),
+      async () => this.axios.post(this.endpoint, quotes),
       this.endpoint,
       'POST'
     );
   }
 
-  async get(id: number): Promise<ApiResponse<Quote>> {
-    this.logger.info('Getting quote', { id });
+  /**
+   * Get a quotes by ID
+   * @param id - The quotes ID
+   * @returns Promise with the quotes data
+   */
+  async get(id: number): Promise<ApiResponse<IQuotes>> {
+    this.logger.info('Getting quotes', { id });
     return this.executeRequest(
       async () => this.axios.get(`${this.endpoint}/${id}`),
       `${this.endpoint}/${id}`,
@@ -118,46 +96,69 @@ export class Quotes extends BaseEntity {
     );
   }
 
-  async update(id: number, quote: Partial<Quote>): Promise<ApiResponse<Quote>> {
-    this.logger.info('Updating quote', { id, quote });
+  /**
+   * Update a quotes
+   * @param id - The quotes ID
+   * @param quotes - The updated quotes data
+   * @returns Promise with the updated quotes
+   */
+  async update(
+    id: number,
+    quotes: Partial<IQuotes>
+  ): Promise<ApiResponse<IQuotes>> {
+    this.logger.info('Updating quotes', { id, quotes });
     return this.executeRequest(
-      async () => this.axios.put(`${this.endpoint}/${id}`, quote),
+      async () => this.axios.put(`${this.endpoint}/${id}`, quotes),
       `${this.endpoint}/${id}`,
       'PUT'
     );
   }
 
-  async delete(id: number): Promise<void> {
-    this.logger.info('Deleting quote', { id });
-    await this.executeRequest(
-      async () => this.axios.delete(`${this.endpoint}/${id}`),
+  /**
+   * Partially update a quotes
+   * @param id - The quotes ID
+   * @param quotes - The partial quotes data to update
+   * @returns Promise with the updated quotes
+   */
+  async patch(
+    id: number,
+    quotes: Partial<IQuotes>
+  ): Promise<ApiResponse<IQuotes>> {
+    this.logger.info('Patching quotes', { id, quotes });
+    return this.executeRequest(
+      async () => this.axios.patch(`${this.endpoint}/${id}`, quotes),
       `${this.endpoint}/${id}`,
-      'DELETE'
+      'PATCH'
     );
   }
 
-  async list(query: QuoteQuery = {}): Promise<ApiResponse<Quote[]>> {
+  /**
+   * List quotes with optional filtering
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns Promise with array of quotes
+   */
+  async list(query: IQuotesQuery = {}): Promise<ApiResponse<IQuotes[]>> {
     this.logger.info('Listing quotes', { query });
     const searchBody: Record<string, any> = {};
-    
-    // Ensure there's a filter - Autotask API requires a filter
+
+    // Set up basic filter if none provided
     if (!query.filter || Object.keys(query.filter).length === 0) {
       searchBody.filter = [
         {
-          "op": "gte",
-          "field": "id",
-          "value": 0
-        }
+          op: 'gte',
+          field: 'id',
+          value: 0,
+        },
       ];
     } else {
-      // If filter is provided as an object, convert to array format expected by API
+      // Convert object filter to array format
       if (!Array.isArray(query.filter)) {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
           filterArray.push({
-            "op": "eq",
-            "field": field,
-            "value": value
+            op: 'eq',
+            field: field,
+            value: value,
           });
         }
         searchBody.filter = filterArray;
@@ -165,116 +166,16 @@ export class Quotes extends BaseEntity {
         searchBody.filter = query.filter;
       }
     }
-    
+
     if (query.sort) searchBody.sort = query.sort;
     if (query.page) searchBody.page = query.page;
     if (query.pageSize) searchBody.pageSize = query.pageSize;
-    
-    this.logger.info('Listing quotes with search body', { searchBody });
-    
+
     return this.executeQueryRequest(
-      async () => this.axios.post(`${this.endpoint}/query`, searchBody),
+      async () =>
+        this.axios.get(`${this.endpoint}/query`, { params: searchBody }),
       `${this.endpoint}/query`,
-      'POST'
+      'GET'
     );
   }
-
-  /**
-   * Get all quotes for a specific account
-   */
-  async getByAccount(accountId: number): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting quotes by account ID', { accountId });
-    return this.list({
-      filter: { accountId }
-    });
-  }
-
-  /**
-   * Get quotes by status
-   */
-  async getByStatus(status: number): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting quotes by status', { status });
-    return this.list({
-      filter: { status }
-    });
-  }
-
-  /**
-   * Get active quotes
-   */
-  async getActive(): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting active quotes');
-    return this.list({
-      filter: { isActive: true }
-    });
-  }
-
-  /**
-   * Get expired quotes
-   */
-  async getExpired(): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting expired quotes');
-    const today = new Date().toISOString().split('T')[0];
-    return this.list({
-      filter: [
-        { "op": "lt", "field": "expirationDate", "value": today },
-        { "op": "eq", "field": "isActive", "value": true }
-      ]
-    });
-  }
-
-  /**
-   * Get quotes within a date range
-   */
-  async getByDateRange(startDate: string, endDate: string): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting quotes by date range', { startDate, endDate });
-    return this.list({
-      filter: [
-        { "op": "gte", "field": "quoteDate", "value": startDate },
-        { "op": "lte", "field": "quoteDate", "value": endDate }
-      ]
-    });
-  }
-
-  /**
-   * Get quotes by quote number pattern
-   */
-  async getByQuoteNumber(quoteNumber: string): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting quotes by quote number', { quoteNumber });
-    return this.list({
-      filter: { quoteNumber }
-    });
-  }
-
-  /**
-   * Get quotes for a specific opportunity
-   */
-  async getByOpportunity(opportunityId: number): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting quotes by opportunity ID', { opportunityId });
-    return this.list({
-      filter: { opportunityId }
-    });
-  }
-
-  /**
-   * Get quotes for a specific project
-   */
-  async getByProject(projectId: number): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting quotes by project ID', { projectId });
-    return this.list({
-      filter: { projectId }
-    });
-  }
-
-  /**
-   * Get sold quotes
-   */
-  async getSold(): Promise<ApiResponse<Quote[]>> {
-    this.logger.info('Getting sold quotes');
-    return this.list({
-      filter: [
-        { "op": "isnotnull", "field": "soldDate" }
-      ]
-    });
-  }
-} 
+}

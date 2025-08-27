@@ -1,0 +1,833 @@
+{
+  "metadata": {
+    "lastUpdated": "2025-08-25",
+    "source": "https://www.autotask.net/help/developerhelp/Content/APIs/REST/Entities/",
+    "description": "Comprehensive list of Autotask REST API entities with their capabilities and configurations",
+    "notes": [
+      "Entity paths follow the pattern: /atservicesrest/v1.0/{EntityName}",
+      "All entities support basic query operations unless specifically noted",
+      "UDF limits and webhook support vary by entity",
+      "Some entities have child collection access URLs"
+    ]
+  },
+  "entities": [
+    {
+      "name": "Ticket",
+      "pluralName": "Tickets", 
+      "entityPath": "/atservicesrest/v1.0/Tickets",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": 300,
+        "supportsWebhooks": true,
+        "hasChildCollections": true,
+        "supportsImpersonation": true
+      },
+      "specialNotes": [
+        "Requires special handling for URLs and relationships",
+        "Fields creatorType and lastActivityPersonType are not queryable",
+        "Rich Text fields will lose formatting when updated via API",
+        "Respects View, Add, and Edit permissions except 'Mine + Companies' setting",
+        "Three read-only fields (monitorID, monitorTypeID, rMMAlertID) for RMM integration only"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/TicketsEntity.htm"
+    },
+    {
+      "name": "Company",
+      "pluralName": "Companies",
+      "entityPath": "/atservicesrest/v1.0/Companies", 
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": 200,
+        "supportsWebhooks": true,
+        "hasChildCollections": true,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Pivotal entity - all other entities are directly or indirectly associated with organizations",
+        "Can have up to 5,000 locations per organization", 
+        "Organizations can be set up as sub-organizations with parentCompanyID",
+        "Several fields cannot be queried (assetValue, sicCode, stockMarket, stockSymbol)",
+        "API can create organizations with companyCategory of 'API' (not possible in UI)"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/CompaniesEntity.htm"
+    },
+    {
+      "name": "Contact",
+      "pluralName": "Contacts",
+      "entityPath": "/atservicesrest/v1.0/Contacts",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": true
+      },
+      "specialNotes": [
+        "Create actions require security level permission to add Contacts"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ContactsEntity.htm"
+    },
+    {
+      "name": "Project",
+      "pluralName": "Projects",
+      "entityPath": "/atservicesrest/v1.0/Projects",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": true,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ProjectsEntity.htm"
+    },
+    {
+      "name": "Resource",
+      "pluralName": "Resources", 
+      "entityPath": "/atservicesrest/v1.0/Resources",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ResourcesEntity.htm"
+    },
+    {
+      "name": "TimeEntry",
+      "pluralName": "TimeEntries",
+      "entityPath": "/atservicesrest/v1.0/TimeEntries", 
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": true
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": true
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/TimeEntriesEntity.htm"
+    },
+    {
+      "name": "Task",
+      "pluralName": "Tasks",
+      "entityPath": "/atservicesrest/v1.0/Tasks",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/TasksEntity.htm"
+    },
+    {
+      "name": "Contract",
+      "pluralName": "Contracts",
+      "entityPath": "/atservicesrest/v1.0/Contracts",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": true,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ContractsEntity.htm"
+    },
+    {
+      "name": "Account",
+      "pluralName": "Accounts",
+      "entityPath": "/atservicesrest/v1.0/Accounts",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for account information"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/AccountsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItem",
+      "pluralName": "ConfigurationItems",
+      "entityPath": "/atservicesrest/v1.0/ConfigurationItems",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ConfigurationItemsEntity.htm"
+    },
+    {
+      "name": "Opportunity",
+      "pluralName": "Opportunities",
+      "entityPath": "/atservicesrest/v1.0/Opportunities",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/OpportunitiesEntity.htm"
+    },
+    {
+      "name": "Quote",
+      "pluralName": "Quotes",
+      "entityPath": "/atservicesrest/v1.0/Quotes",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": true,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/QuotesEntity.htm"
+    },
+    {
+      "name": "PurchaseOrder",
+      "pluralName": "PurchaseOrders",
+      "entityPath": "/atservicesrest/v1.0/PurchaseOrders",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/PurchaseOrdersEntity.htm"
+    },
+    {
+      "name": "Invoice",
+      "pluralName": "Invoices",
+      "entityPath": "/atservicesrest/v1.0/Invoices",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": true,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity - invoices are generated by the system"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/InvoicesEntity.htm"
+    },
+    {
+      "name": "Expense",
+      "pluralName": "Expenses",
+      "entityPath": "/atservicesrest/v1.0/Expenses",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": true
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ExpensesEntity.htm"
+    },
+    {
+      "name": "Note",
+      "pluralName": "Notes",
+      "entityPath": "/atservicesrest/v1.0/Notes",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": true
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": true
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/NotesEntity.htm"
+    },
+    {
+      "name": "Attachment",
+      "pluralName": "Attachments",
+      "entityPath": "/atservicesrest/v1.0/Attachments",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": true
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": true
+      },
+      "specialNotes": [
+        "Special handling required for file uploads and downloads",
+        "Binary data handling required"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/AttachmentsEntity.htm"
+    },
+    {
+      "name": "Service",
+      "pluralName": "Services",
+      "entityPath": "/atservicesrest/v1.0/Services",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for service definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ServicesEntity.htm"
+    },
+    {
+      "name": "ServiceCall",
+      "pluralName": "ServiceCalls",
+      "entityPath": "/atservicesrest/v1.0/ServiceCalls",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ServiceCallsEntity.htm"
+    },
+    {
+      "name": "ContractService",
+      "pluralName": "ContractServices",
+      "entityPath": "/atservicesrest/v1.0/ContractServices",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ContractServicesEntity.htm"
+    },
+    {
+      "name": "ContractServiceBundle",
+      "pluralName": "ContractServiceBundles",
+      "entityPath": "/atservicesrest/v1.0/ContractServiceBundles",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ContractServiceBundlesEntity.htm"
+    },
+    {
+      "name": "ContractAdjustment",
+      "pluralName": "ContractAdjustments",
+      "entityPath": "/atservicesrest/v1.0/ContractAdjustments",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ContractAdjustmentsEntity.htm"
+    },
+    {
+      "name": "ContractBlock",
+      "pluralName": "ContractBlocks",
+      "entityPath": "/atservicesrest/v1.0/ContractBlocks",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ContractBlocksEntity.htm"
+    },
+    {
+      "name": "ContractExclusion",
+      "pluralName": "ContractExclusions",
+      "entityPath": "/atservicesrest/v1.0/ContractExclusions",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/ContractExclusionsEntity.htm"
+    },
+    {
+      "name": "Role",
+      "pluralName": "Roles",
+      "entityPath": "/atservicesrest/v1.0/Roles",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for role definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/RolesEntity.htm"
+    },
+    {
+      "name": "BillingCode",
+      "pluralName": "BillingCodes",
+      "entityPath": "/atservicesrest/v1.0/BillingCodes",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for billing code definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/BillingCodesEntity.htm"
+    },
+    {
+      "name": "Currency",
+      "pluralName": "Currencies",
+      "entityPath": "/atservicesrest/v1.0/Currencies",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for currency definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/CurrenciesEntity.htm"
+    },
+    {
+      "name": "Country",
+      "pluralName": "Countries",
+      "entityPath": "/atservicesrest/v1.0/Countries",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for country definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/CountriesEntity.htm"
+    },
+    {
+      "name": "CompanyCategory",
+      "pluralName": "CompanyCategories",
+      "entityPath": "/atservicesrest/v1.0/CompanyCategories",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for company category definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/CompanyCategoriesEntity.htm"
+    },
+    {
+      "name": "CompanyLocation",
+      "pluralName": "CompanyLocations",
+      "entityPath": "/atservicesrest/v1.0/CompanyLocations",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": true,
+        "maxUDFs": null,
+        "supportsWebhooks": true,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/CompanyLocationsEntity.htm"
+    },
+    {
+      "name": "TaxRegion",
+      "pluralName": "TaxRegions",
+      "entityPath": "/atservicesrest/v1.0/TaxRegions",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for tax region definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/TaxRegionsEntity.htm"
+    },
+    {
+      "name": "InvoiceTemplate",
+      "pluralName": "InvoiceTemplates",
+      "entityPath": "/atservicesrest/v1.0/InvoiceTemplates",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for invoice template definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/InvoiceTemplatesEntity.htm"
+    },
+    {
+      "name": "QuoteTemplate",
+      "pluralName": "QuoteTemplates",
+      "entityPath": "/atservicesrest/v1.0/QuoteTemplates",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Read-only entity for quote template definitions"
+      ],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/Entities/QuoteTemplatesEntity.htm"
+    },
+    {
+      "name": "TicketAdditionalContact",
+      "pluralName": "TicketAdditionalContacts",
+      "entityPath": "/atservicesrest/v1.0/TicketAdditionalContacts",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": true
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/rest/entities/TicketAdditionalContactsEntity.htm"
+    },
+    {
+      "name": "UserDefinedFieldListItem",
+      "pluralName": "UserDefinedFieldListItems",
+      "entityPath": "/atservicesrest/v1.0/UserDefinedFieldListItems",
+      "supportedOperations": {
+        "GET": true,
+        "POST": false,
+        "PUT": false,
+        "PATCH": false,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [
+        "Describes list items associated with UserDefinedFieldDefinition entity that has dataType = List"
+      ],
+      "documentationUrl": "https://autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/UserDefinedFieldListItemsEntity.htm"
+    },
+    {
+      "name": "ServiceCallTicket", 
+      "pluralName": "ServiceCallTickets",
+      "entityPath": "/atservicesrest/v1.0/ServiceCallTickets",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": true
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://ww1.autotask.net/help/developerhelp/content/apis/REST/Entities/ServiceCallTicketsEntity.htm"
+    },
+    {
+      "name": "Document",
+      "pluralName": "Documents",
+      "entityPath": "/atservicesrest/v1.0/Documents",
+      "supportedOperations": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "PATCH": true,
+        "DELETE": false
+      },
+      "capabilities": {
+        "supportsUDFs": false,
+        "maxUDFs": null,
+        "supportsWebhooks": false,
+        "hasChildCollections": false,
+        "supportsImpersonation": false
+      },
+      "specialNotes": [],
+      "documentationUrl": "https://autotask.net/help/developerhelp/content/apis/REST/Entities/DocumentsEntity.htm"
+    }
+  ]
+}

@@ -248,7 +248,8 @@ describe('TicketStatuses', () => {
       await ticketStatuses.get(123);
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Request failed (attempt 1)')
+        expect.stringContaining('Request failed, retrying in'),
+        expect.any(Object)
       );
     });
   });

@@ -1,0 +1,116 @@
+import { AxiosInstance } from 'axios';
+import winston from 'winston';
+import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
+import { BaseEntity } from './base';
+
+export interface IInventoryStockedItemsRemove {
+  id?: number;
+  [key: string]: any;
+}
+
+export interface IInventoryStockedItemsRemoveQuery {
+  filter?: Record<string, any>;
+  sort?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+/**
+ * InventoryStockedItemsRemove entity class for Autotask API
+ * 
+ * Remove items from inventory stock
+ * Supported Operations: POST
+ * Category: inventory
+ * 
+ * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/InventoryStockedItemsRemove.htm}
+ */
+export class InventoryStockedItemsRemove extends BaseEntity {
+  private readonly endpoint = '/InventoryStockedItemsRemove';
+
+  constructor(
+    axios: AxiosInstance,
+    logger: winston.Logger,
+    requestHandler?: RequestHandler
+  ) {
+    super(axios, logger, requestHandler);
+  }
+
+  static getMetadata(): MethodMetadata[] {
+    return [
+      {
+        operation: 'createInventoryStockedItemsRemove',
+        requiredParams: ['inventoryStockedItemsRemove'],
+        optionalParams: [],
+        returnType: 'IInventoryStockedItemsRemove',
+        endpoint: '/InventoryStockedItemsRemove',
+      },
+      {
+        operation: 'listInventoryStockedItemsRemove',
+        requiredParams: [],
+        optionalParams: ['filter', 'sort', 'page', 'pageSize'],
+        returnType: 'IInventoryStockedItemsRemove[]',
+        endpoint: '/InventoryStockedItemsRemove',
+      }
+    ];
+  }
+
+  /**
+   * Create a new inventorystockeditemsremove
+   * @param inventoryStockedItemsRemove - The inventorystockeditemsremove data to create
+   * @returns Promise with the created inventorystockeditemsremove
+   */
+  async create(inventoryStockedItemsRemove: IInventoryStockedItemsRemove): Promise<ApiResponse<IInventoryStockedItemsRemove>> {
+    this.logger.info('Creating inventorystockeditemsremove', { inventoryStockedItemsRemove });
+    return this.executeRequest(
+      async () => this.axios.post(this.endpoint, inventoryStockedItemsRemove),
+      this.endpoint,
+      'POST'
+    );
+  }
+
+  /**
+   * List inventorystockeditemsremove with optional filtering
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns Promise with array of inventorystockeditemsremove
+   */
+  async list(query: IInventoryStockedItemsRemoveQuery = {}): Promise<ApiResponse<IInventoryStockedItemsRemove[]>> {
+    this.logger.info('Listing inventorystockeditemsremove', { query });
+    const searchBody: Record<string, any> = {};
+
+    // Set up basic filter if none provided
+    if (!query.filter || Object.keys(query.filter).length === 0) {
+      searchBody.filter = [
+        {
+          op: 'gte',
+          field: 'id',
+          value: 0,
+        },
+      ];
+    } else {
+      // Convert object filter to array format
+      if (!Array.isArray(query.filter)) {
+        const filterArray = [];
+        for (const [field, value] of Object.entries(query.filter)) {
+          filterArray.push({
+            op: 'eq',
+            field: field,
+            value: value,
+          });
+        }
+        searchBody.filter = filterArray;
+      } else {
+        searchBody.filter = query.filter;
+      }
+    }
+
+    if (query.sort) searchBody.sort = query.sort;
+    if (query.page) searchBody.page = query.page;
+    if (query.pageSize) searchBody.pageSize = query.pageSize;
+
+    return this.executeQueryRequest(
+      async () => this.axios.get(`${this.endpoint}/query`, { params: searchBody }),
+      `${this.endpoint}/query`,
+      'GET'
+    );
+  }
+}

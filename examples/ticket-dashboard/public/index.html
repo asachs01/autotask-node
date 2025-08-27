@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autotask Ticket Dashboard</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .status { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-dot.connected { background: #48bb78; }
+        .status-dot.disconnected { background: #f56565; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .metric-title {
+            font-size: 0.875rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-change {
+            font-size: 0.875rem;
+            color: #48bb78;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .main-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background: #f7fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+        }
+        
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .tickets-table th,
+        .tickets-table td {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .tickets-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #4a5568;
+        }
+        
+        .priority {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-critical { background: #fed7d7; color: #c53030; }
+        .priority-high { background: #feebc8; color: #dd6b20; }
+        .priority-medium { background: #e6fffa; color: #38b2ac; }
+        .priority-low { background: #e6f3ff; color: #3182ce; }
+        
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-new { background: #edf2f7; color: #4a5568; }
+        .status-progress { background: #bee3f8; color: #2b6cb0; }
+        .status-waiting { background: #fef5e7; color: #d69e2e; }
+        .status-complete { background: #c6f6d5; color: #2f855a; }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 1rem;
+        }
+        
+        .alert {
+            padding: 0.75rem 1rem;
+            border-left: 4px solid #f56565;
+            background: #fed7d7;
+            color: #c53030;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #718096;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Autotask Ticket Dashboard</h1>
+        <div class="status">
+            <span class="status-dot" id="connectionStatus"></span>
+            <span id="connectionText">Connecting...</span>
+            <span id="lastUpdate"></span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="metrics-grid" id="metricsGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading metrics...
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="main-panel">
+                <div class="panel-header">Recent Tickets</div>
+                <div id="ticketsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading tickets...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="side-panel">
+                <div class="main-panel">
+                    <div class="panel-header">Active Alerts</div>
+                    <div id="alertsContainer" style="padding: 1rem;">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading alerts...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="main-panel">
+                    <div class="panel-header">Ticket Trends</div>
+                    <div class="chart-container">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        class TicketDashboard {
+            constructor() {
+                this.socket = null;
+                this.charts = {};
+                this.lastUpdate = null;
+                this.init();
+            }
+            
+            init() {
+                this.connectWebSocket();
+                this.setupEventHandlers();
+            }
+            
+            connectWebSocket() {
+                this.socket = io();
+                
+                this.socket.on('connect', () => {
+                    console.log('Connected to server');
+                    this.updateConnectionStatus(true);
+                    
+                    // Register user and subscribe to updates
+                    this.socket.emit('register', {
+                        name: 'Dashboard User',
+                        role: 'viewer'
+                    });
+                    
+                    this.socket.emit('subscribe', [
+                        'metrics', 'alerts', 'ticket-updates'
+                    ]);
+                });
+                
+                this.socket.on('disconnect', () => {
+                    console.log('Disconnected from server');
+                    this.updateConnectionStatus(false);
+                });
+                
+                this.socket.on('initialData', (data) => {
+                    console.log('Received initial data', data);
+                    this.updateMetrics(data.metrics);
+                    this.updateAlerts(data.alerts);
+                    this.lastUpdate = new Date();
+                    this.updateLastUpdateTime();
+                });
+                
+                this.socket.on('recentTickets', (tickets) => {
+                    this.updateTicketsTable(tickets);
+                });
+                
+                this.socket.on('message', (message) => {
+                    console.log('Received message:', message);
+                    
+                    switch(message.type) {
+                        case 'metrics_update':
+                            this.updateMetrics(message.data);
+                            break;
+                        case 'alert':
+                            this.addAlert(message.data);
+                            break;
+                        case 'ticket_update':
+                            this.handleTicketUpdate(message.data);
+                            break;
+                    }
+                    
+                    this.lastUpdate = new Date();
+                    this.updateLastUpdateTime();
+                });
+            }
+            
+            setupEventHandlers() {
+                // Update last update time every minute
+                setInterval(() => {
+                    this.updateLastUpdateTime();
+                }, 60000);
+            }
+            
+            updateConnectionStatus(connected) {
+                const statusDot = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('connectionText');
+                
+                if (connected) {
+                    statusDot.className = 'status-dot connected';
+                    statusText.textContent = 'Connected';
+                } else {
+                    statusDot.className = 'status-dot disconnected';
+                    statusText.textContent = 'Disconnected';
+                }
+            }
+            
+            updateLastUpdateTime() {
+                const lastUpdateEl = document.getElementById('lastUpdate');
+                if (this.lastUpdate) {
+                    const minutes = Math.floor((new Date() - this.lastUpdate) / 60000);
+                    lastUpdateEl.textContent = minutes === 0 ? 'Just now' : `${minutes}m ago`;
+                }
+            }
+            
+            updateMetrics(metrics) {
+                if (!metrics) return;
+                
+                const metricsGrid = document.getElementById('metricsGrid');
+                metricsGrid.innerHTML = `
+                    <div class="metric-card">
+                        <div class="metric-title">Total Tickets</div>
+                        <div class="metric-value">${metrics.overview?.totalTickets || 0}</div>
+                        <div class="metric-change">All tickets in system</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Open Tickets</div>
+                        <div class="metric-value">${metrics.overview?.openTickets || 0}</div>
+                        <div class="metric-change">${metrics.overview?.newTickets || 0} new today</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">SLA Compliance</div>
+                        <div class="metric-value">${(metrics.overview?.slaComplianceRate || 0).toFixed(1)}%</div>
+                        <div class="metric-change">This month</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg Resolution</div>
+                        <div class="metric-value">${(metrics.overview?.averageResolutionTime || 0).toFixed(1)}h</div>
+                        <div class="metric-change">Last 30 days</div>
+                    </div>
+                `;
+                
+                // Update trends chart
+                if (metrics.trends) {
+                    this.updateTrendsChart(metrics.trends);
+                }
+            }
+            
+            updateTicketsTable(tickets) {
+                const container = document.getElementById('ticketsContainer');
+                
+                if (!tickets || tickets.length === 0) {
+                    container.innerHTML = '<div style="padding: 1rem; text-align: center; color: #718096;">No tickets found</div>';
+                    return;
+                }
+                
+                const tableHTML = `
+                    <table class="tickets-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Company</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tickets.slice(0, 10).map(ticket => `
+                                <tr>
+                                    <td>
+                                        <div style="font-weight: 600;">${ticket.ticketNumber}</div>
+                                        <div style="font-size: 0.875rem; color: #718096;">${ticket.title}</div>
+                                    </td>
+                                    <td><span class="priority priority-${this.getPriorityClass(ticket.priority)}">${ticket.priorityName}</span></td>
+                                    <td><span class="status status-${this.getStatusClass(ticket.status)}">${ticket.statusName}</span></td>
+                                    <td>${ticket.assignedResourceName || 'Unassigned'}</td>
+                                    <td>${ticket.companyName}</td>
+                                    <td>${this.formatDate(ticket.createdDateTime)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = tableHTML;
+            }
+            
+            updateAlerts(alerts) {
+                const container = document.getElementById('alertsContainer');
+                
+                if (!alerts || alerts.length === 0) {
+                    container.innerHTML = '<div style="color: #718096; font-size: 0.875rem;">No active alerts</div>';
+                    return;
+                }
+                
+                const alertsHTML = alerts.slice(0, 5).map(alert => `
+                    <div class="alert">
+                        <div class="alert-title">${alert.title}</div>
+                        <div>${alert.message}</div>
+                    </div>
+                `).join('');
+                
+                container.innerHTML = alertsHTML;
+            }
+            
+            addAlert(alert) {
+                // Add new alert to the top of the list
+                const container = document.getElementById('alertsContainer');
+                const alertEl = document.createElement('div');
+                alertEl.className = 'alert';
+                alertEl.innerHTML = `
+                    <div class="alert-title">${alert.title}</div>
+                    <div>${alert.message}</div>
+                `;
+                
+                if (container.firstChild && container.firstChild.classList.contains('alert')) {
+                    container.insertBefore(alertEl, container.firstChild);
+                } else {
+                    container.innerHTML = '';
+                    container.appendChild(alertEl);
+                }
+                
+                // Show browser notification if supported
+                if (Notification.permission === 'granted') {
+                    new Notification(alert.title, {
+                        body: alert.message,
+                        icon: '/favicon.ico'
+                    });
+                }
+            }
+            
+            updateTrendsChart(trends) {
+                const canvas = document.getElementById('trendsChart');
+                const ctx = canvas.getContext('2d');
+                
+                // Destroy existing chart
+                if (this.charts.trends) {
+                    this.charts.trends.destroy();
+                }
+                
+                const labels = trends.ticketsCreatedTrend?.map(d => 
+                    new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                ).slice(-7) || [];
+                
+                this.charts.trends = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Created',
+                            data: trends.ticketsCreatedTrend?.map(d => d.count).slice(-7) || [],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Closed',
+                            data: trends.ticketsClosedTrend?.map(d => d.count).slice(-7) || [],
+                            borderColor: '#48bb78',
+                            backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            handleTicketUpdate(data) {
+                // Handle real-time ticket updates
+                console.log('Ticket updated:', data);
+                // In a real implementation, you would update the tickets table
+            }
+            
+            getPriorityClass(priority) {
+                switch(priority) {
+                    case 1: return 'critical';
+                    case 2: return 'high';
+                    case 3: return 'medium';
+                    case 4: return 'low';
+                    default: return 'medium';
+                }
+            }
+            
+            getStatusClass(status) {
+                switch(status) {
+                    case 1: return 'new';
+                    case 2: return 'progress';
+                    case 3:
+                    case 4: return 'waiting';
+                    case 5: return 'complete';
+                    default: return 'new';
+                }
+            }
+            
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffHours = Math.floor((now - date) / (1000 * 60 * 60));
+                
+                if (diffHours < 1) return 'Just now';
+                if (diffHours < 24) return `${diffHours}h ago`;
+                if (diffHours < 48) return 'Yesterday';
+                return date.toLocaleDateString();
+            }
+        }
+        
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new TicketDashboard();
+        });
+    </script>
+</body>
+</html>

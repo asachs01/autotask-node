@@ -11,15 +11,28 @@ dotenv.config();
 const cwdEnvPath = resolve(process.cwd(), '.env');
 dotenv.config({ path: cwdEnvPath });
 
+// Entities that support DELETE operations
+const DELETABLE_ENTITIES = new Set([
+  'timeEntries',
+  'serviceCalls',
+  'contractServices',
+  'contractBlocks',
+  'contractServiceAdjustments',
+  'contractExclusionSets',
+]);
+
 function printUsage() {
   console.log(`Usage:
   autotask-node <entity> <create|get|update|delete|list> [args]
 
 Entities:
-  tickets, accounts, contacts, projects, timeEntries, configurationItems, 
-  serviceCalls, tasks, resources, notes, attachments, contracts,
-  contractServices, contractBlocks, contractAdjustments, contractExclusions,
-  invoices, quotes
+  tickets, companies, contacts, projects, timeEntries, configurationItems, 
+  serviceCalls, tasks, resources, contracts, contractServices, contractBlocks,
+  contractServiceAdjustments, contractExclusionSets, invoices, quotes
+
+Operations:
+  - create, get, update, list: Available for all entities
+  - delete: Only available for timeEntries, serviceCalls, contractServices, contractBlocks, contractServiceAdjustments, contractExclusionSets
 
 Env vars required:
   AUTOTASK_USERNAME
@@ -31,8 +44,19 @@ Environment variables can be set in a .env file in the current directory.
 }
 
 async function main() {
-  const [,, entity, command, ...args] = process.argv;
+  const [, , entity, command, ...args] = process.argv;
   if (!entity || !command) return printUsage();
+
+  // Check if delete operation is requested for an entity that doesn't support it
+  if (command === 'delete' && !DELETABLE_ENTITIES.has(entity)) {
+    console.error(
+      `Error: Entity '${entity}' does not support DELETE operations.`
+    );
+    console.error(
+      `DELETE is only supported for: ${Array.from(DELETABLE_ENTITIES).join(', ')}`
+    );
+    return printUsage();
+  }
 
   const auth: AutotaskAuth = {
     username: process.env.AUTOTASK_USERNAME!,
@@ -70,11 +94,6 @@ async function main() {
           const res = await client.tickets.update(id, ticket);
           return console.log(JSON.stringify(res, null, 2));
         }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.tickets.delete(id);
-          return console.log('Deleted');
-        }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
           const res = await client.tickets.list(query);
@@ -83,32 +102,27 @@ async function main() {
         default:
           return printUsage();
       }
-    } else if (entity === 'accounts') {
+    } else if (entity === 'companies') {
       switch (command) {
         case 'create': {
-          const account = JSON.parse(args[0] || '{}');
-          const res = await client.accounts.create(account);
+          const company = JSON.parse(args[0] || '{}');
+          const res = await client.companies.create(company);
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'get': {
           const id = Number(args[0]);
-          const res = await client.accounts.get(id);
+          const res = await client.companies.get(id);
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'update': {
           const id = Number(args[0]);
-          const account = JSON.parse(args[1] || '{}');
-          const res = await client.accounts.update(id, account);
+          const company = JSON.parse(args[1] || '{}');
+          const res = await client.companies.update(id, company);
           return console.log(JSON.stringify(res, null, 2));
-        }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.accounts.delete(id);
-          return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
-          const res = await client.accounts.list(query);
+          const res = await client.companies.list(query);
           return console.log(JSON.stringify(res, null, 2));
         }
         default:
@@ -131,11 +145,6 @@ async function main() {
           const contact = JSON.parse(args[1] || '{}');
           const res = await client.contacts.update(id, contact);
           return console.log(JSON.stringify(res, null, 2));
-        }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.contacts.delete(id);
-          return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
@@ -162,11 +171,6 @@ async function main() {
           const project = JSON.parse(args[1] || '{}');
           const res = await client.projects.update(id, project);
           return console.log(JSON.stringify(res, null, 2));
-        }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.projects.delete(id);
-          return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
@@ -222,13 +226,11 @@ async function main() {
         case 'update': {
           const id = Number(args[0]);
           const configurationItem = JSON.parse(args[1] || '{}');
-          const res = await client.configurationItems.update(id, configurationItem);
+          const res = await client.configurationItems.update(
+            id,
+            configurationItem
+          );
           return console.log(JSON.stringify(res, null, 2));
-        }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.configurationItems.delete(id);
-          return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
@@ -286,11 +288,6 @@ async function main() {
           const contract = JSON.parse(args[1] || '{}');
           const res = await client.contracts.update(id, contract);
           return console.log(JSON.stringify(res, null, 2));
-        }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.contracts.delete(id);
-          return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
@@ -362,63 +359,72 @@ async function main() {
         default:
           return printUsage();
       }
-    } else if (entity === 'contractAdjustments') {
+    } else if (entity === 'contractServiceAdjustments') {
       switch (command) {
         case 'create': {
-          const contractAdjustment = JSON.parse(args[0] || '{}');
-          const res = await client.contractAdjustments.create(contractAdjustment);
+          const contractServiceAdjustment = JSON.parse(args[0] || '{}');
+          const res = await client.contractServiceAdjustments.create(
+            contractServiceAdjustment
+          );
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'get': {
           const id = Number(args[0]);
-          const res = await client.contractAdjustments.get(id);
+          const res = await client.contractServiceAdjustments.get(id);
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'update': {
           const id = Number(args[0]);
-          const contractAdjustment = JSON.parse(args[1] || '{}');
-          const res = await client.contractAdjustments.update(id, contractAdjustment);
+          const contractServiceAdjustment = JSON.parse(args[1] || '{}');
+          const res = await client.contractServiceAdjustments.update(
+            id,
+            contractServiceAdjustment
+          );
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'delete': {
           const id = Number(args[0]);
-          await client.contractAdjustments.delete(id);
+          await client.contractServiceAdjustments.delete(id);
           return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
-          const res = await client.contractAdjustments.list(query);
+          const res = await client.contractServiceAdjustments.list(query);
           return console.log(JSON.stringify(res, null, 2));
         }
         default:
           return printUsage();
       }
-    } else if (entity === 'contractExclusions') {
+    } else if (entity === 'contractExclusionSets') {
       switch (command) {
         case 'create': {
-          const contractExclusion = JSON.parse(args[0] || '{}');
-          const res = await client.contractExclusions.create(contractExclusion);
+          const contractExclusionSet = JSON.parse(args[0] || '{}');
+          const res =
+            await client.contractExclusionSets.create(contractExclusionSet);
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'get': {
           const id = Number(args[0]);
-          const res = await client.contractExclusions.get(id);
+          const res = await client.contractExclusionSets.get(id);
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'update': {
           const id = Number(args[0]);
-          const contractExclusion = JSON.parse(args[1] || '{}');
-          const res = await client.contractExclusions.update(id, contractExclusion);
+          const contractExclusionSet = JSON.parse(args[1] || '{}');
+          const res = await client.contractExclusionSets.update(
+            id,
+            contractExclusionSet
+          );
           return console.log(JSON.stringify(res, null, 2));
         }
         case 'delete': {
           const id = Number(args[0]);
-          await client.contractExclusions.delete(id);
+          await client.contractExclusionSets.delete(id);
           return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
-          const res = await client.contractExclusions.list(query);
+          const res = await client.contractExclusionSets.list(query);
           return console.log(JSON.stringify(res, null, 2));
         }
         default:
@@ -441,11 +447,6 @@ async function main() {
           const invoice = JSON.parse(args[1] || '{}');
           const res = await client.invoices.update(id, invoice);
           return console.log(JSON.stringify(res, null, 2));
-        }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.invoices.delete(id);
-          return console.log('Deleted');
         }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
@@ -473,11 +474,6 @@ async function main() {
           const res = await client.quotes.update(id, quote);
           return console.log(JSON.stringify(res, null, 2));
         }
-        case 'delete': {
-          const id = Number(args[0]);
-          await client.quotes.delete(id);
-          return console.log('Deleted');
-        }
         case 'list': {
           const query = args[0] ? JSON.parse(args[0]) : {};
           const res = await client.quotes.list(query);
@@ -495,4 +491,4 @@ async function main() {
   }
 }
 
-main(); 
+main();

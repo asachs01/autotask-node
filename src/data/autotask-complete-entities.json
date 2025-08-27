@@ -1,0 +1,2007 @@
+{
+  "metadata": {
+    "lastUpdated": "2025-08-25",
+    "totalEntitiesFound": 178,
+    "source": "Autotask REST API Documentation",
+    "documentation_url": "https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/_EntitiesOverview.htm",
+    "notes": "Comprehensive analysis of all Autotask REST API entities from official documentation navigation"
+  },
+  "categories": {
+    "core": {
+      "description": "Primary business entities",
+      "entities": ["Companies", "Contacts", "Tickets", "Projects", "Opportunities", "Resources", "Tasks"]
+    },
+    "attachments": {
+      "description": "File attachment entities for various core entities",
+      "entities": ["AttachmentInfo", "CompanyAttachments", "TicketAttachments", "ProjectAttachments", "TaskAttachments", "ResourceAttachments", "DocumentAttachments", "ExpenseItemAttachments", "ExpenseReportAttachments", "OpportunityAttachments", "SalesOrderAttachments", "TimeEntryAttachments"]
+    },
+    "notes": {
+      "description": "Note entities for various core entities",
+      "entities": ["CompanyNotes", "TicketNotes", "ProjectNotes", "TaskNotes", "ContractNotes", "DocumentNotes", "ProductNotes", "CompanyNoteAttachments", "TicketNoteAttachments", "ProjectNoteAttachments", "TaskNoteAttachments", "ContractNoteAttachments", "ConfigurationItemNotes", "ConfigurationItemNoteAttachments", "ArticleNotes"]
+    },
+    "contracts": {
+      "description": "Contract and service-related entities",
+      "entities": ["Contracts", "ContractBillingRules", "ContractBlocks", "ContractBlockHourFactors", "ContractCharges", "ContractExclusionBillingCodes", "ContractExclusionRoles", "ContractExclusionSets", "ContractExclusionSetExcludedRoles", "ContractExclusionSetExcludedWorkTypes", "ContractMilestones", "ContractRates", "ContractRetainers", "ContractRoleCosts", "ContractServices", "ContractServiceAdjustments", "ContractServiceBundles", "ContractServiceBundleAdjustments", "ContractServiceBundleUnits", "ContractServiceUnits", "ContractTicketPurchases", "Services", "ServiceBundles", "ServiceBundleServices"]
+    },
+    "configuration": {
+      "description": "Configuration and asset management entities",
+      "entities": ["ConfigurationItems", "ConfigurationItemAttachments", "ConfigurationItemBillingProductAssociations", "ConfigurationItemCategories", "ConfigurationItemCategoryUdfAssociations", "ConfigurationItemDnsRecords", "ConfigurationItemRelatedItems", "ConfigurationItemSslSubjectAlternativeName", "ConfigurationItemTypes"]
+    },
+    "financial": {
+      "description": "Financial and billing entities",
+      "entities": ["BillingCodes", "BillingItems", "BillingItemApprovalLevels", "Invoices", "InvoiceTemplates", "Quotes", "QuoteItems", "QuoteLocations", "QuoteTemplates", "PurchaseOrders", "PurchaseOrderItems", "PurchaseOrderItemReceiving", "PurchaseApprovals", "ChangeOrderCharges", "Taxes", "TaxCategories", "TaxRegions", "Currencies", "PaymentTerms"]
+    },
+    "inventory": {
+      "description": "Inventory and product management entities",
+      "entities": ["InventoryItems", "InventoryItemSerialNumbers", "InventoryLocations", "InventoryProducts", "InventoryStockedItems", "InventoryStockedItemsAdd", "InventoryStockedItemsRemove", "InventoryStockedItemsTransfer", "InventoryTransfers", "Products", "ProductTiers", "ProductVendors"]
+    },
+    "expense": {
+      "description": "Expense management entities",
+      "entities": ["ExpenseItems", "ExpenseReports", "ExpenseItemAttachment"]
+    },
+    "time": {
+      "description": "Time tracking and scheduling entities",
+      "entities": ["TimeEntries", "Appointments", "Holidays", "HolidaySets", "ResourceDailyAvailabilities", "ResourceTimeOffAdditional", "ResourceTimeOffApprovers", "ResourceTimeOffBalances", "TimeOffRequests", "TimeOffRequestsApprove", "TimeOffRequestsReject"]
+    },
+    "service_calls": {
+      "description": "Service call management entities",
+      "entities": ["ServiceCalls", "ServiceCallTasks", "ServiceCallTaskResources", "ServiceCallTickets", "ServiceCallTicketResources"]
+    },
+    "knowledge": {
+      "description": "Knowledge base and documentation entities",
+      "entities": ["KnowledgeBaseArticles", "KnowledgeBaseCategories", "Documents", "DocumentCategories", "DocumentChecklistItems", "DocumentChecklistLibraries", "DocumentConfigurationItemAssociations", "DocumentConfigurationItemCategoryAssociations", "DocumentTagAssociations", "DocumentTicketAssociations", "DocumentToArticleAssociations", "Articles", "ArticleAttachments", "ArticleConfigurationItemCategoryAssociations", "ArticlePlainTextContent", "ArticleTagAssociations", "ArticleTicketAssociations", "ArticleToArticleAssociations", "ArticleToDocumentAssociations"]
+    },
+    "sales": {
+      "description": "Sales and opportunity management entities",
+      "entities": ["SalesOrders", "OpportunityCategories"]
+    },
+    "pricing": {
+      "description": "Pricing and rate management entities",
+      "entities": ["PriceListMaterialCodes", "PriceListProducts", "PriceListProductTiers", "PriceListRoles", "PriceListServices", "PriceListServiceBundles", "PriceListWorkTypeModifiers"]
+    },
+    "organizational": {
+      "description": "Organizational structure entities",
+      "entities": ["Departments", "OrganizationalLevel1", "OrganizationalLevel2", "OrganizationalLevelAssociations", "OrganizatonalResources", "InternalLocations", "InternalLocationWithBusinessHours", "CompanyLocations", "CompanySiteConfigurations", "CompanyTeams", "CompanyToDos"]
+    },
+    "lookup": {
+      "description": "Reference and lookup entities",
+      "entities": ["Countries", "Roles", "Skills", "ResourceSkills", "ResourceRoles", "ResourceRoleDepartments", "ResourceRoleQueues", "ResourceServiceDeskRoles", "ActionTypes", "ClassificationIcons", "ShippingTypes", "Modules", "SubscriptionPeriods", "Subscriptions", "DomainRegistrars", "WorkTypeModifiers", "Phases", "Version"]
+    },
+    "ticketing": {
+      "description": "Ticket management entities",
+      "entities": ["TicketCategories", "TicketCategoryFieldDefaults", "TicketAdditionalConfigurationItems", "TicketAdditionalContacts", "TicketChangeRequestApprovals", "TicketCharges", "TicketChecklistItems", "TicketChecklistLibraries", "TicketHistory", "TicketRmaCredits", "TicketSecondaryResources", "TicketTagAssociations"]
+    },
+    "tasks": {
+      "description": "Task and project management entities",
+      "entities": ["TaskPredecessors", "TaskSecondaryResources", "ProjectCharges"]
+    },
+    "portal": {
+      "description": "Client portal entities",
+      "entities": ["ClientPortalUsers"]
+    },
+    "tags": {
+      "description": "Tagging and classification entities",
+      "entities": ["Tags", "TagGroups", "TagAliases"]
+    },
+    "surveys": {
+      "description": "Survey and feedback entities",
+      "entities": ["Surveys", "SurveyResults"]
+    },
+    "notifications": {
+      "description": "Notification and alert entities",
+      "entities": ["NotificationHistory", "CompanyAlerts"]
+    },
+    "checklists": {
+      "description": "Checklist and template entities",
+      "entities": ["ChecklistLibraries", "ChecklistLibraryChecklistItems"]
+    },
+    "user_defined": {
+      "description": "User-defined field entities",
+      "entities": ["UserDefinedFieldDefinitions", "UserDefinedFieldListItems"]
+    },
+    "associations": {
+      "description": "Association and relationship entities",
+      "entities": ["ComanagedAssociations", "ContactBillingProductAssociations", "ContactGroups", "ContactGroupContacts", "ChangeRequestLinks", "AdditionalInvoiceFieldValues", "ServiceLevelAgreementResults"]
+    },
+    "logs": {
+      "description": "Audit and log entities",
+      "entities": ["DeletedTaskActivityLogs", "DeletedTicketActivityLogs", "DeletedTicketLogs"]
+    },
+    "special": {
+      "description": "Special purpose and system entities",
+      "entities": ["RecurringSerContractEntityRelation"]
+    }
+  },
+  "entities": [
+    {
+      "name": "ActionTypes",
+      "pluralName": "ActionTypes",
+      "apiEndpoint": "/v1.0/ActionTypes",
+      "supportedOperations": ["GET"],
+      "description": "Lookup entity for action types",
+      "category": "lookup",
+      "fileName": "ActionTypesEntity.htm"
+    },
+    {
+      "name": "AdditionalInvoiceFieldValues",
+      "pluralName": "AdditionalInvoiceFieldValues",
+      "apiEndpoint": "/v1.0/AdditionalInvoiceFieldValues",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Additional invoice field values",
+      "category": "associations",
+      "fileName": "AdditionalInvoiceFieldValuesEntity.htm"
+    },
+    {
+      "name": "Appointments",
+      "pluralName": "Appointments",
+      "apiEndpoint": "/v1.0/Appointments",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Calendar appointments and scheduling",
+      "category": "time",
+      "fileName": "AppointmentsEntity.htm"
+    },
+    {
+      "name": "ArticleAttachments",
+      "pluralName": "ArticleAttachments",
+      "apiEndpoint": "/v1.0/ArticleAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for knowledge base articles",
+      "category": "attachments",
+      "fileName": "ArticleAttachmentsEntity.htm"
+    },
+    {
+      "name": "ArticleConfigurationItemCategoryAssociations",
+      "pluralName": "ArticleConfigurationItemCategoryAssociations",
+      "apiEndpoint": "/v1.0/ArticleConfigurationItemCategoryAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between articles and configuration item categories",
+      "category": "knowledge",
+      "fileName": "ArticleConfigurationItemCategoryAssociationsEntity.htm"
+    },
+    {
+      "name": "ArticleNotes",
+      "pluralName": "ArticleNotes",
+      "apiEndpoint": "/v1.0/ArticleNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for knowledge base articles",
+      "category": "notes",
+      "fileName": "ArticleNotesEntity.htm"
+    },
+    {
+      "name": "ArticlePlainTextContent",
+      "pluralName": "ArticlePlainTextContent",
+      "apiEndpoint": "/v1.0/ArticlePlainTextContent",
+      "supportedOperations": ["GET"],
+      "description": "Plain text content of knowledge base articles",
+      "category": "knowledge",
+      "fileName": "ArticlePlainTextContentEntity.htm"
+    },
+    {
+      "name": "ArticleTagAssociations",
+      "pluralName": "ArticleTagAssociations",
+      "apiEndpoint": "/v1.0/ArticleTagAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Tag associations for articles",
+      "category": "knowledge",
+      "fileName": "ArticleTagAssociationsEntity.htm"
+    },
+    {
+      "name": "ArticleTicketAssociations",
+      "pluralName": "ArticleTicketAssociations",
+      "apiEndpoint": "/v1.0/ArticleTicketAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between articles and tickets",
+      "category": "knowledge",
+      "fileName": "ArticleTicketAssociationsEntity.htm"
+    },
+    {
+      "name": "ArticleToArticleAssociations",
+      "pluralName": "ArticleToArticleAssociations",
+      "apiEndpoint": "/v1.0/ArticleToArticleAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between articles",
+      "category": "knowledge",
+      "fileName": "ArticleToArticleAssociationsEntity.htm"
+    },
+    {
+      "name": "ArticleToDocumentAssociations",
+      "pluralName": "ArticleToDocumentAssociations",
+      "apiEndpoint": "/v1.0/ArticleToDocumentAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between articles and documents",
+      "category": "knowledge",
+      "fileName": "ArticleToDocumentAssociationsEntity.htm"
+    },
+    {
+      "name": "AttachmentInfo",
+      "pluralName": "AttachmentInfo",
+      "apiEndpoint": "/v1.0/AttachmentInfo",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Attachment information and metadata",
+      "category": "attachments",
+      "fileName": "AttachmentInfoEntity.htm"
+    },
+    {
+      "name": "BillingCodes",
+      "pluralName": "BillingCodes",
+      "apiEndpoint": "/v1.0/BillingCodes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Billing codes for time and expense tracking",
+      "category": "financial",
+      "fileName": "BillingCodesEntity.htm"
+    },
+    {
+      "name": "BillingItemApprovalLevels",
+      "pluralName": "BillingItemApprovalLevels",
+      "apiEndpoint": "/v1.0/BillingItemApprovalLevels",
+      "supportedOperations": ["GET"],
+      "description": "Approval levels for billing items",
+      "category": "financial",
+      "fileName": "BillingItemApprovalLevelsEntity.htm"
+    },
+    {
+      "name": "BillingItems",
+      "pluralName": "BillingItems",
+      "apiEndpoint": "/v1.0/BillingItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Billing items for invoicing",
+      "category": "financial",
+      "fileName": "BillingItemsEntity.htm"
+    },
+    {
+      "name": "ChangeOrderCharges",
+      "pluralName": "ChangeOrderCharges",
+      "apiEndpoint": "/v1.0/ChangeOrderCharges",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Charges for change orders",
+      "category": "financial",
+      "fileName": "ChangeOrderChargesEntity.htm"
+    },
+    {
+      "name": "ChangeRequestLinks",
+      "pluralName": "ChangeRequestLinks",
+      "apiEndpoint": "/v1.0/ChangeRequestLinks",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Links between change requests",
+      "category": "associations",
+      "fileName": "ChangeRequestLinksEntity.htm"
+    },
+    {
+      "name": "ChecklistLibraries",
+      "pluralName": "ChecklistLibraries",
+      "apiEndpoint": "/v1.0/ChecklistLibraries",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Libraries of reusable checklists",
+      "category": "checklists",
+      "fileName": "ChecklistLibrariesEntity.htm"
+    },
+    {
+      "name": "ChecklistLibraryChecklistItems",
+      "pluralName": "ChecklistLibraryChecklistItems",
+      "apiEndpoint": "/v1.0/ChecklistLibraryChecklistItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Items within checklist libraries",
+      "category": "checklists",
+      "fileName": "ChecklistLibraryChecklistItemsEntity.htm"
+    },
+    {
+      "name": "ClassificationIcons",
+      "pluralName": "ClassificationIcons",
+      "apiEndpoint": "/v1.0/ClassificationIcons",
+      "supportedOperations": ["GET"],
+      "description": "Icons for classification purposes",
+      "category": "lookup",
+      "fileName": "ClassificationIconsEntity.htm"
+    },
+    {
+      "name": "ClientPortalUsers",
+      "pluralName": "ClientPortalUsers",
+      "apiEndpoint": "/v1.0/ClientPortalUsers",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Users with access to the client portal",
+      "category": "portal",
+      "fileName": "ClientPortalUsersEntity.htm"
+    },
+    {
+      "name": "ComanagedAssociations",
+      "pluralName": "ComanagedAssociations",
+      "apiEndpoint": "/v1.0/ComanagedAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Co-managed service associations",
+      "category": "associations",
+      "fileName": "ComanagedAssociationsEntity.htm"
+    },
+    {
+      "name": "Companies",
+      "pluralName": "Companies",
+      "apiEndpoint": "/v1.0/Companies",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Organizations and companies in Autotask",
+      "category": "core",
+      "fileName": "CompaniesEntity.htm"
+    },
+    {
+      "name": "CompanyAlerts",
+      "pluralName": "CompanyAlerts",
+      "apiEndpoint": "/v1.0/CompanyAlerts",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Alerts associated with companies",
+      "category": "notifications",
+      "fileName": "CompanyAlertsEntity.htm"
+    },
+    {
+      "name": "CompanyAttachments",
+      "pluralName": "CompanyAttachments",
+      "apiEndpoint": "/v1.0/CompanyAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for companies",
+      "category": "attachments",
+      "fileName": "CompanyAttachmentsEntity.htm"
+    },
+    {
+      "name": "CompanyCategories",
+      "pluralName": "CompanyCategories",
+      "apiEndpoint": "/v1.0/CompanyCategories",
+      "supportedOperations": ["GET"],
+      "description": "Categories for organizing companies",
+      "category": "organizational",
+      "fileName": "CompanyCategoriesEntity.htm"
+    },
+    {
+      "name": "CompanyLocations",
+      "pluralName": "CompanyLocations",
+      "apiEndpoint": "/v1.0/CompanyLocations",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Physical locations associated with companies",
+      "category": "organizational",
+      "fileName": "CompanyLocationsEntity.htm"
+    },
+    {
+      "name": "CompanyNoteAttachments",
+      "pluralName": "CompanyNoteAttachments",
+      "apiEndpoint": "/v1.0/CompanyNoteAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for company notes",
+      "category": "notes",
+      "fileName": "CompanyNoteAttachmentsEntity.htm"
+    },
+    {
+      "name": "CompanyNotes",
+      "pluralName": "CompanyNotes",
+      "apiEndpoint": "/v1.0/CompanyNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes associated with companies",
+      "category": "notes",
+      "fileName": "CompanyNotesEntity.htm"
+    },
+    {
+      "name": "CompanySiteConfigurations",
+      "pluralName": "CompanySiteConfigurations",
+      "apiEndpoint": "/v1.0/CompanySiteConfigurations",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Site configurations for companies",
+      "category": "organizational",
+      "fileName": "CompanySiteConfigurationsEntity.htm"
+    },
+    {
+      "name": "CompanyTeams",
+      "pluralName": "CompanyTeams",
+      "apiEndpoint": "/v1.0/CompanyTeams",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Teams associated with companies",
+      "category": "organizational",
+      "fileName": "CompanyTeamsEntity.htm"
+    },
+    {
+      "name": "CompanyToDos",
+      "pluralName": "CompanyToDos",
+      "apiEndpoint": "/v1.0/CompanyToDos",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "To-do items associated with companies",
+      "category": "organizational",
+      "fileName": "CompanyToDosEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemAttachments",
+      "pluralName": "ConfigurationItemAttachments",
+      "apiEndpoint": "/v1.0/ConfigurationItemAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for configuration items",
+      "category": "configuration",
+      "fileName": "ConfigurationItemAttachmentsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemBillingProductAssociations",
+      "pluralName": "ConfigurationItemBillingProductAssociations",
+      "apiEndpoint": "/v1.0/ConfigurationItemBillingProductAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between configuration items and billing products",
+      "category": "configuration",
+      "fileName": "ConfigurationItemBillingProductAssociationsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemCategories",
+      "pluralName": "ConfigurationItemCategories",
+      "apiEndpoint": "/v1.0/ConfigurationItemCategories",
+      "supportedOperations": ["GET"],
+      "description": "Categories for configuration items",
+      "category": "configuration",
+      "fileName": "ConfigurationItemCategoriesEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemCategoryUdfAssociations",
+      "pluralName": "ConfigurationItemCategoryUdfAssociations",
+      "apiEndpoint": "/v1.0/ConfigurationItemCategoryUdfAssociations",
+      "supportedOperations": ["GET"],
+      "description": "UDF associations for configuration item categories",
+      "category": "configuration",
+      "fileName": "ConfigurationItemCategoryUdfAssociationsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemDnsRecords",
+      "pluralName": "ConfigurationItemDnsRecords",
+      "apiEndpoint": "/v1.0/ConfigurationItemDnsRecords",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "DNS records for configuration items",
+      "category": "configuration",
+      "fileName": "ConfigurationItemDnsRecordsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemNoteAttachments",
+      "pluralName": "ConfigurationItemNoteAttachments",
+      "apiEndpoint": "/v1.0/ConfigurationItemNoteAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for configuration item notes",
+      "category": "notes",
+      "fileName": "ConfigurationItemNoteAttachmentsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemNotes",
+      "pluralName": "ConfigurationItemNotes",
+      "apiEndpoint": "/v1.0/ConfigurationItemNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for configuration items",
+      "category": "notes",
+      "fileName": "ConfigurationItemNotesEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemRelatedItems",
+      "pluralName": "ConfigurationItemRelatedItems",
+      "apiEndpoint": "/v1.0/ConfigurationItemRelatedItems",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Related items for configuration items",
+      "category": "configuration",
+      "fileName": "ConfigurationItemRelatedItemsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItems",
+      "pluralName": "ConfigurationItems",
+      "apiEndpoint": "/v1.0/ConfigurationItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Configuration items and assets",
+      "category": "configuration",
+      "fileName": "ConfigurationItemsEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemSslSubjectAlternativeName",
+      "pluralName": "ConfigurationItemSslSubjectAlternativeName",
+      "apiEndpoint": "/v1.0/ConfigurationItemSslSubjectAlternativeName",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "SSL subject alternative names for configuration items",
+      "category": "configuration",
+      "fileName": "ConfigurationItemSslSubjectAlternativeNameEntity.htm"
+    },
+    {
+      "name": "ConfigurationItemTypes",
+      "pluralName": "ConfigurationItemTypes",
+      "apiEndpoint": "/v1.0/ConfigurationItemTypes",
+      "supportedOperations": ["GET"],
+      "description": "Types of configuration items",
+      "category": "configuration",
+      "fileName": "ConfigurationItemTypesEntity.htm"
+    },
+    {
+      "name": "ContactBillingProductAssociations",
+      "pluralName": "ContactBillingProductAssociations",
+      "apiEndpoint": "/v1.0/ContactBillingProductAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between contacts and billing products",
+      "category": "associations",
+      "fileName": "ContactBillingProductAssociationsEntity.htm"
+    },
+    {
+      "name": "ContactGroupContacts",
+      "pluralName": "ContactGroupContacts",
+      "apiEndpoint": "/v1.0/ContactGroupContacts",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Contacts within contact groups",
+      "category": "associations",
+      "fileName": "ContactGroupContactsEntity.htm"
+    },
+    {
+      "name": "ContactGroups",
+      "pluralName": "ContactGroups",
+      "apiEndpoint": "/v1.0/ContactGroups",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Groups for organizing contacts",
+      "category": "associations",
+      "fileName": "ContactGroupsEntity.htm"
+    },
+    {
+      "name": "Contacts",
+      "pluralName": "Contacts",
+      "apiEndpoint": "/v1.0/Contacts",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Individual contacts within companies",
+      "category": "core",
+      "fileName": "ContactsEntity.htm"
+    },
+    {
+      "name": "ContractBillingRules",
+      "pluralName": "ContractBillingRules",
+      "apiEndpoint": "/v1.0/ContractBillingRules",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Billing rules for contracts",
+      "category": "contracts",
+      "fileName": "ContractBillingRulesEntity.htm"
+    },
+    {
+      "name": "ContractBlockHourFactors",
+      "pluralName": "ContractBlockHourFactors",
+      "apiEndpoint": "/v1.0/ContractBlockHourFactors",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Hour factors for contract blocks",
+      "category": "contracts",
+      "fileName": "ContractBlockHourFactorsEntity.htm"
+    },
+    {
+      "name": "ContractBlocks",
+      "pluralName": "ContractBlocks",
+      "apiEndpoint": "/v1.0/ContractBlocks",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Time blocks for contracts",
+      "category": "contracts",
+      "fileName": "ContractBlocksEntity.htm"
+    },
+    {
+      "name": "ContractCharges",
+      "pluralName": "ContractCharges",
+      "apiEndpoint": "/v1.0/ContractCharges",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Charges associated with contracts",
+      "category": "contracts",
+      "fileName": "ContractChargesEntity.htm"
+    },
+    {
+      "name": "ContractExclusionBillingCodes",
+      "pluralName": "ContractExclusionBillingCodes",
+      "apiEndpoint": "/v1.0/ContractExclusionBillingCodes",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Billing codes excluded from contracts",
+      "category": "contracts",
+      "fileName": "ContractExclusionBillingCodesEntity.htm"
+    },
+    {
+      "name": "ContractExclusionRoles",
+      "pluralName": "ContractExclusionRoles",
+      "apiEndpoint": "/v1.0/ContractExclusionRoles",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Roles excluded from contracts",
+      "category": "contracts",
+      "fileName": "ContractExclusionRolesEntity.htm"
+    },
+    {
+      "name": "ContractExclusionSetExcludedRoles",
+      "pluralName": "ContractExclusionSetExcludedRoles",
+      "apiEndpoint": "/v1.0/ContractExclusionSetExcludedRoles",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Excluded roles within contract exclusion sets",
+      "category": "contracts",
+      "fileName": "ContractExclusionSetExcludedRolesEntity.htm"
+    },
+    {
+      "name": "ContractExclusionSetExcludedWorkTypes",
+      "pluralName": "ContractExclusionSetExcludedWorkTypes",
+      "apiEndpoint": "/v1.0/ContractExclusionSetExcludedWorkTypes",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Excluded work types within contract exclusion sets",
+      "category": "contracts",
+      "fileName": "ContractExclusionSetExcludedWorkTypesEntity.htm"
+    },
+    {
+      "name": "ContractExclusionSets",
+      "pluralName": "ContractExclusionSets",
+      "apiEndpoint": "/v1.0/ContractExclusionSets",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Sets of exclusions for contracts",
+      "category": "contracts",
+      "fileName": "ContractExclusionSetsEntity.htm"
+    },
+    {
+      "name": "ContractMilestones",
+      "pluralName": "ContractMilestones",
+      "apiEndpoint": "/v1.0/ContractMilestones",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Milestones for contracts",
+      "category": "contracts",
+      "fileName": "ContractMilestonesEntity.htm"
+    },
+    {
+      "name": "ContractNoteAttachments",
+      "pluralName": "ContractNoteAttachments",
+      "apiEndpoint": "/v1.0/ContractNoteAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for contract notes",
+      "category": "notes",
+      "fileName": "ContractNoteAttachmentsEntity.htm"
+    },
+    {
+      "name": "ContractNotes",
+      "pluralName": "ContractNotes",
+      "apiEndpoint": "/v1.0/ContractNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for contracts",
+      "category": "notes",
+      "fileName": "ContractNotesEntity.htm"
+    },
+    {
+      "name": "ContractRates",
+      "pluralName": "ContractRates",
+      "apiEndpoint": "/v1.0/ContractRates",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Billing rates for contracts",
+      "category": "contracts",
+      "fileName": "ContractRatesEntity.htm"
+    },
+    {
+      "name": "ContractRetainers",
+      "pluralName": "ContractRetainers",
+      "apiEndpoint": "/v1.0/ContractRetainers",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Retainers for contracts",
+      "category": "contracts",
+      "fileName": "ContractRetainersEntity.htm"
+    },
+    {
+      "name": "ContractRoleCosts",
+      "pluralName": "ContractRoleCosts",
+      "apiEndpoint": "/v1.0/ContractRoleCosts",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Role costs for contracts",
+      "category": "contracts",
+      "fileName": "ContractRoleCostsEntity.htm"
+    },
+    {
+      "name": "Contracts",
+      "pluralName": "Contracts",
+      "apiEndpoint": "/v1.0/Contracts",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Service contracts and agreements",
+      "category": "contracts",
+      "fileName": "ContractsEntity.htm"
+    },
+    {
+      "name": "ContractServiceAdjustments",
+      "pluralName": "ContractServiceAdjustments",
+      "apiEndpoint": "/v1.0/ContractServiceAdjustments",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Adjustments to contract services",
+      "category": "contracts",
+      "fileName": "ContractServiceAdjustmentsEntity.htm"
+    },
+    {
+      "name": "ContractServiceBundleAdjustments",
+      "pluralName": "ContractServiceBundleAdjustments",
+      "apiEndpoint": "/v1.0/ContractServiceBundleAdjustments",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Adjustments to contract service bundles",
+      "category": "contracts",
+      "fileName": "ContractServiceBundleAdjustmentsEntity.htm"
+    },
+    {
+      "name": "ContractServiceBundles",
+      "pluralName": "ContractServiceBundles",
+      "apiEndpoint": "/v1.0/ContractServiceBundles",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Service bundles within contracts",
+      "category": "contracts",
+      "fileName": "ContractServiceBundlesEntity.htm"
+    },
+    {
+      "name": "ContractServiceBundleUnits",
+      "pluralName": "ContractServiceBundleUnits",
+      "apiEndpoint": "/v1.0/ContractServiceBundleUnits",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Units for contract service bundles",
+      "category": "contracts",
+      "fileName": "ContractServiceBundleUnitsEntity.htm"
+    },
+    {
+      "name": "ContractServices",
+      "pluralName": "ContractServices",
+      "apiEndpoint": "/v1.0/ContractServices",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Services included in contracts",
+      "category": "contracts",
+      "fileName": "ContractServicesEntity.htm"
+    },
+    {
+      "name": "ContractServiceUnits",
+      "pluralName": "ContractServiceUnits",
+      "apiEndpoint": "/v1.0/ContractServiceUnits",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Units for contract services",
+      "category": "contracts",
+      "fileName": "ContractServiceUnitsEntity.htm"
+    },
+    {
+      "name": "ContractTicketPurchases",
+      "pluralName": "ContractTicketPurchases",
+      "apiEndpoint": "/v1.0/ContractTicketPurchases",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Ticket purchases for contracts",
+      "category": "contracts",
+      "fileName": "ContractTicketPurchasesEntity.htm"
+    },
+    {
+      "name": "Countries",
+      "pluralName": "Countries",
+      "apiEndpoint": "/v1.0/Countries",
+      "supportedOperations": ["GET"],
+      "description": "List of countries for localization",
+      "category": "lookup",
+      "fileName": "CountriesEntity.htm"
+    },
+    {
+      "name": "Currencies",
+      "pluralName": "Currencies",
+      "apiEndpoint": "/v1.0/Currencies",
+      "supportedOperations": ["GET"],
+      "description": "Available currencies for financial transactions",
+      "category": "financial",
+      "fileName": "CurrenciesEntity.htm"
+    },
+    {
+      "name": "DeletedTaskActivityLogs",
+      "pluralName": "DeletedTaskActivityLogs",
+      "apiEndpoint": "/v1.0/DeletedTaskActivityLogs",
+      "supportedOperations": ["GET"],
+      "description": "Audit logs for deleted task activities",
+      "category": "logs",
+      "fileName": "DeletedTaskActivityLogsEntity.htm"
+    },
+    {
+      "name": "DeletedTicketActivityLogs",
+      "pluralName": "DeletedTicketActivityLogs",
+      "apiEndpoint": "/v1.0/DeletedTicketActivityLogs",
+      "supportedOperations": ["GET"],
+      "description": "Audit logs for deleted ticket activities",
+      "category": "logs",
+      "fileName": "DeletedTicketActivityLogsEntity.htm"
+    },
+    {
+      "name": "DeletedTicketLogs",
+      "pluralName": "DeletedTicketLogs",
+      "apiEndpoint": "/v1.0/DeletedTicketLogs",
+      "supportedOperations": ["GET"],
+      "description": "Audit logs for deleted tickets",
+      "category": "logs",
+      "fileName": "DeletedTicketLogsEntity.htm"
+    },
+    {
+      "name": "Departments",
+      "pluralName": "Departments",
+      "apiEndpoint": "/v1.0/Departments",
+      "supportedOperations": ["GET"],
+      "description": "Organizational departments",
+      "category": "organizational",
+      "fileName": "DepartmentsEntity.htm"
+    },
+    {
+      "name": "DocumentAttachments",
+      "pluralName": "DocumentAttachments",
+      "apiEndpoint": "/v1.0/DocumentAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for documents",
+      "category": "attachments",
+      "fileName": "DocumentAttachmentsEntity.htm"
+    },
+    {
+      "name": "DocumentCategories",
+      "pluralName": "DocumentCategories",
+      "apiEndpoint": "/v1.0/DocumentCategories",
+      "supportedOperations": ["GET"],
+      "description": "Categories for organizing documents",
+      "category": "knowledge",
+      "fileName": "DocumentCategoriesEntity.htm"
+    },
+    {
+      "name": "DocumentChecklistItems",
+      "pluralName": "DocumentChecklistItems",
+      "apiEndpoint": "/v1.0/DocumentChecklistItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Checklist items for documents",
+      "category": "knowledge",
+      "fileName": "DocumentChecklistItemsEntity.htm"
+    },
+    {
+      "name": "DocumentChecklistLibraries",
+      "pluralName": "DocumentChecklistLibraries",
+      "apiEndpoint": "/v1.0/DocumentChecklistLibraries",
+      "supportedOperations": ["GET"],
+      "description": "Checklist libraries for documents",
+      "category": "knowledge",
+      "fileName": "DocumentChecklistLibrariesEntity.htm"
+    },
+    {
+      "name": "DocumentConfigurationItemAssociations",
+      "pluralName": "DocumentConfigurationItemAssociations",
+      "apiEndpoint": "/v1.0/DocumentConfigurationItemAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between documents and configuration items",
+      "category": "knowledge",
+      "fileName": "DocumentConfigurationItemAssociationsEntity.htm"
+    },
+    {
+      "name": "DocumentConfigurationItemCategoryAssociations",
+      "pluralName": "DocumentConfigurationItemCategoryAssociations",
+      "apiEndpoint": "/v1.0/DocumentConfigurationItemCategoryAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between documents and configuration item categories",
+      "category": "knowledge",
+      "fileName": "DocumentConfigurationItemCategoryAssociationsEntity.htm"
+    },
+    {
+      "name": "DocumentNotes",
+      "pluralName": "DocumentNotes",
+      "apiEndpoint": "/v1.0/DocumentNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for documents",
+      "category": "notes",
+      "fileName": "DocumentNotesEntity.htm"
+    },
+    {
+      "name": "Documents",
+      "pluralName": "Documents",
+      "apiEndpoint": "/v1.0/Documents",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Documents and files in the system",
+      "category": "knowledge",
+      "fileName": "DocumentsEntity.htm"
+    },
+    {
+      "name": "DocumentTagAssociations",
+      "pluralName": "DocumentTagAssociations",
+      "apiEndpoint": "/v1.0/DocumentTagAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Tag associations for documents",
+      "category": "knowledge",
+      "fileName": "DocumentTagAssociationsEntity.htm"
+    },
+    {
+      "name": "DocumentTicketAssociations",
+      "pluralName": "DocumentTicketAssociations",
+      "apiEndpoint": "/v1.0/DocumentTicketAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between documents and tickets",
+      "category": "knowledge",
+      "fileName": "DocumentTicketAssociationsEntity.htm"
+    },
+    {
+      "name": "DocumentToArticleAssociations",
+      "pluralName": "DocumentToArticleAssociations",
+      "apiEndpoint": "/v1.0/DocumentToArticleAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between documents and articles",
+      "category": "knowledge",
+      "fileName": "DocumentToArticleAssociationsEntity.htm"
+    },
+    {
+      "name": "DomainRegistrars",
+      "pluralName": "DomainRegistrars",
+      "apiEndpoint": "/v1.0/DomainRegistrars",
+      "supportedOperations": ["GET"],
+      "description": "Domain registrar information",
+      "category": "lookup",
+      "fileName": "DomainRegistrarsEntity.htm"
+    },
+    {
+      "name": "ExpenseItemAttachments",
+      "pluralName": "ExpenseItemAttachments",
+      "apiEndpoint": "/v1.0/ExpenseItemAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for expense items",
+      "category": "attachments",
+      "fileName": "ExpenseItemAttachmentsEntity.htm"
+    },
+    {
+      "name": "ExpenseItems",
+      "pluralName": "ExpenseItems",
+      "apiEndpoint": "/v1.0/ExpenseItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Individual expense items",
+      "category": "expense",
+      "fileName": "ExpenseItemsEntity.htm"
+    },
+    {
+      "name": "ExpenseReportAttachments",
+      "pluralName": "ExpenseReportAttachments",
+      "apiEndpoint": "/v1.0/ExpenseReportAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for expense reports",
+      "category": "attachments",
+      "fileName": "ExpenseReportAttachmentsEntity.htm"
+    },
+    {
+      "name": "ExpenseReports",
+      "pluralName": "ExpenseReports",
+      "apiEndpoint": "/v1.0/ExpenseReports",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Expense reports for reimbursement",
+      "category": "expense",
+      "fileName": "ExpenseReportsEntity.htm"
+    },
+    {
+      "name": "Holidays",
+      "pluralName": "Holidays",
+      "apiEndpoint": "/v1.0/Holidays",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Holiday calendar entries",
+      "category": "time",
+      "fileName": "HolidaysEntity.htm"
+    },
+    {
+      "name": "HolidaySets",
+      "pluralName": "HolidaySets",
+      "apiEndpoint": "/v1.0/HolidaySets",
+      "supportedOperations": ["GET"],
+      "description": "Sets of holidays for different regions",
+      "category": "time",
+      "fileName": "HolidaySetsEntity.htm"
+    },
+    {
+      "name": "InternalLocations",
+      "pluralName": "InternalLocations",
+      "apiEndpoint": "/v1.0/InternalLocations",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Internal office locations",
+      "category": "organizational",
+      "fileName": "InternalLocationsEntity.htm"
+    },
+    {
+      "name": "InternalLocationWithBusinessHours",
+      "pluralName": "InternalLocationWithBusinessHours",
+      "apiEndpoint": "/v1.0/InternalLocationWithBusinessHours",
+      "supportedOperations": ["GET"],
+      "description": "Internal locations with business hours information",
+      "category": "organizational",
+      "fileName": "InternalLocationWithBusinessHoursEntity.htm"
+    },
+    {
+      "name": "InventoryItems",
+      "pluralName": "InventoryItems",
+      "apiEndpoint": "/v1.0/InventoryItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Items in inventory",
+      "category": "inventory",
+      "fileName": "InventoryItemsEntity.htm"
+    },
+    {
+      "name": "InventoryItemSerialNumbers",
+      "pluralName": "InventoryItemSerialNumbers",
+      "apiEndpoint": "/v1.0/InventoryItemSerialNumbers",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Serial numbers for inventory items",
+      "category": "inventory",
+      "fileName": "InventoryItemSerialNumbersEntity.htm"
+    },
+    {
+      "name": "InventoryLocations",
+      "pluralName": "InventoryLocations",
+      "apiEndpoint": "/v1.0/InventoryLocations",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Physical locations for inventory storage",
+      "category": "inventory",
+      "fileName": "InventoryLocationsEntity.htm"
+    },
+    {
+      "name": "InventoryProducts",
+      "pluralName": "InventoryProducts",
+      "apiEndpoint": "/v1.0/InventoryProducts",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Products available in inventory",
+      "category": "inventory",
+      "fileName": "InventoryProductsEntity.htm"
+    },
+    {
+      "name": "InventoryStockedItems",
+      "pluralName": "InventoryStockedItems",
+      "apiEndpoint": "/v1.0/InventoryStockedItems",
+      "supportedOperations": ["GET"],
+      "description": "Items currently stocked in inventory",
+      "category": "inventory",
+      "fileName": "InventoryStockedItems.htm"
+    },
+    {
+      "name": "InventoryStockedItemsAdd",
+      "pluralName": "InventoryStockedItemsAdd",
+      "apiEndpoint": "/v1.0/InventoryStockedItemsAdd",
+      "supportedOperations": ["POST"],
+      "description": "Add items to inventory stock",
+      "category": "inventory",
+      "fileName": "InventoryStockedItemsAdd.htm"
+    },
+    {
+      "name": "InventoryStockedItemsRemove",
+      "pluralName": "InventoryStockedItemsRemove",
+      "apiEndpoint": "/v1.0/InventoryStockedItemsRemove",
+      "supportedOperations": ["POST"],
+      "description": "Remove items from inventory stock",
+      "category": "inventory",
+      "fileName": "InventoryStockedItemsRemove.htm"
+    },
+    {
+      "name": "InventoryStockedItemsTransfer",
+      "pluralName": "InventoryStockedItemsTransfer",
+      "apiEndpoint": "/v1.0/InventoryStockedItemsTransfer",
+      "supportedOperations": ["POST"],
+      "description": "Transfer items between inventory locations",
+      "category": "inventory",
+      "fileName": "InventoryStockedItemsTransfer.htm"
+    },
+    {
+      "name": "InventoryTransfers",
+      "pluralName": "InventoryTransfers",
+      "apiEndpoint": "/v1.0/InventoryTransfers",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Transfer records for inventory items",
+      "category": "inventory",
+      "fileName": "InventoryTransfersEntity.htm"
+    },
+    {
+      "name": "Invoices",
+      "pluralName": "Invoices",
+      "apiEndpoint": "/v1.0/Invoices",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Customer invoices and billing",
+      "category": "financial",
+      "fileName": "InvoicesEntity.htm"
+    },
+    {
+      "name": "InvoiceTemplates",
+      "pluralName": "InvoiceTemplates",
+      "apiEndpoint": "/v1.0/InvoiceTemplates",
+      "supportedOperations": ["GET"],
+      "description": "Templates for generating invoices",
+      "category": "financial",
+      "fileName": "InvoiceTemplatesEntity.htm"
+    },
+    {
+      "name": "KnowledgeBaseArticles",
+      "pluralName": "KnowledgeBaseArticles",
+      "apiEndpoint": "/v1.0/KnowledgeBaseArticles",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Knowledge base articles and documentation",
+      "category": "knowledge",
+      "fileName": "KnowledgeBaseArticlesEntity.htm"
+    },
+    {
+      "name": "KnowledgeBaseCategories",
+      "pluralName": "KnowledgeBaseCategories",
+      "apiEndpoint": "/v1.0/KnowledgeBaseCategories",
+      "supportedOperations": ["GET"],
+      "description": "Categories for knowledge base articles",
+      "category": "knowledge",
+      "fileName": "KnowledgeBaseCategoriesEntity.htm"
+    },
+    {
+      "name": "Modules",
+      "pluralName": "Modules",
+      "apiEndpoint": "/v1.0/Modules",
+      "supportedOperations": ["GET"],
+      "description": "System modules and features",
+      "category": "lookup",
+      "fileName": "ModulesEntity.htm"
+    },
+    {
+      "name": "NotificationHistory",
+      "pluralName": "NotificationHistory",
+      "apiEndpoint": "/v1.0/NotificationHistory",
+      "supportedOperations": ["GET"],
+      "description": "History of system notifications",
+      "category": "notifications",
+      "fileName": "NotificationHistoryEntity.htm"
+    },
+    {
+      "name": "Opportunities",
+      "pluralName": "Opportunities",
+      "apiEndpoint": "/v1.0/Opportunities",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Sales opportunities and pipeline",
+      "category": "core",
+      "fileName": "OpportunitiesEntity.htm"
+    },
+    {
+      "name": "OpportunityAttachments",
+      "pluralName": "OpportunityAttachments",
+      "apiEndpoint": "/v1.0/OpportunityAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for opportunities",
+      "category": "attachments",
+      "fileName": "OpportunityAttachmentsEntity.htm"
+    },
+    {
+      "name": "OpportunityCategories",
+      "pluralName": "OpportunityCategories",
+      "apiEndpoint": "/v1.0/OpportunityCategories",
+      "supportedOperations": ["GET"],
+      "description": "Categories for organizing opportunities",
+      "category": "sales",
+      "fileName": "OpportunityCategories.htm"
+    },
+    {
+      "name": "OrganizationalLevel1",
+      "pluralName": "OrganizationalLevel1",
+      "apiEndpoint": "/v1.0/OrganizationalLevel1",
+      "supportedOperations": ["GET"],
+      "description": "First level of organizational hierarchy",
+      "category": "organizational",
+      "fileName": "OrganizationalLevel1Entity.htm"
+    },
+    {
+      "name": "OrganizationalLevel2",
+      "pluralName": "OrganizationalLevel2",
+      "apiEndpoint": "/v1.0/OrganizationalLevel2",
+      "supportedOperations": ["GET"],
+      "description": "Second level of organizational hierarchy",
+      "category": "organizational",
+      "fileName": "OrganizationalLevel2Entity.htm"
+    },
+    {
+      "name": "OrganizationalLevelAssociations",
+      "pluralName": "OrganizationalLevelAssociations",
+      "apiEndpoint": "/v1.0/OrganizationalLevelAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Associations between organizational levels",
+      "category": "organizational",
+      "fileName": "OrganizationalLevelAssociationsEntity.htm"
+    },
+    {
+      "name": "OrganizatonalResources",
+      "pluralName": "OrganizatonalResources",
+      "apiEndpoint": "/v1.0/OrganizatonalResources",
+      "supportedOperations": ["GET"],
+      "description": "Resources organized by organizational structure",
+      "category": "organizational",
+      "fileName": "OrganizatonalResourcesEntity.htm"
+    },
+    {
+      "name": "PaymentTerms",
+      "pluralName": "PaymentTerms",
+      "apiEndpoint": "/v1.0/PaymentTerms",
+      "supportedOperations": ["GET"],
+      "description": "Available payment terms for invoicing",
+      "category": "financial",
+      "fileName": "PaymentTermsEntity.htm"
+    },
+    {
+      "name": "Phases",
+      "pluralName": "Phases",
+      "apiEndpoint": "/v1.0/Phases",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Project and task phases",
+      "category": "lookup",
+      "fileName": "PhasesEntity.htm"
+    },
+    {
+      "name": "PriceListMaterialCodes",
+      "pluralName": "PriceListMaterialCodes",
+      "apiEndpoint": "/v1.0/PriceListMaterialCodes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Material codes in price lists",
+      "category": "pricing",
+      "fileName": "PriceListMaterialCodesEntity.htm"
+    },
+    {
+      "name": "PriceListProducts",
+      "pluralName": "PriceListProducts",
+      "apiEndpoint": "/v1.0/PriceListProducts",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Products in price lists",
+      "category": "pricing",
+      "fileName": "PriceListProductsEntity.htm"
+    },
+    {
+      "name": "PriceListProductTiers",
+      "pluralName": "PriceListProductTiers",
+      "apiEndpoint": "/v1.0/PriceListProductTiers",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Product tiers in price lists",
+      "category": "pricing",
+      "fileName": "PriceListProductTiersEntity.htm"
+    },
+    {
+      "name": "PriceListRoles",
+      "pluralName": "PriceListRoles",
+      "apiEndpoint": "/v1.0/PriceListRoles",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Roles in price lists",
+      "category": "pricing",
+      "fileName": "PriceListRolesEntity.htm"
+    },
+    {
+      "name": "PriceListServiceBundles",
+      "pluralName": "PriceListServiceBundles",
+      "apiEndpoint": "/v1.0/PriceListServiceBundles",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Service bundles in price lists",
+      "category": "pricing",
+      "fileName": "PriceListServiceBundlesEntity.htm"
+    },
+    {
+      "name": "PriceListServices",
+      "pluralName": "PriceListServices",
+      "apiEndpoint": "/v1.0/PriceListServices",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Services in price lists",
+      "category": "pricing",
+      "fileName": "PriceListServicesEntity.htm"
+    },
+    {
+      "name": "PriceListWorkTypeModifiers",
+      "pluralName": "PriceListWorkTypeModifiers",
+      "apiEndpoint": "/v1.0/PriceListWorkTypeModifiers",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Work type modifiers in price lists",
+      "category": "pricing",
+      "fileName": "PriceListWorkTypeModifiersEntity.htm"
+    },
+    {
+      "name": "ProductNotes",
+      "pluralName": "ProductNotes",
+      "apiEndpoint": "/v1.0/ProductNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for products",
+      "category": "notes",
+      "fileName": "ProductNotesEntity.htm"
+    },
+    {
+      "name": "Products",
+      "pluralName": "Products",
+      "apiEndpoint": "/v1.0/Products",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Products and services offered",
+      "category": "inventory",
+      "fileName": "ProductsEntity.htm"
+    },
+    {
+      "name": "ProductTiers",
+      "pluralName": "ProductTiers",
+      "apiEndpoint": "/v1.0/ProductTiers",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Pricing tiers for products",
+      "category": "inventory",
+      "fileName": "ProductTiersEntity.htm"
+    },
+    {
+      "name": "ProductVendors",
+      "pluralName": "ProductVendors",
+      "apiEndpoint": "/v1.0/ProductVendors",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Vendor information for products",
+      "category": "inventory",
+      "fileName": "ProductVendorsEntity.htm"
+    },
+    {
+      "name": "ProjectAttachments",
+      "pluralName": "ProjectAttachments",
+      "apiEndpoint": "/v1.0/ProjectAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for projects",
+      "category": "attachments",
+      "fileName": "ProjectAttachmentsEntity.htm"
+    },
+    {
+      "name": "ProjectCharges",
+      "pluralName": "ProjectCharges",
+      "apiEndpoint": "/v1.0/ProjectCharges",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Charges associated with projects",
+      "category": "tasks",
+      "fileName": "ProjectChargesEntity.htm"
+    },
+    {
+      "name": "ProjectNoteAttachments",
+      "pluralName": "ProjectNoteAttachments",
+      "apiEndpoint": "/v1.0/ProjectNoteAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for project notes",
+      "category": "notes",
+      "fileName": "ProjectNoteAttachmentsEntity.htm"
+    },
+    {
+      "name": "ProjectNotes",
+      "pluralName": "ProjectNotes",
+      "apiEndpoint": "/v1.0/ProjectNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for projects",
+      "category": "notes",
+      "fileName": "ProjectNotesEntity.htm"
+    },
+    {
+      "name": "Projects",
+      "pluralName": "Projects",
+      "apiEndpoint": "/v1.0/Projects",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Client projects and work orders",
+      "category": "core",
+      "fileName": "ProjectsEntity.htm"
+    },
+    {
+      "name": "PurchaseApprovals",
+      "pluralName": "PurchaseApprovals",
+      "apiEndpoint": "/v1.0/PurchaseApprovals",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Approvals for purchase orders",
+      "category": "financial",
+      "fileName": "PurchaseApprovalsEntity.htm"
+    },
+    {
+      "name": "PurchaseOrderItemReceiving",
+      "pluralName": "PurchaseOrderItemReceiving",
+      "apiEndpoint": "/v1.0/PurchaseOrderItemReceiving",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Receiving records for purchase order items",
+      "category": "financial",
+      "fileName": "PurchaseOrderItemReceivingEntity.htm"
+    },
+    {
+      "name": "PurchaseOrderItems",
+      "pluralName": "PurchaseOrderItems",
+      "apiEndpoint": "/v1.0/PurchaseOrderItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Items within purchase orders",
+      "category": "financial",
+      "fileName": "PurchaseOrderItemsEntity.htm"
+    },
+    {
+      "name": "PurchaseOrders",
+      "pluralName": "PurchaseOrders",
+      "apiEndpoint": "/v1.0/PurchaseOrders",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Purchase orders for procurement",
+      "category": "financial",
+      "fileName": "PurchaseOrdersEntity.htm"
+    },
+    {
+      "name": "QuoteItems",
+      "pluralName": "QuoteItems",
+      "apiEndpoint": "/v1.0/QuoteItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Line items within quotes",
+      "category": "financial",
+      "fileName": "QuoteItemsEntity.htm"
+    },
+    {
+      "name": "QuoteLocations",
+      "pluralName": "QuoteLocations",
+      "apiEndpoint": "/v1.0/QuoteLocations",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Location information for quotes",
+      "category": "financial",
+      "fileName": "QuoteLocationsEntity.htm"
+    },
+    {
+      "name": "Quotes",
+      "pluralName": "Quotes",
+      "apiEndpoint": "/v1.0/Quotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Customer quotes and estimates",
+      "category": "financial",
+      "fileName": "QuotesEntity.htm"
+    },
+    {
+      "name": "QuoteTemplates",
+      "pluralName": "QuoteTemplates",
+      "apiEndpoint": "/v1.0/QuoteTemplates",
+      "supportedOperations": ["GET"],
+      "description": "Templates for generating quotes",
+      "category": "financial",
+      "fileName": "QuoteTemplatesEntity.htm"
+    },
+    {
+      "name": "ResourceAttachments",
+      "pluralName": "ResourceAttachments",
+      "apiEndpoint": "/v1.0/ResourceAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for resources",
+      "category": "attachments",
+      "fileName": "ResourceAttachmentsEntity.htm"
+    },
+    {
+      "name": "ResourceDailyAvailabilities",
+      "pluralName": "ResourceDailyAvailabilities",
+      "apiEndpoint": "/v1.0/ResourceDailyAvailabilities",
+      "supportedOperations": ["GET"],
+      "description": "Daily availability schedules for resources",
+      "category": "time",
+      "fileName": "ResourceDailyAvailability.htm"
+    },
+    {
+      "name": "ResourceRoleDepartments",
+      "pluralName": "ResourceRoleDepartments",
+      "apiEndpoint": "/v1.0/ResourceRoleDepartments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Department assignments for resource roles",
+      "category": "lookup",
+      "fileName": "ResourceRoleDepartmentsEntity.htm"
+    },
+    {
+      "name": "ResourceRoleQueues",
+      "pluralName": "ResourceRoleQueues",
+      "apiEndpoint": "/v1.0/ResourceRoleQueues",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Queue assignments for resource roles",
+      "category": "lookup",
+      "fileName": "ResourceRoleQueuesEntity.htm"
+    },
+    {
+      "name": "ResourceRoles",
+      "pluralName": "ResourceRoles",
+      "apiEndpoint": "/v1.0/ResourceRoles",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Role assignments for resources",
+      "category": "lookup",
+      "fileName": "ResourceRolesEntity.htm"
+    },
+    {
+      "name": "Resources",
+      "pluralName": "Resources",
+      "apiEndpoint": "/v1.0/Resources",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Human resources and staff members",
+      "category": "core",
+      "fileName": "ResourcesEntity.htm"
+    },
+    {
+      "name": "ResourceServiceDeskRoles",
+      "pluralName": "ResourceServiceDeskRoles",
+      "apiEndpoint": "/v1.0/ResourceServiceDeskRoles",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Service desk role assignments for resources",
+      "category": "lookup",
+      "fileName": "ResourceServiceDeskRolesEntity.htm"
+    },
+    {
+      "name": "ResourceSkills",
+      "pluralName": "ResourceSkills",
+      "apiEndpoint": "/v1.0/ResourceSkills",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Skills associated with resources",
+      "category": "lookup",
+      "fileName": "ResourceSkillsEntity.htm"
+    },
+    {
+      "name": "ResourceTimeOffAdditional",
+      "pluralName": "ResourceTimeOffAdditional",
+      "apiEndpoint": "/v1.0/ResourceTimeOffAdditional",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Additional time off information for resources",
+      "category": "time",
+      "fileName": "ResourceTimeOffAdditionalEntity.htm"
+    },
+    {
+      "name": "ResourceTimeOffApprovers",
+      "pluralName": "ResourceTimeOffApprovers",
+      "apiEndpoint": "/v1.0/ResourceTimeOffApprovers",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Approvers for resource time off requests",
+      "category": "time",
+      "fileName": "ResourceTimeOffApproversEntity.htm"
+    },
+    {
+      "name": "ResourceTimeOffBalances",
+      "pluralName": "ResourceTimeOffBalances",
+      "apiEndpoint": "/v1.0/ResourceTimeOffBalances",
+      "supportedOperations": ["GET"],
+      "description": "Time off balances for resources",
+      "category": "time",
+      "fileName": "ResourceTimeOffBalanceEntity.htm"
+    },
+    {
+      "name": "Roles",
+      "pluralName": "Roles",
+      "apiEndpoint": "/v1.0/Roles",
+      "supportedOperations": ["GET"],
+      "description": "System roles and permissions",
+      "category": "lookup",
+      "fileName": "RolesEntity.htm"
+    },
+    {
+      "name": "SalesOrderAttachments",
+      "pluralName": "SalesOrderAttachments",
+      "apiEndpoint": "/v1.0/SalesOrderAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for sales orders",
+      "category": "attachments",
+      "fileName": "SalesOrderAttachmentsEntity.htm"
+    },
+    {
+      "name": "SalesOrders",
+      "pluralName": "SalesOrders",
+      "apiEndpoint": "/v1.0/SalesOrders",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Customer sales orders",
+      "category": "sales",
+      "fileName": "SalesOrdersEntity.htm"
+    },
+    {
+      "name": "ServiceBundles",
+      "pluralName": "ServiceBundles",
+      "apiEndpoint": "/v1.0/ServiceBundles",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Bundled service offerings",
+      "category": "contracts",
+      "fileName": "ServiceBundlesEntity.htm"
+    },
+    {
+      "name": "ServiceBundleServices",
+      "pluralName": "ServiceBundleServices",
+      "apiEndpoint": "/v1.0/ServiceBundleServices",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Services within service bundles",
+      "category": "contracts",
+      "fileName": "ServiceBundleServicesEntity.htm"
+    },
+    {
+      "name": "ServiceCalls",
+      "pluralName": "ServiceCalls",
+      "apiEndpoint": "/v1.0/ServiceCalls",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Service call dispatching and management",
+      "category": "service_calls",
+      "fileName": "ServiceCallsEntity.htm"
+    },
+    {
+      "name": "ServiceCallTaskResources",
+      "pluralName": "ServiceCallTaskResources",
+      "apiEndpoint": "/v1.0/ServiceCallTaskResources",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Resource assignments for service call tasks",
+      "category": "service_calls",
+      "fileName": "ServiceCallTaskResourceEntity.htm"
+    },
+    {
+      "name": "ServiceCallTasks",
+      "pluralName": "ServiceCallTasks",
+      "apiEndpoint": "/v1.0/ServiceCallTasks",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Tasks within service calls",
+      "category": "service_calls",
+      "fileName": "ServiceCallTasksEntity.htm"
+    },
+    {
+      "name": "ServiceCallTicketResources",
+      "pluralName": "ServiceCallTicketResources",
+      "apiEndpoint": "/v1.0/ServiceCallTicketResources",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Resource assignments for service call tickets",
+      "category": "service_calls",
+      "fileName": "ServiceCallTicketResourceEntity.htm"
+    },
+    {
+      "name": "ServiceCallTickets",
+      "pluralName": "ServiceCallTickets",
+      "apiEndpoint": "/v1.0/ServiceCallTickets",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Tickets associated with service calls",
+      "category": "service_calls",
+      "fileName": "ServiceCallTicketsEntity.htm"
+    },
+    {
+      "name": "ServiceLevelAgreementResults",
+      "pluralName": "ServiceLevelAgreementResults",
+      "apiEndpoint": "/v1.0/ServiceLevelAgreementResults",
+      "supportedOperations": ["GET"],
+      "description": "Results and performance metrics for SLAs",
+      "category": "associations",
+      "fileName": "ServiceLevelAgreementResultsEntity.htm"
+    },
+    {
+      "name": "Services",
+      "pluralName": "Services",
+      "apiEndpoint": "/v1.0/Services",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Individual services offered",
+      "category": "contracts",
+      "fileName": "ServicesEntity.htm"
+    },
+    {
+      "name": "ShippingTypes",
+      "pluralName": "ShippingTypes",
+      "apiEndpoint": "/v1.0/ShippingTypes",
+      "supportedOperations": ["GET"],
+      "description": "Available shipping methods",
+      "category": "lookup",
+      "fileName": "ShippingTypesEntity.htm"
+    },
+    {
+      "name": "Skills",
+      "pluralName": "Skills",
+      "apiEndpoint": "/v1.0/Skills",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Available skills for resource assignment",
+      "category": "lookup",
+      "fileName": "SkillsEntity.htm"
+    },
+    {
+      "name": "SubscriptionPeriods",
+      "pluralName": "SubscriptionPeriods",
+      "apiEndpoint": "/v1.0/SubscriptionPeriods",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Billing periods for subscriptions",
+      "category": "lookup",
+      "fileName": "SubscriptionPeriodsEntity.htm"
+    },
+    {
+      "name": "Subscriptions",
+      "pluralName": "Subscriptions",
+      "apiEndpoint": "/v1.0/Subscriptions",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Recurring service subscriptions",
+      "category": "lookup",
+      "fileName": "SubscriptionsEntity.htm"
+    },
+    {
+      "name": "SurveyResults",
+      "pluralName": "SurveyResults",
+      "apiEndpoint": "/v1.0/SurveyResults",
+      "supportedOperations": ["GET"],
+      "description": "Results from customer satisfaction surveys",
+      "category": "surveys",
+      "fileName": "SurveyResultsEntity.htm"
+    },
+    {
+      "name": "Surveys",
+      "pluralName": "Surveys",
+      "apiEndpoint": "/v1.0/Surveys",
+      "supportedOperations": ["GET"],
+      "description": "Customer satisfaction surveys",
+      "category": "surveys",
+      "fileName": "SurveysEntity.htm"
+    },
+    {
+      "name": "TagAliases",
+      "pluralName": "TagAliases",
+      "apiEndpoint": "/v1.0/TagAliases",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Alternative names for tags",
+      "category": "tags",
+      "fileName": "TagAliasesEntity.htm"
+    },
+    {
+      "name": "TagGroups",
+      "pluralName": "TagGroups",
+      "apiEndpoint": "/v1.0/TagGroups",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Groups for organizing tags",
+      "category": "tags",
+      "fileName": "TagGroupsEntity.htm"
+    },
+    {
+      "name": "Tags",
+      "pluralName": "Tags",
+      "apiEndpoint": "/v1.0/Tags",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Tags for categorizing and organizing data",
+      "category": "tags",
+      "fileName": "TagsEntity.htm"
+    },
+    {
+      "name": "TaskAttachments",
+      "pluralName": "TaskAttachments",
+      "apiEndpoint": "/v1.0/TaskAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for tasks",
+      "category": "attachments",
+      "fileName": "TaskAttachmentsEntity.htm"
+    },
+    {
+      "name": "TaskNoteAttachments",
+      "pluralName": "TaskNoteAttachments",
+      "apiEndpoint": "/v1.0/TaskNoteAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for task notes",
+      "category": "notes",
+      "fileName": "TaskNoteAttachmentsEntity.htm"
+    },
+    {
+      "name": "TaskNotes",
+      "pluralName": "TaskNotes",
+      "apiEndpoint": "/v1.0/TaskNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for tasks",
+      "category": "notes",
+      "fileName": "TaskNotesEntity.htm"
+    },
+    {
+      "name": "TaskPredecessors",
+      "pluralName": "TaskPredecessors",
+      "apiEndpoint": "/v1.0/TaskPredecessors",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Predecessor relationships between tasks",
+      "category": "tasks",
+      "fileName": "TaskPredecessorsEntity.htm"
+    },
+    {
+      "name": "TaskSecondaryResources",
+      "pluralName": "TaskSecondaryResources",
+      "apiEndpoint": "/v1.0/TaskSecondaryResources",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Secondary resource assignments for tasks",
+      "category": "tasks",
+      "fileName": "TaskSecondaryResourcesEntity.htm"
+    },
+    {
+      "name": "Tasks",
+      "pluralName": "Tasks",
+      "apiEndpoint": "/v1.0/Tasks",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Project tasks and work items",
+      "category": "core",
+      "fileName": "TasksEntity.htm"
+    },
+    {
+      "name": "TaxCategories",
+      "pluralName": "TaxCategories",
+      "apiEndpoint": "/v1.0/TaxCategories",
+      "supportedOperations": ["GET"],
+      "description": "Categories for tax calculations",
+      "category": "financial",
+      "fileName": "TaxCategoriesEntity.htm"
+    },
+    {
+      "name": "Taxes",
+      "pluralName": "Taxes",
+      "apiEndpoint": "/v1.0/Taxes",
+      "supportedOperations": ["GET"],
+      "description": "Tax rates and calculations",
+      "category": "financial",
+      "fileName": "TaxesEntity.htm"
+    },
+    {
+      "name": "TaxRegions",
+      "pluralName": "TaxRegions",
+      "apiEndpoint": "/v1.0/TaxRegions",
+      "supportedOperations": ["GET"],
+      "description": "Geographic regions for tax purposes",
+      "category": "financial",
+      "fileName": "TaxRegionsEntity.htm"
+    },
+    {
+      "name": "TicketAdditionalConfigurationItems",
+      "pluralName": "TicketAdditionalConfigurationItems",
+      "apiEndpoint": "/v1.0/TicketAdditionalConfigurationItems",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Additional configuration items associated with tickets",
+      "category": "ticketing",
+      "fileName": "TicketAdditionalConfigurationItemsEntity.htm"
+    },
+    {
+      "name": "TicketAdditionalContacts",
+      "pluralName": "TicketAdditionalContacts",
+      "apiEndpoint": "/v1.0/TicketAdditionalContacts",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Additional contacts associated with tickets",
+      "category": "ticketing",
+      "fileName": "TicketAdditionalContactsEntity.htm"
+    },
+    {
+      "name": "TicketAttachments",
+      "pluralName": "TicketAttachments",
+      "apiEndpoint": "/v1.0/TicketAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for tickets",
+      "category": "attachments",
+      "fileName": "TicketAttachmentsEntity.htm"
+    },
+    {
+      "name": "TicketCategories",
+      "pluralName": "TicketCategories",
+      "apiEndpoint": "/v1.0/TicketCategories",
+      "supportedOperations": ["GET"],
+      "description": "Categories for organizing tickets",
+      "category": "ticketing",
+      "fileName": "TicketCategoriesEntity.htm"
+    },
+    {
+      "name": "TicketCategoryFieldDefaults",
+      "pluralName": "TicketCategoryFieldDefaults",
+      "apiEndpoint": "/v1.0/TicketCategoryFieldDefaults",
+      "supportedOperations": ["GET"],
+      "description": "Default field values for ticket categories",
+      "category": "ticketing",
+      "fileName": "TicketCategoryFieldDefaultsEntity.htm"
+    },
+    {
+      "name": "TicketChangeRequestApprovals",
+      "pluralName": "TicketChangeRequestApprovals",
+      "apiEndpoint": "/v1.0/TicketChangeRequestApprovals",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Approvals for ticket change requests",
+      "category": "ticketing",
+      "fileName": "TicketChangeRequestApprovalsEntity.htm"
+    },
+    {
+      "name": "TicketCharges",
+      "pluralName": "TicketCharges",
+      "apiEndpoint": "/v1.0/TicketCharges",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Charges associated with tickets",
+      "category": "ticketing",
+      "fileName": "TicketChargesEntity.htm"
+    },
+    {
+      "name": "TicketChecklistItems",
+      "pluralName": "TicketChecklistItems",
+      "apiEndpoint": "/v1.0/TicketChecklistItems",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Checklist items for tickets",
+      "category": "ticketing",
+      "fileName": "TicketChecklistItemsEntity.htm"
+    },
+    {
+      "name": "TicketChecklistLibraries",
+      "pluralName": "TicketChecklistLibraries",
+      "apiEndpoint": "/v1.0/TicketChecklistLibraries",
+      "supportedOperations": ["GET"],
+      "description": "Checklist libraries for tickets",
+      "category": "ticketing",
+      "fileName": "TicketChecklistLibrariesEntity.htm"
+    },
+    {
+      "name": "TicketHistory",
+      "pluralName": "TicketHistory",
+      "apiEndpoint": "/v1.0/TicketHistory",
+      "supportedOperations": ["GET"],
+      "description": "Historical changes to tickets",
+      "category": "ticketing",
+      "fileName": "TicketHistoryEntity.htm"
+    },
+    {
+      "name": "TicketNoteAttachments",
+      "pluralName": "TicketNoteAttachments",
+      "apiEndpoint": "/v1.0/TicketNoteAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for ticket notes",
+      "category": "notes",
+      "fileName": "TicketNoteAttachmentsEntity.htm"
+    },
+    {
+      "name": "TicketNotes",
+      "pluralName": "TicketNotes",
+      "apiEndpoint": "/v1.0/TicketNotes",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Notes for tickets",
+      "category": "notes",
+      "fileName": "TicketNotesEntity.htm"
+    },
+    {
+      "name": "TicketRmaCredits",
+      "pluralName": "TicketRmaCredits",
+      "apiEndpoint": "/v1.0/TicketRmaCredits",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "RMA credits associated with tickets",
+      "category": "ticketing",
+      "fileName": "TicketRmaCreditsEntity.htm"
+    },
+    {
+      "name": "TicketSecondaryResources",
+      "pluralName": "TicketSecondaryResources",
+      "apiEndpoint": "/v1.0/TicketSecondaryResources",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Secondary resource assignments for tickets",
+      "category": "ticketing",
+      "fileName": "TicketSecondaryResourcesEntity.htm"
+    },
+    {
+      "name": "Tickets",
+      "pluralName": "Tickets",
+      "apiEndpoint": "/v1.0/Tickets",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT"],
+      "description": "Service tickets and support requests",
+      "category": "core",
+      "fileName": "TicketsEntity.htm"
+    },
+    {
+      "name": "TicketTagAssociations",
+      "pluralName": "TicketTagAssociations",
+      "apiEndpoint": "/v1.0/TicketTagAssociations",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "Tag associations for tickets",
+      "category": "ticketing",
+      "fileName": "TicketTagAssociationsEntity.htm"
+    },
+    {
+      "name": "TimeEntries",
+      "pluralName": "TimeEntries",
+      "apiEndpoint": "/v1.0/TimeEntries",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Time tracking entries for billing",
+      "category": "time",
+      "fileName": "TimeEntriesEntity.htm"
+    },
+    {
+      "name": "TimeEntryAttachments",
+      "pluralName": "TimeEntryAttachments",
+      "apiEndpoint": "/v1.0/TimeEntryAttachments",
+      "supportedOperations": ["GET", "POST", "DELETE"],
+      "description": "File attachments for time entries",
+      "category": "attachments",
+      "fileName": "TimeEntryAttachmentsEntity.htm"
+    },
+    {
+      "name": "TimeOffRequestsApprove",
+      "pluralName": "TimeOffRequestsApprove",
+      "apiEndpoint": "/v1.0/TimeOffRequestsApprove",
+      "supportedOperations": ["POST"],
+      "description": "Approve time off requests",
+      "category": "time",
+      "fileName": "TimeOffRequestsApproveEntity.htm"
+    },
+    {
+      "name": "TimeOffRequests",
+      "pluralName": "TimeOffRequests",
+      "apiEndpoint": "/v1.0/TimeOffRequests",
+      "supportedOperations": ["GET", "POST", "PATCH", "PUT", "DELETE"],
+      "description": "Requests for time off",
+      "category": "time",
+      "fileName": "TimeOffRequestsEntity.htm"
+    },
+    {
+      "name": "TimeOffRequestsReject",
+      "pluralName": "TimeOffRequestsReject",
+      "apiEndpoint": "/v1.0/TimeOffRequestsReject",
+      "supportedOperations": ["POST"],
+      "description": "Reject time off requests",
+      "category": "time",
+      "fileName": "TimeOffRequestsRejectEntity.htm"
+    },
+    {
+      "name": "UserDefinedFieldDefinitions",
+      "pluralName": "UserDefinedFieldDefinitions",
+      "apiEndpoint": "/v1.0/UserDefinedFieldDefinitions",
+      "supportedOperations": ["GET"],
+      "description": "Definitions for user-defined fields",
+      "category": "user_defined",
+      "fileName": "UserDefinedFieldDefinitionsEntity.htm"
+    },
+    {
+      "name": "UserDefinedFieldListItems",
+      "pluralName": "UserDefinedFieldListItems",
+      "apiEndpoint": "/v1.0/UserDefinedFieldListItems",
+      "supportedOperations": ["GET"],
+      "description": "List items for user-defined fields",
+      "category": "user_defined",
+      "fileName": "UserDefinedFieldListItemsEntity.htm"
+    },
+    {
+      "name": "Version",
+      "pluralName": "Version",
+      "apiEndpoint": "/v1.0/Version",
+      "supportedOperations": ["GET"],
+      "description": "API version information",
+      "category": "lookup",
+      "fileName": "VersionEntity.htm"
+    },
+    {
+      "name": "WorkTypeModifiers",
+      "pluralName": "WorkTypeModifiers",
+      "apiEndpoint": "/v1.0/WorkTypeModifiers",
+      "supportedOperations": ["GET"],
+      "description": "Modifiers for different types of work",
+      "category": "lookup",
+      "fileName": "WorkTypeModifiersEntity.htm"
+    }
+  ]
+}

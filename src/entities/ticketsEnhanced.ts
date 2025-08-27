@@ -5,14 +5,14 @@
 
 import { AxiosInstance } from 'axios';
 import winston from 'winston';
-import { Tickets, Ticket } from './tickets';
+import { Tickets, ITickets as Ticket } from './tickets';
 import { QueryBuilder } from '../utils/queryBuilder';
 import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
 import { QueryableEntity } from '../utils/queryableEntity';
 import { QueryResult } from '../types/queryBuilder';
 
 // Re-export Ticket interface for external use
-export { Ticket } from './tickets';
+export { ITickets as Ticket } from './tickets';
 
 export interface TicketQuery {
   filter?: Record<string, any>;

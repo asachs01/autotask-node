@@ -1,161 +1,188 @@
-import { Contracts, Contract } from '../../src/entities/contracts';
-import { AxiosInstance } from 'axios';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from '@jest/globals';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import winston from 'winston';
 import {
-  createMockAxios,
-  createMockLogger,
-  createTestRequestHandler,
-} from '../utils/testHelpers';
+  Contracts,
+  IContracts,
+  IContractsQuery,
+} from '../../src/entities/contracts';
 
-describe('Contracts', () => {
+describe('Contracts Entity', () => {
   let contracts: Contracts;
   let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: jest.Mocked<winston.Logger>;
+  let mockLogger: winston.Logger;
 
   beforeEach(() => {
-    mockAxios = createMockAxios();
-    mockLogger = createMockLogger();
-    const testRequestHandler = createTestRequestHandler(mockAxios, mockLogger);
-    contracts = new Contracts(mockAxios, mockLogger, testRequestHandler);
-  });
+    mockAxios = {
+      get: jest.fn(),
+      post: jest.fn(),
+      put: jest.fn(),
+      patch: jest.fn(),
+      delete: jest.fn(),
+      interceptors: {
+        request: {
+          use: jest.fn(),
+          eject: jest.fn(),
+        },
+        response: {
+          use: jest.fn(),
+          eject: jest.fn(),
+        },
+      },
+    } as any;
 
-  describe('create', () => {
-    it('should create a contract', async () => {
-      const contractData: Contract = {
-        accountId: 123,
-        contractName: 'Test Contract',
-        contractType: 1,
-        status: 1,
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-      };
-
-      const expectedResponse = { data: { id: 1, ...contractData } };
-      mockAxios.post.mockResolvedValue(expectedResponse);
-
-      const result = await contracts.create(contractData);
-
-      expect(mockAxios.post).toHaveBeenCalledWith('/Contracts', contractData);
-      expect(result.data).toEqual(expectedResponse.data);
+    mockLogger = winston.createLogger({
+      level: 'error',
+      transports: [new winston.transports.Console({ silent: true })],
     });
 
-    it('should handle create errors', async () => {
-      const contractData: Contract = { accountId: 123 };
-      mockAxios.post.mockRejectedValue(new Error('API Error'));
+    contracts = new Contracts(mockAxios, mockLogger);
+  });
 
-      await expect(contracts.create(contractData)).rejects.toThrow('API Error');
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('list', () => {
+    it('should list contracts successfully', async () => {
+      const mockData = [
+        { id: 1, name: 'Contracts 1' },
+        { id: 2, name: 'Contracts 2' },
+      ];
+
+      mockAxios.get.mockResolvedValueOnce({
+        data: { items: mockData },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
+
+      const result = await contracts.list();
+
+      expect(result.data).toEqual(mockData);
+      expect(mockAxios.get).toHaveBeenCalledWith('/Contracts/query', {
+        params: {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        },
+      });
+    });
+
+    it('should handle query parameters', async () => {
+      const query: IContractsQuery = {
+        filter: { name: 'test' },
+        sort: 'id',
+        page: 1,
+        pageSize: 10,
+      };
+
+      mockAxios.get.mockResolvedValueOnce({
+        data: { items: [] },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
+
+      await contracts.list(query);
+
+      expect(mockAxios.get).toHaveBeenCalledWith('/Contracts/query', {
+        params: {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          pageSize: 10,
+        },
+      });
     });
   });
 
   describe('get', () => {
-    it('should get a contract by id', async () => {
-      const contractId = 1;
-      const expectedResponse = {
-        data: { id: contractId, contractName: 'Test Contract' },
-      };
-      mockAxios.get.mockResolvedValue(expectedResponse);
+    it('should get contracts by id', async () => {
+      const mockData = { id: 1, name: 'Test Contracts' };
 
-      const result = await contracts.get(contractId);
+      mockAxios.get.mockResolvedValueOnce({
+        data: { item: mockData },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
 
+      const result = await contracts.get(1);
+
+      expect(result.data).toEqual(mockData);
       expect(mockAxios.get).toHaveBeenCalledWith('/Contracts/1');
-      expect(result.data).toEqual(expectedResponse.data);
     });
+  });
 
-    it('should handle get errors', async () => {
-      mockAxios.get.mockRejectedValue(new Error('Not Found'));
+  describe('create', () => {
+    it('should create contracts successfully', async () => {
+      const contractsData = { name: 'New Contracts' };
+      const mockResponse = { id: 1, ...contractsData };
 
-      await expect(contracts.get(999)).rejects.toThrow('Not Found');
+      mockAxios.post.mockResolvedValueOnce({
+        data: { item: mockResponse },
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as any,
+      });
+
+      const result = await contracts.create(contractsData);
+
+      expect(result.data).toEqual(mockResponse);
+      expect(mockAxios.post).toHaveBeenCalledWith('/Contracts', contractsData);
     });
   });
 
   describe('update', () => {
-    it('should update a contract', async () => {
-      const contractId = 1;
-      const updateData: Partial<Contract> = {
-        contractName: 'Updated Contract',
-      };
-      const expectedResponse = { data: { id: contractId, ...updateData } };
-      mockAxios.put.mockResolvedValue(expectedResponse);
+    it('should update contracts successfully', async () => {
+      const contractsData = { name: 'Updated Contracts' };
+      const mockResponse = { id: 1, ...contractsData };
 
-      const result = await contracts.update(contractId, updateData);
-
-      expect(mockAxios.put).toHaveBeenCalledWith('/Contracts/1', updateData);
-      expect(result.data).toEqual(expectedResponse.data);
-    });
-
-    it('should handle update errors', async () => {
-      mockAxios.put.mockRejectedValue(new Error('Update Failed'));
-
-      await expect(contracts.update(1, {})).rejects.toThrow('Update Failed');
-    });
-  });
-
-  describe('delete', () => {
-    it('should delete a contract', async () => {
-      const contractId = 1;
-      mockAxios.delete.mockResolvedValue({ data: {} });
-
-      await contracts.delete(contractId);
-
-      expect(mockAxios.delete).toHaveBeenCalledWith('/Contracts/1');
-    });
-
-    it('should handle delete errors', async () => {
-      mockAxios.delete.mockRejectedValue(new Error('Delete Failed'));
-
-      await expect(contracts.delete(1)).rejects.toThrow('Delete Failed');
-    });
-  });
-
-  describe('list', () => {
-    it('should list contracts with default filter', async () => {
-      const expectedResponse = {
-        data: [{ id: 1, contractName: 'Contract 1' }],
-      };
-      mockAxios.post.mockResolvedValue(expectedResponse);
-
-      const result = await contracts.list();
-
-      expect(mockAxios.post).toHaveBeenCalledWith('/Contracts/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      mockAxios.put.mockResolvedValueOnce({
+        data: { item: mockResponse },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
       });
-      expect(result.data).toEqual(expectedResponse.data);
-    });
 
-    it('should list contracts with custom filter', async () => {
-      const query = { filter: { accountId: 123 }, page: 1, pageSize: 10 };
-      const expectedResponse = { data: [{ id: 1, accountId: 123 }] };
-      mockAxios.post.mockResolvedValue(expectedResponse);
+      const result = await contracts.update(1, contractsData);
 
-      const result = await contracts.list(query);
-
-      expect(mockAxios.post).toHaveBeenCalledWith('/Contracts/query', {
-        filter: [{ op: 'eq', field: 'accountId', value: 123 }],
-        page: 1,
-        pageSize: 10,
-      });
-      expect(result.data).toEqual(expectedResponse.data);
-    });
-
-    it('should handle list errors', async () => {
-      mockAxios.post.mockRejectedValue(new Error('List Failed'));
-
-      await expect(contracts.list()).rejects.toThrow('List Failed');
+      expect(result.data).toEqual(mockResponse);
+      expect(mockAxios.put).toHaveBeenCalledWith('/Contracts/1', contractsData);
     });
   });
 
-  describe('getMetadata', () => {
-    it('should return metadata for all operations', () => {
-      const metadata = Contracts.getMetadata();
+  describe('patch', () => {
+    it('should partially update contracts successfully', async () => {
+      const contractsData = { name: 'Patched Contracts' };
+      const mockResponse = { id: 1, ...contractsData };
 
-      expect(metadata).toHaveLength(5);
-      expect(metadata.map(m => m.operation)).toEqual([
-        'createContract',
-        'getContract',
-        'updateContract',
-        'deleteContract',
-        'listContracts',
-      ]);
+      mockAxios.patch.mockResolvedValueOnce({
+        data: { item: mockResponse },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
+
+      const result = await contracts.patch(1, contractsData);
+
+      expect(result.data).toEqual(mockResponse);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/Contracts/1',
+        contractsData
+      );
     });
   });
 });

@@ -1,0 +1,158 @@
+import { AxiosInstance } from 'axios';
+import winston from 'winston';
+import { MethodMetadata, ApiResponse, RequestHandler } from '../types';
+import { BaseEntity } from './base';
+
+export interface IServiceCallTaskResources {
+  id?: number;
+  [key: string]: any;
+}
+
+export interface IServiceCallTaskResourcesQuery {
+  filter?: Record<string, any>;
+  sort?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+/**
+ * ServiceCallTaskResources entity class for Autotask API
+ * 
+ * Resource assignments for service call tasks
+ * Supported Operations: GET, POST, DELETE
+ * Category: service_calls
+ * 
+ * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/ServiceCallTaskResourceEntity.htm}
+ */
+export class ServiceCallTaskResources extends BaseEntity {
+  private readonly endpoint = '/ServiceCallTaskResources';
+
+  constructor(
+    axios: AxiosInstance,
+    logger: winston.Logger,
+    requestHandler?: RequestHandler
+  ) {
+    super(axios, logger, requestHandler);
+  }
+
+  static getMetadata(): MethodMetadata[] {
+    return [
+      {
+        operation: 'createServiceCallTaskResources',
+        requiredParams: ['serviceCallTaskResources'],
+        optionalParams: [],
+        returnType: 'IServiceCallTaskResources',
+        endpoint: '/ServiceCallTaskResources',
+      },
+      {
+        operation: 'getServiceCallTaskResources',
+        requiredParams: ['id'],
+        optionalParams: [],
+        returnType: 'IServiceCallTaskResources',
+        endpoint: '/ServiceCallTaskResources/{id}',
+      },
+      {
+        operation: 'deleteServiceCallTaskResources',
+        requiredParams: ['id'],
+        optionalParams: [],
+        returnType: 'void',
+        endpoint: '/ServiceCallTaskResources/{id}',
+      },
+      {
+        operation: 'listServiceCallTaskResources',
+        requiredParams: [],
+        optionalParams: ['filter', 'sort', 'page', 'pageSize'],
+        returnType: 'IServiceCallTaskResources[]',
+        endpoint: '/ServiceCallTaskResources',
+      }
+    ];
+  }
+
+  /**
+   * Create a new servicecalltaskresources
+   * @param serviceCallTaskResources - The servicecalltaskresources data to create
+   * @returns Promise with the created servicecalltaskresources
+   */
+  async create(serviceCallTaskResources: IServiceCallTaskResources): Promise<ApiResponse<IServiceCallTaskResources>> {
+    this.logger.info('Creating servicecalltaskresources', { serviceCallTaskResources });
+    return this.executeRequest(
+      async () => this.axios.post(this.endpoint, serviceCallTaskResources),
+      this.endpoint,
+      'POST'
+    );
+  }
+
+  /**
+   * Get a servicecalltaskresources by ID
+   * @param id - The servicecalltaskresources ID
+   * @returns Promise with the servicecalltaskresources data
+   */
+  async get(id: number): Promise<ApiResponse<IServiceCallTaskResources>> {
+    this.logger.info('Getting servicecalltaskresources', { id });
+    return this.executeRequest(
+      async () => this.axios.get(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'GET'
+    );
+  }
+
+  /**
+   * Delete a servicecalltaskresources
+   * @param id - The servicecalltaskresources ID
+   * @returns Promise that resolves when deletion is complete
+   */
+  async delete(id: number): Promise<void> {
+    this.logger.info('Deleting servicecalltaskresources', { id });
+    await this.executeRequest(
+      async () => this.axios.delete(`${this.endpoint}/${id}`),
+      `${this.endpoint}/${id}`,
+      'DELETE'
+    );
+  }
+
+  /**
+   * List servicecalltaskresources with optional filtering
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns Promise with array of servicecalltaskresources
+   */
+  async list(query: IServiceCallTaskResourcesQuery = {}): Promise<ApiResponse<IServiceCallTaskResources[]>> {
+    this.logger.info('Listing servicecalltaskresources', { query });
+    const searchBody: Record<string, any> = {};
+
+    // Set up basic filter if none provided
+    if (!query.filter || Object.keys(query.filter).length === 0) {
+      searchBody.filter = [
+        {
+          op: 'gte',
+          field: 'id',
+          value: 0,
+        },
+      ];
+    } else {
+      // Convert object filter to array format
+      if (!Array.isArray(query.filter)) {
+        const filterArray = [];
+        for (const [field, value] of Object.entries(query.filter)) {
+          filterArray.push({
+            op: 'eq',
+            field: field,
+            value: value,
+          });
+        }
+        searchBody.filter = filterArray;
+      } else {
+        searchBody.filter = query.filter;
+      }
+    }
+
+    if (query.sort) searchBody.sort = query.sort;
+    if (query.page) searchBody.page = query.page;
+    if (query.pageSize) searchBody.pageSize = query.pageSize;
+
+    return this.executeQueryRequest(
+      async () => this.axios.get(`${this.endpoint}/query`, { params: searchBody }),
+      `${this.endpoint}/query`,
+      'GET'
+    );
+  }
+}
