@@ -153,6 +153,15 @@ The SDK provides access to all major Autotask entity categories:
 
 ## 🔧 Authentication & Setup
 
+### Authentication Method
+
+The SDK uses Autotask's header-based authentication with three required headers:
+- `ApiIntegrationCode`: Your Autotask API integration code
+- `UserName`: Your API username (email address)
+- `Secret`: Your API secret/password
+
+**Note:** This SDK does NOT use Basic Authentication. All credentials are sent as separate headers as required by the Autotask REST API.
+
 ### Environment Variables (Recommended)
 
 ```bash

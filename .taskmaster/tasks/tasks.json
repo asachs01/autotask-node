@@ -1,0 +1,1411 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Audit and Identify All Placeholder Implementations",
+        "description": "Perform a comprehensive audit of the codebase to identify all placeholder methods, stub implementations, and hardcoded return values that need to be replaced.",
+        "details": "Create a detailed inventory of all placeholder implementations across the SDK. This includes:\n1. Methods returning hardcoded values\n2. Stub implementations with TODOs\n3. Fake metrics generators\n4. Incomplete entity implementations\n5. Missing validation logic\n\nThe output should be a spreadsheet or document that lists:\n- File path\n- Function/method name\n- Current implementation status\n- Required implementation details\n- Priority level\n- Estimated complexity\n\nThis will serve as the roadmap for implementation tasks.",
+        "testStrategy": "No direct tests for this task, but the output document should be reviewed by the team lead to ensure completeness. Verify the audit covers all 215+ entity classes and all critical systems mentioned in the PRD.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Automated Code Scanning Tools",
+            "description": "Configure and run automated code scanning tools to identify placeholder implementations across the codebase. This includes setting up static code analysis tools that can detect patterns like TODOs, hardcoded return values, and stub implementations.",
+            "dependencies": [],
+            "details": "1. Select and install appropriate static code analysis tools (e.g., ESLint, SonarQube)\n2. Configure custom rules to detect patterns like:\n   - Methods with TODO comments\n   - Functions returning hardcoded values\n   - Empty method implementations\n   - Methods throwing NotImplementedExceptions\n3. Create a script that runs these tools across the entire codebase\n4. Generate an initial report in CSV or JSON format\n5. Set up the scanning process to run in a CI/CD pipeline for future audits",
+            "status": "done",
+            "testStrategy": "Verify the scanning tools correctly identify known placeholder implementations in a test directory. Compare manual review results of a sample module against automated scanning results to ensure accuracy."
+          },
+          {
+            "id": 2,
+            "title": "Perform Manual Code Review of Critical Components",
+            "description": "Conduct a thorough manual review of critical system components to identify placeholder implementations that automated tools might miss, especially focusing on complex business logic, validation systems, and entity implementations.",
+            "dependencies": [],
+            "details": "1. Identify critical system components based on the PRD\n2. Create a checklist of placeholder patterns to look for during review\n3. Review each critical component's source code, focusing on:\n   - Fake metrics generators\n   - Incomplete entity implementations\n   - Missing validation logic\n   - Simplified implementations that don't match specifications\n4. Document findings in the same format as the automated scan results\n5. Pay special attention to the 215+ entity classes mentioned in the project context",
+            "status": "done",
+            "testStrategy": "Have a second developer verify findings for a subset of components to ensure thoroughness and accuracy of the manual review."
+          },
+          {
+            "id": 3,
+            "title": "Create Comprehensive Inventory Spreadsheet",
+            "description": "Consolidate findings from automated scans and manual reviews into a structured spreadsheet that categorizes and prioritizes all placeholder implementations according to the required format.",
+            "dependencies": [],
+            "details": "1. Create a spreadsheet with the following columns:\n   - File path\n   - Function/method name\n   - Current implementation status (e.g., hardcoded, stubbed, TODO, fake implementation)\n   - Required implementation details\n   - Priority level (High/Medium/Low)\n   - Estimated complexity (Easy/Medium/Hard)\n2. Import data from automated scans\n3. Add manually identified placeholders\n4. Remove duplicates and consolidate related items\n5. Organize by module/component for better readability\n6. Add filtering and sorting capabilities to the spreadsheet",
+            "status": "done",
+            "testStrategy": "Verify the spreadsheet contains all placeholder implementations identified in tasks 1 and 2. Ensure all required columns are present and properly formatted."
+          },
+          {
+            "id": 4,
+            "title": "Analyze Dependencies and Implementation Complexity",
+            "description": "Review each identified placeholder to determine its dependencies, implementation complexity, and priority based on system architecture and business requirements.",
+            "dependencies": [],
+            "details": "1. For each placeholder implementation in the inventory:\n   - Analyze dependencies on other components\n   - Determine what external systems or APIs it interacts with\n   - Assess the complexity of implementing the real functionality\n   - Determine the impact on other system components\n2. Update the spreadsheet with:\n   - More detailed implementation requirements\n   - Refined complexity estimates\n   - Dependency information\n   - Updated priority based on system impact\n3. Identify groups of related placeholders that should be implemented together",
+            "status": "done",
+            "testStrategy": "Review complexity and priority assignments with technical leads to ensure accuracy. Verify dependency chains are correctly identified by tracing through the codebase."
+          },
+          {
+            "id": 5,
+            "title": "Create Implementation Roadmap and Final Report",
+            "description": "Finalize the audit by creating a prioritized implementation roadmap and executive summary that will guide the subsequent development tasks.",
+            "dependencies": [],
+            "details": "1. Group placeholder implementations into logical implementation batches\n2. Create a prioritized implementation sequence considering:\n   - Dependencies between components\n   - Business priority\n   - Implementation complexity\n3. Estimate implementation effort for each batch\n4. Prepare an executive summary that includes:\n   - Total number of placeholder implementations found\n   - Breakdown by type, priority, and complexity\n   - Key risk areas and critical components\n   - Recommended implementation approach\n5. Present findings to the development team and stakeholders\n6. Finalize the document based on feedback",
+            "status": "done",
+            "testStrategy": "Have the team lead review the final report and roadmap to ensure it provides a clear path forward for implementation tasks. Verify the roadmap addresses all 215+ entity classes and critical systems mentioned in the PRD."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Core Entity Validation Framework",
+        "description": "Create a robust validation framework that will be used across all entity classes to enforce business rules, field constraints, and data integrity.",
+        "details": "Design and implement a validation system that includes:\n1. Field type validation (string, number, boolean, date, etc.)\n2. Required field validation\n3. Field length constraints\n4. Format validation (email, phone, etc.)\n5. Range validation for numeric fields\n6. Enumeration validation for fields with predefined values\n7. Custom validation rule support\n\nImplementation should use a decorator or schema-based approach to define validation rules. Example:\n\n```typescript\nclass ValidationRule {\n  constructor(public field: string, public validator: (value: any) => boolean, public message: string) {}\n}\n\nclass EntityValidator {\n  validate(entity: any, rules: ValidationRule[]): ValidationResult {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Create unit tests for each validation type. Test both valid and invalid scenarios. Ensure error messages are clear and actionable. Verify that the validation framework can be extended with custom rules. Test with at least 5 different entity types to ensure flexibility.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Base Validation Rule and Result Classes",
+            "description": "Implement the core validation classes that will serve as the foundation for the validation framework. This includes the ValidationRule class for defining rules, ValidationResult class for storing validation outcomes, and ValidationError class for representing individual validation failures.",
+            "dependencies": [],
+            "details": "Create the following classes:\n1. ValidationRule class with field, validator function, and error message properties\n2. ValidationError class with field name, value, and error message properties\n3. ValidationResult class with methods to add errors, check if valid, and retrieve all errors\n\nExample implementation:\n```typescript\nexport class ValidationRule {\n  constructor(\n    public field: string,\n    public validator: (value: any) => boolean,\n    public message: string\n  ) {}\n}\n\nexport class ValidationError {\n  constructor(\n    public field: string,\n    public value: any,\n    public message: string\n  ) {}\n}\n\nexport class ValidationResult {\n  private errors: ValidationError[] = [];\n\n  addError(error: ValidationError): void {\n    this.errors.push(error);\n  }\n\n  isValid(): boolean {\n    return this.errors.length === 0;\n  }\n\n  getErrors(): ValidationError[] {\n    return [...this.errors];\n  }\n\n  getErrorsForField(field: string): ValidationError[] {\n    return this.errors.filter(error => error.field === field);\n  }\n}\n```",
+            "status": "done",
+            "testStrategy": "Write unit tests for each class to verify their functionality. Test ValidationRule with various validator functions. Test ValidationResult's methods for adding errors, checking validity, and retrieving errors. Ensure ValidationError correctly stores field, value, and message information."
+          },
+          {
+            "id": 2,
+            "title": "Implement Core EntityValidator Class",
+            "description": "Create the main EntityValidator class that will process validation rules against entity objects. This class will be responsible for executing validation rules and collecting validation errors.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Implement the EntityValidator class with the following features:\n1. A validate method that accepts an entity object and an array of ValidationRule objects\n2. Logic to apply each validation rule to the corresponding field in the entity\n3. Collection of validation errors into a ValidationResult object\n4. Support for nested property paths (e.g., 'user.address.city')\n\nExample implementation:\n```typescript\nexport class EntityValidator {\n  validate(entity: any, rules: ValidationRule[]): ValidationResult {\n    const result = new ValidationResult();\n    \n    for (const rule of rules) {\n      const value = this.getNestedPropertyValue(entity, rule.field);\n      \n      if (!rule.validator(value)) {\n        result.addError(new ValidationError(rule.field, value, rule.message));\n      }\n    }\n    \n    return result;\n  }\n  \n  private getNestedPropertyValue(obj: any, path: string): any {\n    return path.split('.').reduce((o, key) => (o && o[key] !== undefined) ? o[key] : undefined, obj);\n  }\n}\n```",
+            "status": "done",
+            "testStrategy": "Create unit tests for the EntityValidator class. Test validation with simple entities and with complex nested entities. Verify that validation rules are correctly applied and errors are properly collected. Test edge cases such as null values, undefined properties, and empty objects."
+          },
+          {
+            "id": 3,
+            "title": "Implement Standard Validation Rule Factories",
+            "description": "Create factory functions for generating standard validation rules such as required fields, type validation, length constraints, format validation, range validation, and enumeration validation.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Implement a set of factory functions that create ValidationRule instances for common validation scenarios:\n1. required() - validates that a field is not null, undefined, or empty string\n2. type() - validates field type (string, number, boolean, date)\n3. length() - validates string length constraints (min, max)\n4. format() - validates string format (email, phone, URL, etc.)\n5. range() - validates numeric range constraints (min, max)\n6. enumeration() - validates value is one of a predefined set\n\nExample implementation:\n```typescript\nexport class ValidationRules {\n  static required(field: string, message?: string): ValidationRule {\n    return new ValidationRule(\n      field,\n      value => value !== null && value !== undefined && value !== '',\n      message || `${field} is required`\n    );\n  }\n  \n  static type(field: string, type: 'string' | 'number' | 'boolean' | 'date', message?: string): ValidationRule {\n    return new ValidationRule(\n      field,\n      value => {\n        if (value === null || value === undefined) return true;\n        switch (type) {\n          case 'string': return typeof value === 'string';\n          case 'number': return typeof value === 'number' && !isNaN(value);\n          case 'boolean': return typeof value === 'boolean';\n          case 'date': return value instanceof Date && !isNaN(value.getTime());\n          default: return false;\n        }\n      },\n      message || `${field} must be a valid ${type}`\n    );\n  }\n  \n  static length(field: string, options: { min?: number, max?: number }, message?: string): ValidationRule {\n    return new ValidationRule(\n      field,\n      value => {\n        if (value === null || value === undefined) return true;\n        if (typeof value !== 'string') return false;\n        \n        const { min, max } = options;\n        let valid = true;\n        \n        if (min !== undefined) valid = valid && value.length >= min;\n        if (max !== undefined) valid = valid && value.length <= max;\n        \n        return valid;\n      },\n      message || `${field} length must be ${options.min !== undefined ? `at least ${options.min}` : ''}${options.min !== undefined && options.max !== undefined ? ' and ' : ''}${options.max !== undefined ? `at most ${options.max}` : ''} characters`\n    );\n  }\n  \n  static format(field: string, format: 'email' | 'phone' | 'url', message?: string): ValidationRule {\n    const patterns = {\n      email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/,\n      phone: /^\\+?[0-9]{10,15}$/,\n      url: /^(https?:\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*\\/?$/\n    };\n    \n    return new ValidationRule(\n      field,\n      value => {\n        if (value === null || value === undefined || value === '') return true;\n        if (typeof value !== 'string') return false;\n        return patterns[format].test(value);\n      },\n      message || `${field} must be a valid ${format} format`\n    );\n  }\n  \n  static range(field: string, options: { min?: number, max?: number }, message?: string): ValidationRule {\n    return new ValidationRule(\n      field,\n      value => {\n        if (value === null || value === undefined) return true;\n        if (typeof value !== 'number') return false;\n        \n        const { min, max } = options;\n        let valid = true;\n        \n        if (min !== undefined) valid = valid && value >= min;\n        if (max !== undefined) valid = valid && value <= max;\n        \n        return valid;\n      },\n      message || `${field} must be ${options.min !== undefined ? `at least ${options.min}` : ''}${options.min !== undefined && options.max !== undefined ? ' and ' : ''}${options.max !== undefined ? `at most ${options.max}` : ''}`\n    );\n  }\n  \n  static enumeration(field: string, allowedValues: any[], message?: string): ValidationRule {\n    return new ValidationRule(\n      field,\n      value => {\n        if (value === null || value === undefined) return true;\n        return allowedValues.includes(value);\n      },\n      message || `${field} must be one of: ${allowedValues.join(', ')}`\n    );\n  }\n}\n```",
+            "status": "done",
+            "testStrategy": "Create unit tests for each validation rule factory function. Test both valid and invalid inputs for each rule type. Verify that error messages are correctly generated. Test edge cases such as empty strings, zero values, and boundary conditions for ranges and lengths."
+          },
+          {
+            "id": 4,
+            "title": "Implement Decorator-Based Validation System",
+            "description": "Create a decorator-based approach for defining validation rules directly on entity class properties. This will allow for a more declarative and type-safe way to define validation rules.",
+            "dependencies": [
+              "2.1",
+              "2.2",
+              "2.3"
+            ],
+            "details": "Implement TypeScript decorators for validation that can be applied to entity class properties:\n1. Create a metadata storage mechanism to store validation rules defined by decorators\n2. Implement decorators for each validation type (required, type, length, etc.)\n3. Create a validate function that can validate an entity instance using its class's metadata\n\nExample implementation:\n```typescript\nconst validationMetadataKey = Symbol('validation');\n\ninterface ValidationMetadata {\n  propertyName: string;\n  rules: ValidationRule[];\n}\n\nfunction getValidationMetadata(target: any): ValidationMetadata[] {\n  return Reflect.getMetadata(validationMetadataKey, target) || [];\n}\n\nfunction addValidationMetadata(target: any, propertyName: string, rule: ValidationRule): void {\n  const existingMetadata = getValidationMetadata(target);\n  let propertyMetadata = existingMetadata.find(m => m.propertyName === propertyName);\n  \n  if (!propertyMetadata) {\n    propertyMetadata = { propertyName, rules: [] };\n    existingMetadata.push(propertyMetadata);\n  }\n  \n  propertyMetadata.rules.push(rule);\n  Reflect.defineMetadata(validationMetadataKey, existingMetadata, target);\n}\n\n// Decorator factory functions\nexport function Required(message?: string) {\n  return function(target: any, propertyName: string) {\n    addValidationMetadata(\n      target.constructor,\n      propertyName,\n      ValidationRules.required(propertyName, message)\n    );\n  };\n}\n\nexport function IsString(message?: string) {\n  return function(target: any, propertyName: string) {\n    addValidationMetadata(\n      target.constructor,\n      propertyName,\n      ValidationRules.type(propertyName, 'string', message)\n    );\n  };\n}\n\nexport function Length(options: { min?: number, max?: number }, message?: string) {\n  return function(target: any, propertyName: string) {\n    addValidationMetadata(\n      target.constructor,\n      propertyName,\n      ValidationRules.length(propertyName, options, message)\n    );\n  };\n}\n\n// Add more decorators for other validation types...\n\n// Function to validate an entity using its class's metadata\nexport function validate(entity: any): ValidationResult {\n  const validator = new EntityValidator();\n  const result = new ValidationResult();\n  const metadata = getValidationMetadata(entity.constructor);\n  \n  for (const propertyMetadata of metadata) {\n    const propertyResult = validator.validate(entity, propertyMetadata.rules);\n    for (const error of propertyResult.getErrors()) {\n      result.addError(error);\n    }\n  }\n  \n  return result;\n}\n```",
+            "status": "done",
+            "testStrategy": "Create unit tests for the decorator-based validation system. Define test entity classes with various decorators and validate instances of these classes. Test both valid and invalid entity instances. Verify that validation rules defined with decorators are correctly applied and errors are properly collected."
+          },
+          {
+            "id": 5,
+            "title": "Implement Schema-Based Validation and Custom Validation Support",
+            "description": "Create a schema-based validation approach as an alternative to decorators, and implement support for custom validation rules and entity-level validation that spans multiple fields.",
+            "dependencies": [
+              "2.1",
+              "2.2",
+              "2.3"
+            ],
+            "details": "Implement schema-based validation and custom validation features:\n1. Create a ValidationSchema class for defining validation rules programmatically\n2. Add support for custom validation functions that can access the entire entity\n3. Implement entity-level validation for rules that involve multiple fields\n4. Create a unified validation API that works with both decorator and schema approaches\n\nExample implementation:\n```typescript\nexport class ValidationSchema<T = any> {\n  private rules: { [key: string]: ValidationRule[] } = {};\n  private entityRules: ((entity: T) => ValidationError[])[] = [];\n  \n  field(field: keyof T & string): FieldBuilder<T> {\n    return new FieldBuilder<T>(this, field);\n  }\n  \n  addRule(field: keyof T & string, rule: ValidationRule): this {\n    if (!this.rules[field]) {\n      this.rules[field] = [];\n    }\n    this.rules[field].push(rule);\n    return this;\n  }\n  \n  addEntityRule(validator: (entity: T) => ValidationError[]): this {\n    this.entityRules.push(validator);\n    return this;\n  }\n  \n  validate(entity: T): ValidationResult {\n    const validator = new EntityValidator();\n    const result = new ValidationResult();\n    \n    // Validate field-level rules\n    for (const field in this.rules) {\n      const fieldRules = this.rules[field];\n      const fieldResult = validator.validate(entity, fieldRules);\n      for (const error of fieldResult.getErrors()) {\n        result.addError(error);\n      }\n    }\n    \n    // Validate entity-level rules\n    for (const entityRule of this.entityRules) {\n      const errors = entityRule(entity);\n      for (const error of errors) {\n        result.addError(error);\n      }\n    }\n    \n    return result;\n  }\n}\n\nexport class FieldBuilder<T> {\n  constructor(private schema: ValidationSchema<T>, private field: keyof T & string) {}\n  \n  required(message?: string): this {\n    this.schema.addRule(this.field, ValidationRules.required(this.field as string, message));\n    return this;\n  }\n  \n  string(message?: string): this {\n    this.schema.addRule(this.field, ValidationRules.type(this.field as string, 'string', message));\n    return this;\n  }\n  \n  length(options: { min?: number, max?: number }, message?: string): this {\n    this.schema.addRule(this.field, ValidationRules.length(this.field as string, options, message));\n    return this;\n  }\n  \n  // Add more validation methods...\n  \n  custom(validator: (value: any) => boolean, message: string): this {\n    this.schema.addRule(this.field, new ValidationRule(this.field as string, validator, message));\n    return this;\n  }\n}\n\n// Example of a custom entity-level validation function\nexport function createPasswordMatchValidator<T>(password1Field: keyof T & string, password2Field: keyof T & string, message?: string) {\n  return (entity: T): ValidationError[] => {\n    const password1 = entity[password1Field];\n    const password2 = entity[password2Field];\n    \n    if (password1 !== password2) {\n      return [new ValidationError(password2Field as string, password2, message || 'Passwords do not match')];\n    }\n    \n    return [];\n  };\n}\n\n// Unified validation API\nexport class Validator {\n  static validate<T>(entity: T): ValidationResult {\n    // Try decorator-based validation first\n    const metadata = getValidationMetadata(entity.constructor);\n    if (metadata && metadata.length > 0) {\n      return validate(entity);\n    }\n    \n    // Fall back to schema-based validation if a schema is attached to the entity class\n    const schema = (entity.constructor as any).validationSchema;\n    if (schema instanceof ValidationSchema) {\n      return schema.validate(entity);\n    }\n    \n    // No validation rules found\n    return new ValidationResult();\n  }\n  \n  static defineSchema<T>(entityClass: new (...args: any[]) => T, schemaBuilder: (schema: ValidationSchema<T>) => ValidationSchema<T>): void {\n    const schema = schemaBuilder(new ValidationSchema<T>());\n    (entityClass as any).validationSchema = schema;\n  }\n}\n```",
+            "status": "done",
+            "testStrategy": "Create unit tests for schema-based validation and custom validation rules. Define test schemas for various entity types and validate instances against these schemas. Test custom validation functions and entity-level validation rules. Compare results between decorator-based and schema-based validation approaches to ensure consistency. Test complex validation scenarios that involve multiple fields and custom business rules."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement Business Rule Enforcement System",
+        "description": "Create a system to enforce complex business rules that span multiple fields or entities according to Autotask API requirements.",
+        "details": "Develop a business rule engine that can:\n1. Define rules as code or configuration\n2. Validate cross-field dependencies (e.g., if field A has value X, then field B must have value Y)\n3. Enforce entity relationship rules\n4. Apply conditional validation logic\n5. Support custom rule definitions\n\nThe implementation should use a rule registry pattern:\n\n```typescript\ninterface BusinessRule {\n  condition: (entity: any) => boolean;\n  validate: (entity: any) => ValidationResult;\n}\n\nclass BusinessRuleEngine {\n  private rules: Map<string, BusinessRule[]> = new Map();\n  \n  registerRule(entityType: string, rule: BusinessRule): void {\n    // Implementation\n  }\n  \n  validateEntity(entityType: string, entity: any): ValidationResult {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Create unit tests for the rule engine with various rule types. Test complex scenarios with multiple interdependent rules. Verify that rules can be registered at runtime. Test with actual Autotask business rules extracted from their API documentation.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Core BusinessRule Interface and ValidationResult",
+            "description": "Create the foundation interfaces and classes for the business rule system, including the BusinessRule interface and ValidationResult class that will be used throughout the system.",
+            "dependencies": [],
+            "details": "Create the following core components:\n1. Define a ValidationResult class that includes success/failure status, error messages, and affected fields\n2. Implement the BusinessRule interface with condition and validate methods\n3. Create a RuleContext class to pass contextual information to rules\n4. Add utility methods for common validation patterns\n5. Implement basic rule types (RequiredFieldRule, FieldValueRule, etc.)",
+            "status": "pending",
+            "testStrategy": "Write unit tests for each rule type with various input scenarios. Test ValidationResult aggregation. Verify that rule conditions correctly determine when validation should be applied."
+          },
+          {
+            "id": 2,
+            "title": "Develop BusinessRuleEngine Implementation",
+            "description": "Implement the core BusinessRuleEngine class that manages rule registration and execution according to the rule registry pattern.",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Implement the BusinessRuleEngine class with these features:\n1. Complete the registerRule method to store rules by entity type\n2. Implement validateEntity to execute applicable rules for an entity\n3. Add rule prioritization to control execution order\n4. Implement rule dependency resolution\n5. Add performance optimization for rule execution\n6. Include methods to list and remove rules",
+            "status": "pending",
+            "testStrategy": "Test rule registration and retrieval. Verify rule execution order. Test with multiple rules for the same entity type. Measure performance with large rule sets."
+          },
+          {
+            "id": 3,
+            "title": "Implement Cross-Field Validation Rules",
+            "description": "Create specialized rule implementations for cross-field validations that can enforce dependencies between multiple fields within an entity.",
+            "dependencies": [
+              "3.1",
+              "3.2"
+            ],
+            "details": "Develop specialized rule types for cross-field validation:\n1. Implement ConditionalFieldRule (if field A has value X, then field B must have value Y)\n2. Create FieldComparisonRule (field A must be greater than field B)\n3. Implement FieldDependencyRule (if field A exists, field B must also exist)\n4. Add support for complex field path expressions (e.g., 'customer.address.country')\n5. Create a fluent API for defining cross-field rules",
+            "status": "pending",
+            "testStrategy": "Test each rule type with valid and invalid data. Test complex nested field paths. Verify error messages correctly identify the fields involved in the validation failure."
+          },
+          {
+            "id": 4,
+            "title": "Implement Entity Relationship Rules",
+            "description": "Create rule types that can validate relationships between different entities, ensuring referential integrity and business constraints across the data model.",
+            "dependencies": [
+              "3.2"
+            ],
+            "details": "Implement entity relationship validation:\n1. Create EntityExistsRule to verify referenced entities exist\n2. Implement EntityRelationshipRule to validate cardinality constraints\n3. Add support for validating parent-child relationships\n4. Implement circular reference detection\n5. Create a mechanism to load related entities during validation\n6. Add support for cascading validation across related entities",
+            "status": "pending",
+            "testStrategy": "Test with various entity relationship scenarios. Verify proper handling of missing related entities. Test circular reference detection. Measure performance with deep entity hierarchies."
+          },
+          {
+            "id": 5,
+            "title": "Implement Rule Configuration System",
+            "description": "Create a system to define and load business rules from configuration rather than just code, allowing for dynamic rule management without code changes.",
+            "dependencies": [
+              "3.2",
+              "3.3",
+              "3.4"
+            ],
+            "details": "Develop a configuration-based rule system:\n1. Create a JSON schema for rule definitions\n2. Implement a RuleConfigurationLoader to parse rule configurations\n3. Add support for rule templates and inheritance\n4. Create a rule configuration validator\n5. Implement dynamic rule compilation/interpretation\n6. Add a rule management API for runtime rule modifications\n7. Implement rule versioning and change tracking",
+            "status": "pending",
+            "testStrategy": "Test loading rules from various configuration formats. Verify rule inheritance works correctly. Test dynamic rule updates at runtime. Verify rule versioning and tracking. Test with actual Autotask business rules extracted from their API documentation."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement Referential Integrity System",
+        "description": "Create a system to validate and enforce referential integrity between related entities in the Autotask ecosystem.",
+        "details": "Develop a referential integrity system that:\n1. Validates foreign key relationships before operations\n2. Checks that referenced entities exist\n3. Supports cascade operations (update/delete)\n4. Handles circular references\n5. Provides clear error messages for integrity violations\n\nImplementation should include:\n\n```typescript\ninterface RelationshipDefinition {\n  sourceEntity: string;\n  targetEntity: string;\n  sourceField: string;\n  targetField: string;\n  onDelete?: 'CASCADE' | 'RESTRICT' | 'SET_NULL';\n}\n\nclass ReferentialIntegrityManager {\n  private relationships: RelationshipDefinition[] = [];\n  \n  registerRelationship(relationship: RelationshipDefinition): void {\n    // Implementation\n  }\n  \n  validateOperation(operation: 'CREATE' | 'UPDATE' | 'DELETE', entityType: string, entity: any): Promise<ValidationResult> {\n    // Implementation\n  }\n  \n  performCascadeOperations(operation: 'UPDATE' | 'DELETE', entityType: string, entity: any): Promise<void> {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Create unit tests for relationship validation. Test cascade operations with mock entities. Verify circular reference handling. Test with actual Autotask entity relationships. Create integration tests that verify referential integrity across multiple entity operations.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement RelationshipDefinition Interface and Registration",
+            "description": "Create the RelationshipDefinition interface and implement the registration functionality in the ReferentialIntegrityManager class to allow defining relationships between entities.",
+            "dependencies": [],
+            "details": "Create the RelationshipDefinition interface as specified in the task. Implement the ReferentialIntegrityManager class with a private relationships array and the registerRelationship method. The method should validate the relationship definition (checking that all required fields are present and valid) before adding it to the relationships array. Include logic to prevent duplicate relationships and validate that the relationship definition follows the expected format.",
+            "status": "pending",
+            "testStrategy": "Write unit tests to verify that relationships can be registered correctly. Test validation of relationship definitions with both valid and invalid inputs. Verify that duplicate relationships are handled appropriately."
+          },
+          {
+            "id": 2,
+            "title": "Implement Relationship Validation Logic",
+            "description": "Create the validation logic that checks if operations on entities maintain referential integrity based on defined relationships.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Implement the validateOperation method in the ReferentialIntegrityManager class. This method should check if the operation (CREATE, UPDATE, DELETE) on an entity would violate any defined relationships. For CREATE and UPDATE operations, verify that referenced entities exist. For DELETE operations, check if other entities reference the entity being deleted. The method should return a ValidationResult object containing success status and any validation errors. Include logic to handle circular references by implementing a detection mechanism during validation.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with mock entities to verify validation works correctly for different operations. Test scenarios where validation should pass and fail. Test circular reference detection with complex relationship graphs. Verify that appropriate error messages are generated for integrity violations."
+          },
+          {
+            "id": 3,
+            "title": "Implement Cascade Operations",
+            "description": "Develop the functionality to perform cascade operations (update/delete) based on relationship definitions.",
+            "dependencies": [
+              "4.1",
+              "4.2"
+            ],
+            "details": "Implement the performCascadeOperations method in the ReferentialIntegrityManager class. This method should handle cascade operations based on the onDelete property in relationship definitions. For CASCADE operations, it should recursively apply the operation to related entities. For RESTRICT operations, it should prevent the operation if related entities exist. For SET_NULL operations, it should set the foreign key to null in related entities. The method should handle circular references to prevent infinite loops during cascade operations.",
+            "status": "pending",
+            "testStrategy": "Test cascade operations with mock entities for different cascade types (CASCADE, RESTRICT, SET_NULL). Verify that circular references are handled correctly during cascade operations. Test complex scenarios with multiple levels of relationships."
+          },
+          {
+            "id": 4,
+            "title": "Create Error Handling and Reporting System",
+            "description": "Implement a comprehensive error handling system that provides clear and actionable error messages for referential integrity violations.",
+            "dependencies": [
+              "4.2",
+              "4.3"
+            ],
+            "details": "Enhance the validation and cascade operation methods to provide detailed error messages. Create a structured error reporting system that includes: the type of violation, the entities involved, the relationship that was violated, and suggestions for resolving the issue. Implement different error types for various integrity violations (e.g., MissingReferenceError, CircularReferenceError, CascadeOperationError). Ensure that error messages are user-friendly and provide context about the violation.",
+            "status": "pending",
+            "testStrategy": "Test error messages for different types of integrity violations. Verify that error messages include all necessary information to understand and resolve the issue. Test error handling in complex scenarios with multiple violations."
+          },
+          {
+            "id": 5,
+            "title": "Integrate with Entity Operations and Create Documentation",
+            "description": "Integrate the referential integrity system with the entity operations in the Autotask ecosystem and create comprehensive documentation.",
+            "dependencies": [
+              "4.1",
+              "4.2",
+              "4.3",
+              "4.4"
+            ],
+            "details": "Create hooks or middleware to automatically validate operations and perform cascade operations when entities are created, updated, or deleted. Implement a transaction-like mechanism to ensure that operations are atomic (either all succeed or all fail). Create comprehensive documentation that explains how to define relationships, how the validation works, and how to handle integrity violations. Include examples of common relationship patterns and best practices for maintaining referential integrity.",
+            "status": "pending",
+            "testStrategy": "Create integration tests that verify referential integrity across multiple entity operations. Test the system with actual Autotask entity relationships. Verify that the transaction-like mechanism works correctly by testing scenarios where operations should be rolled back due to integrity violations."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement Entity Relationship Management",
+        "description": "Develop a system to manage relationships between entities, including lazy loading, eager loading, and relationship caching.",
+        "details": "Create a relationship management system that:\n1. Supports lazy loading of related entities\n2. Provides eager loading capabilities for performance optimization\n3. Implements relationship mapping between entities\n4. Handles circular dependencies gracefully\n5. Optimizes queries for related entities\n6. Implements relationship caching\n\nImplementation example:\n\n```typescript\nclass RelationshipManager {\n  private relationshipDefinitions: Map<string, EntityRelationship[]> = new Map();\n  private cache: RelationshipCache;\n  \n  constructor(private apiClient: AutotaskApiClient, cacheOptions?: CacheOptions) {\n    this.cache = new RelationshipCache(cacheOptions);\n  }\n  \n  defineRelationship(sourceEntity: string, relationship: EntityRelationship): void {\n    // Implementation\n  }\n  \n  async lazyLoad<T>(entity: any, relationshipName: string): Promise<T> {\n    // Implementation\n  }\n  \n  async eagerLoad<T>(entities: any[], relationshipNames: string[]): Promise<Map<any, Map<string, T>>> {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Test lazy loading with various entity types. Benchmark eager loading performance. Test circular dependency resolution. Verify caching improves performance on repeated relationship queries. Create integration tests with actual Autotask entities to verify relationship loading works correctly.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Relationship Definition and Mapping",
+            "description": "Create the core relationship definition system that allows defining relationships between entities, including relationship types (one-to-one, one-to-many, many-to-many) and mapping configurations.",
+            "dependencies": [],
+            "details": "Implement the `RelationshipManager` class with methods to define and store relationship configurations. Create an `EntityRelationship` interface that defines relationship properties like type, target entity, and foreign keys. Implement the `defineRelationship` method to register relationships between entities. Add support for bidirectional relationships and proper relationship type validation. Include relationship metadata such as cascade operations and join conditions.",
+            "status": "pending",
+            "testStrategy": "Test relationship definition with various entity types and relationship configurations. Verify that bidirectional relationships are properly registered. Test validation of relationship configurations to ensure proper entity types and keys are defined."
+          },
+          {
+            "id": 2,
+            "title": "Implement Lazy Loading Functionality",
+            "description": "Develop the lazy loading system that retrieves related entities on-demand when accessed, minimizing unnecessary data loading.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Implement the `lazyLoad` method in the `RelationshipManager` class that accepts an entity and relationship name. Create proxy objects or getters that trigger loading when accessed. Handle relationship resolution by constructing appropriate API queries based on relationship definitions. Implement proper error handling for missing relationships or failed requests. Add support for nested relationship paths (e.g., 'customer.contacts').",
+            "status": "pending",
+            "testStrategy": "Test lazy loading with various entity types and relationship depths. Verify that entities are only loaded when accessed. Test error scenarios such as invalid relationships or API failures. Measure performance impact of lazy loading versus eager loading for single entity relationships."
+          },
+          {
+            "id": 3,
+            "title": "Implement Eager Loading Capabilities",
+            "description": "Create the eager loading system that pre-loads related entities for multiple parent entities in a single operation to optimize performance.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Implement the `eagerLoad` method in the `RelationshipManager` class that accepts an array of entities and relationship names to load. Optimize API requests by batching queries where possible. Implement proper entity mapping to associate loaded related entities with their parent entities. Support loading multiple relationships in a single call. Handle different relationship types appropriately during eager loading.",
+            "status": "pending",
+            "testStrategy": "Benchmark eager loading performance compared to multiple lazy loading operations. Test with various batch sizes to determine optimal performance. Verify correct mapping of related entities to parent entities. Test with complex relationship chains."
+          },
+          {
+            "id": 4,
+            "title": "Implement Relationship Caching System",
+            "description": "Develop a caching system for entity relationships to improve performance by storing previously loaded relationships and avoiding redundant API calls.",
+            "dependencies": [
+              "5.2",
+              "5.3"
+            ],
+            "details": "Create a `RelationshipCache` class that stores loaded relationships with configurable time-to-live (TTL). Implement cache key generation based on entity type, ID, and relationship name. Add cache hit/miss tracking for performance monitoring. Implement cache invalidation strategies for entity updates. Support different cache storage backends (memory, persistent). Ensure thread-safety for concurrent operations.",
+            "status": "pending",
+            "testStrategy": "Test cache hit/miss scenarios with various entity types. Verify TTL expiration works correctly. Benchmark performance improvements with caching enabled vs. disabled. Test cache invalidation when entities are updated. Verify cache consistency across multiple operations."
+          },
+          {
+            "id": 5,
+            "title": "Implement Circular Dependency Resolution and Query Optimization",
+            "description": "Add support for handling circular dependencies between entities and optimize queries for related entities to improve performance.",
+            "dependencies": [
+              "5.1",
+              "5.2",
+              "5.3",
+              "5.4"
+            ],
+            "details": "Implement detection and resolution of circular dependencies during relationship traversal. Add depth limiting to prevent infinite recursion. Optimize query generation for related entities by analyzing relationship chains and minimizing API calls. Implement query batching for multiple relationships. Add relationship prefetching based on common access patterns. Create a query plan optimizer that determines the most efficient loading strategy based on the requested relationships.",
+            "status": "pending",
+            "testStrategy": "Test circular dependency scenarios to ensure they're handled gracefully without infinite loops. Verify that optimized queries reduce the number of API calls compared to naive implementation. Test with complex relationship graphs to ensure correct entity resolution. Benchmark performance with and without query optimization."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Comprehensive Error Handling System",
+        "description": "Create a robust error handling system with specific error types, retry logic, and recovery strategies.",
+        "details": "Develop an error handling system that includes:\n1. Custom error hierarchy for different error types\n2. Retry logic with exponential backoff for transient errors\n3. Circuit breaker pattern implementation\n4. Detailed error logging with context\n5. Recovery strategies for different error scenarios\n6. Graceful degradation capabilities\n\nImplementation example:\n\n```typescript\nclass AutotaskApiError extends Error {\n  constructor(message: string, public statusCode?: number, public context?: any) {\n    super(message);\n    this.name = 'AutotaskApiError';\n  }\n}\n\nclass ValidationError extends AutotaskApiError { /* ... */ }\nclass RateLimitError extends AutotaskApiError { /* ... */ }\nclass AuthenticationError extends AutotaskApiError { /* ... */ }\n\nclass RetryStrategy {\n  async execute<T>(operation: () => Promise<T>, options?: RetryOptions): Promise<T> {\n    // Implementation with exponential backoff\n  }\n}\n\nclass CircuitBreaker {\n  // Implementation\n}\n```",
+        "testStrategy": "Create unit tests for each error type. Test retry logic with mock failures. Verify circuit breaker prevents cascading failures. Test recovery strategies with various error scenarios. Create integration tests that simulate API failures and verify correct error handling.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Custom Error Hierarchy",
+            "description": "Create a comprehensive error class hierarchy that extends from a base error class. Include specific error types for different scenarios such as API errors, validation errors, authentication errors, and system errors.",
+            "dependencies": [],
+            "details": "Create a base `AutotaskApiError` class that extends the native Error class with additional properties for status code and context. Then implement specific error subclasses like `ValidationError`, `RateLimitError`, `AuthenticationError`, `NetworkError`, `TimeoutError`, etc. Each error class should have appropriate properties and methods relevant to its error type. Include serialization methods to ensure errors can be properly logged and transmitted.",
+            "status": "pending",
+            "testStrategy": "Create unit tests for each error type, verifying they properly extend the base class and contain the expected properties. Test error serialization and deserialization. Verify error instances can be properly identified using instanceof checks."
+          },
+          {
+            "id": 2,
+            "title": "Develop Retry Logic with Exponential Backoff",
+            "description": "Implement a retry mechanism that can automatically retry failed operations with exponential backoff for transient errors.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Create a `RetryStrategy` class that accepts an operation function and retry options. Implement exponential backoff algorithm that increases wait time between retries. Include configurable options for max retries, initial delay, maximum delay, and jitter factor to prevent thundering herd problems. The strategy should be able to identify which types of errors are retryable based on the error hierarchy created in the previous subtask.",
+            "status": "pending",
+            "testStrategy": "Test retry logic with mock operations that fail a predetermined number of times. Verify correct backoff timing between retries. Test with different error types to ensure only retryable errors trigger retry attempts. Verify max retry limits are respected."
+          },
+          {
+            "id": 3,
+            "title": "Implement Circuit Breaker Pattern",
+            "description": "Create a circuit breaker implementation to prevent cascading failures when a system component is failing repeatedly.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Develop a `CircuitBreaker` class that monitors for failures in a service call. Implement the three circuit breaker states: closed (normal operation), open (failing, preventing calls), and half-open (testing if system has recovered). Include configurable thresholds for failure rates, timeout periods, and reset intervals. The circuit breaker should work with the error types defined in the error hierarchy and integrate with the retry mechanism.",
+            "status": "pending",
+            "testStrategy": "Test state transitions between closed, open, and half-open states. Verify failure thresholds trigger state changes correctly. Test automatic recovery after timeout periods. Create integration tests that simulate service failures and verify the circuit breaker prevents cascading failures."
+          },
+          {
+            "id": 4,
+            "title": "Create Detailed Error Logging System",
+            "description": "Implement a comprehensive error logging system that captures error details, context, and stack traces for effective debugging and monitoring.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Develop an `ErrorLogger` class that handles structured logging of errors with context. Include methods to log different error levels (debug, info, warn, error, fatal). Implement context enrichment to add request IDs, user information, and other relevant data. Create hooks for different logging destinations (console, file, external services). Ensure sensitive information is properly redacted before logging. Add support for correlation IDs to track errors across service boundaries.",
+            "status": "pending",
+            "testStrategy": "Test logging of different error types with various context information. Verify sensitive data is properly redacted. Test integration with external logging services if applicable. Verify correlation IDs are properly maintained across function calls."
+          },
+          {
+            "id": 5,
+            "title": "Implement Recovery Strategies and Graceful Degradation",
+            "description": "Create recovery mechanisms and graceful degradation capabilities to handle different error scenarios and maintain system functionality.",
+            "dependencies": [
+              "6.1",
+              "6.2",
+              "6.3",
+              "6.4"
+            ],
+            "details": "Develop a `RecoveryStrategy` interface and implement concrete strategies for different error scenarios. Create a `FallbackProvider` that can supply alternative data or functionality when primary operations fail. Implement graceful degradation patterns that allow the system to continue operating with reduced functionality rather than complete failure. Add support for feature flags that can disable problematic features temporarily. Create a centralized error handler that can apply the appropriate recovery strategy based on the error type and context.",
+            "status": "pending",
+            "testStrategy": "Test recovery strategies with various error scenarios. Verify fallback mechanisms provide appropriate alternative functionality. Test graceful degradation under different failure conditions. Create integration tests that simulate cascading failures and verify the system degrades gracefully while maintaining core functionality."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Request Batching and Optimization",
+        "description": "Create a system for batching API requests, optimizing memory usage, and implementing connection pooling.",
+        "details": "Develop a request optimization system that:\n1. Batches multiple API requests into fewer calls\n2. Implements connection pooling for HTTP requests\n3. Optimizes memory usage during large operations\n4. Deduplicates identical requests\n5. Collects performance metrics\n\nImplementation example:\n\n```typescript\ninterface BatchRequest {\n  method: string;\n  path: string;\n  body?: any;\n  headers?: Record<string, string>;\n}\n\nclass RequestBatcher {\n  private batchQueue: Map<string, BatchRequest[]> = new Map();\n  private batchPromises: Map<string, Promise<any>[]> = new Map();\n  \n  enqueue<T>(batchKey: string, request: BatchRequest): Promise<T> {\n    // Implementation\n  }\n  \n  async processBatch(batchKey: string): Promise<void> {\n    // Implementation\n  }\n  \n  private deduplicateRequests(requests: BatchRequest[]): BatchRequest[] {\n    // Implementation\n  }\n}\n\nclass ConnectionPool {\n  // Implementation\n}\n```",
+        "testStrategy": "Benchmark performance with and without batching. Test memory usage optimization. Verify request deduplication works correctly. Test with large volumes of requests to ensure stability. Create integration tests that verify batched requests produce the same results as individual requests.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement BatchRequest Interface and RequestBatcher Class",
+            "description": "Create the core BatchRequest interface and RequestBatcher class with queue management and request enqueuing functionality.",
+            "dependencies": [],
+            "details": "Create the BatchRequest interface as defined in the example. Implement the RequestBatcher class with a queue system using Map to store batched requests by batch key. Implement the enqueue method that adds requests to the appropriate batch queue and returns a Promise that will be resolved when the batch is processed. The enqueue method should create a new Promise, store it in the batchPromises map, and return it to the caller. Add basic batch processing logic that triggers after a configurable delay or when the batch reaches a certain size.",
+            "status": "pending",
+            "testStrategy": "Unit test the enqueue method to verify requests are properly added to the queue. Test that promises are created and stored correctly. Verify batch processing triggers based on size and delay conditions."
+          },
+          {
+            "id": 2,
+            "title": "Implement Request Deduplication Logic",
+            "description": "Create the deduplication system that identifies and combines identical API requests within a batch.",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "Implement the deduplicateRequests method in the RequestBatcher class that takes an array of BatchRequest objects and returns a deduplicated array. Create a hashing function that generates a unique identifier for each request based on its method, path, headers, and body. Use this hash to identify duplicate requests. When duplicates are found, keep only one instance but ensure all corresponding promises receive the same response. Add logging to track how many duplicates were removed from each batch.",
+            "status": "pending",
+            "testStrategy": "Test deduplication with various combinations of identical and different requests. Verify that identical requests are properly identified and deduplicated. Ensure all promises for duplicate requests receive the same response."
+          },
+          {
+            "id": 3,
+            "title": "Implement Connection Pooling",
+            "description": "Create a ConnectionPool class that manages HTTP connections for improved performance.",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "Implement the ConnectionPool class that maintains a pool of reusable HTTP connections. Add methods for acquiring and releasing connections from the pool. Implement connection lifecycle management including creation, validation, and cleanup of stale connections. Add configuration options for maximum pool size, connection timeout, and idle timeout. Integrate the ConnectionPool with the RequestBatcher to use pooled connections when processing batches.",
+            "status": "pending",
+            "testStrategy": "Test connection acquisition and release under various load conditions. Verify connections are properly reused. Test timeout handling and connection cleanup. Benchmark performance improvements compared to creating new connections for each request."
+          },
+          {
+            "id": 4,
+            "title": "Implement Batch Processing and Memory Optimization",
+            "description": "Complete the processBatch method with memory optimization for handling large request batches.",
+            "dependencies": [
+              "7.1",
+              "7.2",
+              "7.3"
+            ],
+            "details": "Implement the processBatch method in the RequestBatcher class that processes all requests in a batch. Apply memory optimization techniques such as stream processing for large payloads, pagination for large result sets, and garbage collection hints. Implement chunking logic to break very large batches into smaller manageable chunks. Add error handling that properly resolves or rejects individual request promises based on the batch response. Ensure memory is properly released after batch processing.",
+            "status": "pending",
+            "testStrategy": "Test batch processing with various batch sizes. Measure memory usage during large operations to verify optimization. Test error handling to ensure individual request failures don't affect the entire batch. Verify all promises are properly resolved or rejected."
+          },
+          {
+            "id": 5,
+            "title": "Implement Performance Metrics Collection",
+            "description": "Add a metrics system to track and report on batching performance and optimization effectiveness.",
+            "dependencies": [
+              "7.4"
+            ],
+            "details": "Create a metrics collection system that tracks key performance indicators: batch sizes, processing times, memory usage, connection reuse rate, and deduplication effectiveness. Implement periodic logging of these metrics. Add optional integration with external monitoring systems. Create a dashboard or reporting mechanism to visualize batching performance over time. Add configuration options to adjust batching parameters based on performance metrics.",
+            "status": "pending",
+            "testStrategy": "Verify metrics are accurately collected for all key performance indicators. Test metric reporting under various load conditions. Create benchmark tests that compare performance with and without batching enabled. Test the system's ability to handle sustained high load."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Response Caching System",
+        "description": "Create a caching system for API responses with time-to-live (TTL) and cache invalidation strategies.",
+        "details": "Develop a response caching system that:\n1. Caches API responses with configurable TTL\n2. Implements cache invalidation strategies\n3. Supports different cache storage backends (memory, Redis)\n4. Handles cache hits/misses metrics\n5. Provides cache control options\n\nImplementation example:\n\n```typescript\ninterface CacheOptions {\n  ttl: number; // seconds\n  storage: 'memory' | 'redis';\n  redisConfig?: RedisConfig;\n  maxSize?: number; // for memory cache\n}\n\nclass ResponseCache {\n  private cache: CacheStorage;\n  \n  constructor(options: CacheOptions) {\n    this.cache = this.createStorage(options);\n  }\n  \n  private createStorage(options: CacheOptions): CacheStorage {\n    // Implementation\n  }\n  \n  async get<T>(key: string): Promise<T | null> {\n    // Implementation\n  }\n  \n  async set<T>(key: string, value: T, ttl?: number): Promise<void> {\n    // Implementation\n  }\n  \n  async invalidate(pattern: string): Promise<void> {\n    // Implementation\n  }\n  \n  generateCacheKey(method: string, path: string, params?: any): string {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Test cache hit/miss scenarios. Verify TTL expiration works correctly. Test cache invalidation with various patterns. Benchmark performance improvements with caching. Test with both memory and Redis backends if applicable. Create integration tests that verify cached responses match fresh responses.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Cache Storage Interface and Memory Backend",
+            "description": "Create the core cache storage interface and implement the in-memory storage backend with TTL support and size limits.",
+            "dependencies": [],
+            "details": "Create a `CacheStorage` interface that defines the contract for all storage backends. Implement the `MemoryCacheStorage` class that uses a Map or similar structure to store cache entries in memory. Include TTL tracking, automatic expiration of entries, and enforcement of maximum cache size with LRU (Least Recently Used) eviction policy. Implement methods for get, set, delete, and clear operations.",
+            "status": "pending",
+            "testStrategy": "Unit test the memory cache implementation with various TTL values. Test cache size limits and verify LRU eviction works correctly. Test edge cases like zero TTL, very large TTL values, and concurrent operations."
+          },
+          {
+            "id": 2,
+            "title": "Implement Redis Cache Storage Backend",
+            "description": "Create a Redis-based implementation of the cache storage interface for distributed caching.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Implement the `RedisCacheStorage` class that connects to Redis using a client library like ioredis. Implement the CacheStorage interface methods using Redis commands. Use Redis TTL capabilities for expiration. Handle connection issues gracefully with reconnection logic. Implement proper serialization/deserialization of cached values.",
+            "status": "pending",
+            "testStrategy": "Test Redis connection handling, including reconnection after failures. Verify TTL functionality works with Redis. Test with various data types to ensure proper serialization/deserialization. Use a mock Redis server for unit tests and a real Redis instance for integration tests."
+          },
+          {
+            "id": 3,
+            "title": "Implement Cache Key Generation and Management",
+            "description": "Create a system for generating consistent cache keys based on request parameters and implement cache invalidation strategies.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Implement the `generateCacheKey` method that creates consistent, unique keys based on HTTP method, path, query parameters, and request body (if applicable). Create pattern-based cache invalidation that can clear multiple related cache entries. Implement cache namespacing to isolate different parts of the application. Add support for cache tags to group related cache entries for easier invalidation.",
+            "status": "pending",
+            "testStrategy": "Test key generation with various input combinations to ensure uniqueness and consistency. Test pattern-based invalidation with different patterns. Verify cache namespacing correctly isolates entries. Test tag-based invalidation to ensure all related entries are cleared."
+          },
+          {
+            "id": 4,
+            "title": "Implement Cache Metrics and Monitoring",
+            "description": "Add metrics collection for cache performance, including hit/miss rates, latency, and size tracking.",
+            "dependencies": [
+              "8.1",
+              "8.2"
+            ],
+            "details": "Create a metrics collection system that tracks cache hits, misses, hit ratio, average latency for cache operations, cache size, and eviction counts. Implement hooks in the cache operations to collect these metrics. Add optional integration with monitoring systems. Create a method to retrieve current cache statistics. Implement periodic logging of cache performance metrics.",
+            "status": "pending",
+            "testStrategy": "Test metrics collection accuracy by performing known operations and verifying the metrics reflect them correctly. Test edge cases like empty cache and full cache scenarios. Verify metrics are correctly aggregated over time."
+          },
+          {
+            "id": 5,
+            "title": "Implement Response Cache Middleware and Integration",
+            "description": "Create middleware for HTTP frameworks to easily integrate the caching system with API endpoints, including cache control options.",
+            "dependencies": [
+              "8.1",
+              "8.2",
+              "8.3",
+              "8.4"
+            ],
+            "details": "Implement middleware for Express/Koa/Fastify that automatically caches API responses based on configuration. Add support for cache control headers to override default TTL. Implement cache bypass mechanisms for authenticated requests or specific conditions. Add response headers indicating cache status (hit/miss). Create decorator/annotation support for frameworks that use them. Implement configuration options for cache strategies per route or globally.",
+            "status": "pending",
+            "testStrategy": "Test middleware with various API endpoints to verify caching works correctly. Test cache control header handling. Verify cache bypass works for authenticated requests. Test with different HTTP methods. Create integration tests that measure performance improvements with caching enabled vs. disabled."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Implement Quality Assurance Metrics System",
+        "description": "Replace fake metrics with real data quality calculations, completeness checks, and duplicate detection.",
+        "details": "Develop a quality assurance system that:\n1. Calculates real data quality scores based on completeness and accuracy\n2. Implements actual completeness checks for entities\n3. Adds duplicate detection logic\n4. Validates data accuracy metrics\n5. Creates real uniqueness validation\n\nImplementation example:\n\n```typescript\ninterface QualityMetrics {\n  completeness: number; // 0-100%\n  accuracy: number; // 0-100%\n  uniqueness: number; // 0-100%\n  overall: number; // 0-100%\n  issues: QualityIssue[];\n}\n\ninterface QualityIssue {\n  type: 'missing' | 'invalid' | 'duplicate' | 'inconsistent';\n  field: string;\n  message: string;\n  severity: 'low' | 'medium' | 'high';\n}\n\nclass QualityAssurance {\n  calculateMetrics(entity: any, entityType: string): QualityMetrics {\n    // Implementation\n  }\n  \n  checkCompleteness(entity: any, entityType: string): number {\n    // Implementation\n  }\n  \n  detectDuplicates(entities: any[], entityType: string): Map<string, any[]> {\n    // Implementation\n  }\n  \n  validateAccuracy(entity: any, entityType: string): number {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Create unit tests for each quality metric calculation. Test with various levels of data completeness. Verify duplicate detection with known duplicate sets. Test accuracy validation with known good and bad data. Create integration tests that verify quality metrics reflect actual data quality in Autotask.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Data Completeness Calculation",
+            "description": "Create a system to calculate completeness metrics for entities by checking required fields and data integrity. This will provide a percentage score indicating how complete each entity's data is.",
+            "dependencies": [],
+            "details": "Implement the `checkCompleteness` method in the QualityAssurance class that takes an entity object and its type as parameters. Create a schema registry that defines required fields for each entity type. For each entity, iterate through its required fields and check if they exist and have valid values. Calculate a percentage score based on the number of complete fields divided by the total required fields. Return a number between 0-100%.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with various entity objects having different levels of completeness. Test with completely filled entities, partially filled entities, and empty entities. Verify the completeness score matches expected values based on missing fields."
+          },
+          {
+            "id": 2,
+            "title": "Implement Duplicate Detection Logic",
+            "description": "Create a system to identify duplicate entities based on configurable matching criteria. This will detect potential duplicates in the dataset and group them together.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Implement the `detectDuplicates` method in the QualityAssurance class that takes an array of entities and their type. Create a configurable matching strategy for each entity type that defines which fields to compare (e.g., name, email, phone). Generate fingerprints for each entity based on the matching fields. Group entities with matching fingerprints into potential duplicate sets. Return a Map where keys are fingerprints and values are arrays of duplicate entities.",
+            "status": "pending",
+            "testStrategy": "Test with datasets containing known duplicates with exact matches. Test with datasets containing near-duplicates with slight variations. Verify the duplicate detection correctly groups similar entities. Test with different entity types to ensure type-specific matching works correctly."
+          },
+          {
+            "id": 3,
+            "title": "Implement Data Accuracy Validation",
+            "description": "Create a system to validate the accuracy of entity data against business rules and expected formats. This will identify invalid or inconsistent data.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Implement the `validateAccuracy` method in the QualityAssurance class that validates entity data against business rules. Create validation rules for each entity type and field (e.g., email format, phone number format, valid date ranges). For each entity, check all fields against their validation rules. Track validation failures and calculate an accuracy percentage. Return a number between 0-100% representing the proportion of fields that pass validation.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with entities containing both valid and invalid data. Test each validation rule individually. Test with edge cases like empty strings, special characters, and boundary values. Verify the accuracy score correctly reflects the proportion of valid fields."
+          },
+          {
+            "id": 4,
+            "title": "Implement Uniqueness Validation",
+            "description": "Create a system to validate the uniqueness of entity data across the dataset. This will identify fields that should be unique but have duplicates.",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Create a method in the QualityAssurance class to validate uniqueness of specific fields across entities. Define uniqueness constraints for each entity type (e.g., email addresses should be unique). Scan the dataset to identify violations of uniqueness constraints. Calculate a uniqueness score based on the proportion of unique values where required. Store uniqueness violations as QualityIssues with appropriate severity levels.",
+            "status": "pending",
+            "testStrategy": "Test with datasets containing uniqueness violations. Test with different entity types and uniqueness constraints. Verify uniqueness violations are correctly identified and reported. Test the uniqueness score calculation with various levels of violations."
+          },
+          {
+            "id": 5,
+            "title": "Implement Overall Quality Metrics Calculation",
+            "description": "Create a system to calculate overall quality metrics by combining completeness, accuracy, and uniqueness scores. This will provide a comprehensive quality assessment for each entity and the entire dataset.",
+            "dependencies": [
+              "9.1",
+              "9.2",
+              "9.3",
+              "9.4"
+            ],
+            "details": "Implement the `calculateMetrics` method in the QualityAssurance class that combines all quality dimensions. Calculate an overall quality score as a weighted average of completeness, accuracy, and uniqueness scores. Create a configurable weighting system for different quality dimensions based on business importance. Compile all detected issues into a structured QualityIssue array with type, field, message, and severity. Return a complete QualityMetrics object with all scores and issues.",
+            "status": "pending",
+            "testStrategy": "Create integration tests that verify the overall metrics correctly reflect the individual dimension scores. Test with various weighting configurations. Verify the issues array contains all detected problems from individual checks. Test with known good and bad datasets to ensure the overall score accurately reflects data quality."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Migration System Core Framework",
+        "description": "Create the core framework for the migration system, including checkpoint management and progress tracking.",
+        "details": "Develop a migration system core that:\n1. Implements checkpoint save/restore functionality\n2. Adds real progress tracking with percentages\n3. Creates a plugin architecture for different PSA connectors\n4. Implements rollback capabilities\n5. Creates migration validation reports\n\nImplementation example:\n\n```typescript\ninterface MigrationCheckpoint {\n  id: string;\n  timestamp: Date;\n  progress: number; // 0-100%\n  stage: string;\n  entityCounts: Record<string, number>;\n  metadata: Record<string, any>;\n}\n\nclass MigrationManager {\n  private connectors: Map<string, PsaConnector> = new Map();\n  \n  registerConnector(name: string, connector: PsaConnector): void {\n    // Implementation\n  }\n  \n  async createCheckpoint(migrationId: string, data: Partial<MigrationCheckpoint>): Promise<MigrationCheckpoint> {\n    // Implementation\n  }\n  \n  \n  async restoreFromCheckpoint(checkpointId: string): Promise<MigrationContext> {\n    // Implementation\n  }\n  \n  async rollback(migrationId: string, targetCheckpointId?: string): Promise<void> {\n    // Implementation\n  }\n  \n  async generateValidationReport(migrationId: string): Promise<MigrationValidationReport> {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Test checkpoint creation and restoration. Verify progress tracking accuracy. Test rollback functionality with various scenarios. Verify validation report generation. Create integration tests that simulate partial migrations and verify checkpoint restoration works correctly.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Checkpoint Management System",
+            "description": "Create a system for saving and restoring migration checkpoints to allow pausing and resuming migrations.",
+            "dependencies": [],
+            "details": "Implement the MigrationCheckpoint interface and the checkpoint-related methods in the MigrationManager class. Create a storage mechanism for checkpoints (database or file-based). Implement createCheckpoint() to save the current migration state with progress, stage, and entity counts. Implement restoreFromCheckpoint() to load a previous checkpoint and recreate the migration context. Add methods to list and retrieve available checkpoints for a migration.",
+            "status": "pending",
+            "testStrategy": "Create unit tests for checkpoint creation and restoration. Test with various migration states. Verify all checkpoint data is correctly saved and restored. Create integration tests that simulate interrupted migrations and verify they can be resumed from checkpoints."
+          },
+          {
+            "id": 2,
+            "title": "Implement Progress Tracking System",
+            "description": "Create a system for tracking and reporting migration progress with accurate percentages.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Implement a progress tracking system that calculates percentages based on completed vs. total work items. Create a ProgressTracker class that maintains the current progress state. Implement methods to update progress when entities are processed. Add support for weighted progress where different entity types contribute differently to the overall percentage. Implement progress reporting with detailed breakdowns by entity type.",
+            "status": "pending",
+            "testStrategy": "Test progress calculation with various scenarios. Verify progress updates correctly when entities are processed. Test edge cases like empty migrations or failed entities. Create integration tests that verify progress reporting accuracy during a complete migration."
+          },
+          {
+            "id": 3,
+            "title": "Create Plugin Architecture for PSA Connectors",
+            "description": "Develop a plugin system that allows different PSA connectors to be registered and used with the migration framework.",
+            "dependencies": [
+              "10.1",
+              "10.2"
+            ],
+            "details": "Define the PsaConnector interface that all connectors must implement. Implement the connector registration system in MigrationManager. Create a factory pattern for instantiating appropriate connectors. Implement connector discovery mechanism to automatically find and register available connectors. Add configuration validation for each connector type. Create a connector lifecycle management system (initialize, connect, disconnect).",
+            "status": "pending",
+            "testStrategy": "Create unit tests with mock connectors to verify the plugin architecture. Test connector registration and retrieval. Verify error handling when invalid connectors are used. Create integration tests with sample connectors to verify the entire connector lifecycle."
+          },
+          {
+            "id": 4,
+            "title": "Implement Rollback Capabilities",
+            "description": "Create functionality to roll back migrations to previous checkpoints when errors occur or upon user request.",
+            "dependencies": [
+              "10.1",
+              "10.2",
+              "10.3"
+            ],
+            "details": "Implement the rollback() method in MigrationManager. Create a system to track changes made during migration for reversal. Implement entity-specific rollback logic that can undo changes. Add transaction support where possible to ensure atomicity. Create a rollback strategy selector that can choose between full rollback or partial rollback. Implement rollback verification to ensure the system returns to a consistent state.",
+            "status": "pending",
+            "testStrategy": "Test rollback functionality with various scenarios including partial and complete migrations. Verify that entities are correctly restored to their previous state. Test rollback with different connector types. Create integration tests that simulate failures at different migration stages and verify rollback effectiveness."
+          },
+          {
+            "id": 5,
+            "title": "Create Migration Validation Reports",
+            "description": "Implement a system to generate comprehensive validation reports that verify migration success and identify any issues.",
+            "dependencies": [
+              "10.1",
+              "10.2",
+              "10.3",
+              "10.4"
+            ],
+            "details": "Implement the generateValidationReport() method in MigrationManager. Create a validation framework that can compare source and target systems. Implement entity-specific validation rules. Create a reporting system that categorizes issues by severity (errors, warnings, info). Add support for custom validation rules per connector type. Implement report export in multiple formats (JSON, CSV, PDF). Create a summary view with key migration statistics.",
+            "status": "pending",
+            "testStrategy": "Test report generation with various migration scenarios including successful and partially successful migrations. Verify all validation rules are correctly applied. Test with different entity types and connector combinations. Create integration tests that validate the accuracy of reports against known migration outcomes."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement ConnectWise Manage Connector",
+        "description": "Complete the ConnectWise Manage connector for the migration system, including data extraction and transformation.",
+        "details": "Develop a ConnectWise Manage connector that:\n1. Authenticates with ConnectWise API\n2. Extracts data from all relevant entities\n3. Transforms data to Autotask format\n4. Maps relationships between entities\n5. Handles incremental updates\n\nImplementation example:\n\n```typescript\nclass ConnectWiseConnector implements PsaConnector {\n  constructor(private config: ConnectWiseConfig) {}\n  \n  async authenticate(): Promise<void> {\n    // Implementation\n  }\n  \n  async extractEntities(entityType: string, options?: ExtractOptions): Promise<any[]> {\n    // Implementation\n  }\n  \n  async transformEntity(sourceEntity: any, sourceType: string, targetType: string): Promise<any> {\n    // Implementation\n  }\n  \n  getEntityMapping(): Record<string, string> {\n    // Implementation - maps ConnectWise entities to Autotask entities\n  }\n  \n  getFieldMapping(sourceType: string, targetType: string): Record<string, string> {\n    // Implementation - maps fields between entities\n  }\n}\n```",
+        "testStrategy": "Test authentication with ConnectWise API. Verify data extraction for all entity types. Test transformation logic with various entity types. Verify relationship mapping. Create integration tests with a test ConnectWise environment to verify end-to-end migration works correctly.",
+        "priority": "high",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement ConnectWise Authentication Module",
+            "description": "Create the authentication module for ConnectWise Manage API that handles API key management, token generation, and session maintenance.",
+            "dependencies": [],
+            "details": "Implement the `authenticate()` method in the ConnectWiseConnector class. Use the ConnectWise REST API authentication flow with company ID, public key, and private key. Handle token caching and refresh logic to minimize authentication calls. Implement proper error handling for authentication failures with specific error messages. Store credentials securely using environment variables or a secure credential store.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with mocked API responses. Test successful authentication, token refresh, and error scenarios. Create integration tests against ConnectWise sandbox environment to verify real authentication works."
+          },
+          {
+            "id": 2,
+            "title": "Develop Entity Extraction System",
+            "description": "Implement the data extraction functionality that retrieves all relevant entities from ConnectWise Manage using pagination and filtering.",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Implement the `extractEntities()` method to handle different entity types (companies, contacts, tickets, etc.). Use ConnectWise API pagination to handle large datasets efficiently. Implement query parameter handling for filtering and sorting. Create entity-specific extraction methods for specialized handling. Track extraction progress and implement retry logic for failed requests. Handle rate limiting by respecting ConnectWise API limits.",
+            "status": "pending",
+            "testStrategy": "Test extraction of each entity type with pagination. Verify correct handling of API limits and retries. Test error scenarios and recovery. Create integration tests that extract real data from a test environment."
+          },
+          {
+            "id": 3,
+            "title": "Build Data Transformation Layer",
+            "description": "Create the transformation logic that converts ConnectWise entities to the Autotask format, handling field mapping and data type conversions.",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "Implement the `transformEntity()` method to convert ConnectWise entities to Autotask format. Create entity-specific transformation functions for complex mappings. Handle data type conversions (dates, enums, etc.). Implement field mapping logic that handles required fields, optional fields, and default values. Create utility functions for common transformation patterns. Implement validation to ensure transformed data meets Autotask requirements.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with sample ConnectWise data. Verify correct transformation of all entity types. Test edge cases like missing fields, null values, and special characters. Validate transformed data against Autotask schema requirements."
+          },
+          {
+            "id": 4,
+            "title": "Implement Entity Relationship Mapping",
+            "description": "Develop the relationship mapping system that preserves connections between different ConnectWise entities during migration.",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "Implement the `getEntityMapping()` and `getFieldMapping()` methods to define relationships between entities. Create a relationship graph that tracks dependencies between entities. Implement reference resolution to maintain integrity across entities. Handle circular references appropriately. Create a mapping system for IDs between ConnectWise and Autotask. Implement validation to ensure relationship integrity after transformation.",
+            "status": "pending",
+            "testStrategy": "Test relationship mapping with complex entity relationships. Verify circular references are handled correctly. Test ID mapping between systems. Create integration tests that verify relationship integrity is maintained during a complete migration."
+          },
+          {
+            "id": 5,
+            "title": "Develop Incremental Update Handling",
+            "description": "Create the system for handling incremental updates that efficiently processes only changed data since the last synchronization.",
+            "dependencies": [
+              "11.4"
+            ],
+            "details": "Implement change tracking using ConnectWise's lastModified timestamps. Create a state persistence mechanism to track last sync time per entity type. Implement delta extraction that only retrieves records modified since last sync. Create conflict resolution strategies for handling concurrent updates. Implement a transaction-like system to ensure data consistency during updates. Add logging and monitoring for sync operations.",
+            "status": "pending",
+            "testStrategy": "Test incremental updates with modified, added, and deleted records. Verify only changed records are processed. Test conflict resolution scenarios. Create long-running tests that perform multiple incremental updates to verify consistency over time."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Implement ServiceNow Connector",
+        "description": "Complete the ServiceNow connector for the migration system, including data extraction and transformation.",
+        "details": "Develop a ServiceNow connector that:\n1. Authenticates with ServiceNow API\n2. Extracts data from all relevant entities\n3. Transforms data to Autotask format\n4. Maps relationships between entities\n5. Handles incremental updates\n\nImplementation example:\n\n```typescript\nclass ServiceNowConnector implements PsaConnector {\n  constructor(private config: ServiceNowConfig) {}\n  \n  async authenticate(): Promise<void> {\n    // Implementation\n  }\n  \n  async extractEntities(entityType: string, options?: ExtractOptions): Promise<any[]> {\n    // Implementation\n  }\n  \n  async transformEntity(sourceEntity: any, sourceType: string, targetType: string): Promise<any> {\n    // Implementation\n  }\n  \n  getEntityMapping(): Record<string, string> {\n    // Implementation - maps ServiceNow entities to Autotask entities\n  }\n  \n  getFieldMapping(sourceType: string, targetType: string): Record<string, string> {\n    // Implementation - maps fields between entities\n  }\n}\n```",
+        "testStrategy": "Test authentication with ServiceNow API. Verify data extraction for all entity types. Test transformation logic with various entity types. Verify relationship mapping. Create integration tests with a developer ServiceNow instance to verify end-to-end migration works correctly.",
+        "priority": "high",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement ServiceNow Authentication Module",
+            "description": "Create the authentication module for the ServiceNow connector that handles OAuth or Basic authentication, token management, and session persistence.",
+            "dependencies": [],
+            "details": "Implement the authenticate() method in the ServiceNowConnector class. This should handle both OAuth and Basic authentication methods based on the provided configuration. Store authentication tokens securely and implement token refresh logic when tokens expire. Handle authentication errors gracefully with proper error messages. The implementation should follow the interface defined in PsaConnector.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with mocked ServiceNow API responses. Test successful authentication, token refresh, and error handling scenarios. Use dependency injection to mock HTTP requests for testing."
+          },
+          {
+            "id": 2,
+            "title": "Develop Entity Extraction Logic",
+            "description": "Implement the data extraction functionality that retrieves entities from ServiceNow using their REST API, with support for pagination and filtering.",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "Implement the extractEntities() method to query the ServiceNow API for different entity types (incidents, problems, change requests, users, etc.). Handle pagination to retrieve large datasets efficiently. Implement filtering based on the ExtractOptions parameter. Create helper methods for constructing API URLs and processing responses. Add error handling for network issues and API limitations.",
+            "status": "pending",
+            "testStrategy": "Test extraction of different entity types with various pagination scenarios. Mock API responses to test handling of different data structures. Verify error handling for rate limits and network failures."
+          },
+          {
+            "id": 3,
+            "title": "Create Entity and Field Mapping System",
+            "description": "Develop the mapping system that defines relationships between ServiceNow entities and fields and their Autotask counterparts.",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Implement getEntityMapping() and getFieldMapping() methods to define how ServiceNow entities and fields map to Autotask. Create a comprehensive mapping configuration that covers all relevant entities (tickets, users, companies, etc.). Support custom field mappings through configuration. Implement helper methods to validate mappings and handle special field transformations.",
+            "status": "pending",
+            "testStrategy": "Test mapping configurations with various entity types. Verify that all required fields are properly mapped. Test edge cases like missing fields or custom field mappings."
+          },
+          {
+            "id": 4,
+            "title": "Implement Data Transformation Logic",
+            "description": "Create the transformation logic that converts ServiceNow entities to the format expected by Autotask, applying field mappings and data conversions.",
+            "dependencies": [
+              "12.3"
+            ],
+            "details": "Implement the transformEntity() method to convert ServiceNow entities to Autotask format using the defined mappings. Handle data type conversions (dates, enumerations, etc.). Implement special transformation logic for complex fields. Create utility functions for common transformations. Handle missing or null values appropriately.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with sample ServiceNow entities and verify correct transformation to Autotask format. Test various entity types and edge cases. Verify handling of special fields like dates, enumerations, and references."
+          },
+          {
+            "id": 5,
+            "title": "Implement Incremental Update Mechanism",
+            "description": "Develop the incremental update functionality that efficiently retrieves only changed or new records since the last synchronization.",
+            "dependencies": [
+              "12.2",
+              "12.4"
+            ],
+            "details": "Extend the extractEntities() method to support incremental updates based on modification timestamps or change tracking fields. Implement state persistence to track the last synchronization point. Create logic to merge incremental updates with existing data. Handle deleted records appropriately. Implement conflict resolution strategies for records modified in both systems.",
+            "status": "pending",
+            "testStrategy": "Test incremental updates with various scenarios (new records, modified records, deleted records). Verify that only changed records are retrieved. Test state persistence and recovery from failed synchronizations."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Kaseya VSA Connector",
+        "description": "Create a Kaseya VSA connector for the migration system, including data extraction and transformation.",
+        "details": "Develop a Kaseya VSA connector that:\n1. Authenticates with Kaseya API\n2. Extracts data from all relevant entities\n3. Transforms data to Autotask format\n4. Maps relationships between entities\n5. Handles incremental updates\n\nImplementation example:\n\n```typescript\nclass KaseyaConnector implements PsaConnector {\n  constructor(private config: KaseyaConfig) {}\n  \n  async authenticate(): Promise<void> {\n    // Implementation\n  }\n  \n  async extractEntities(entityType: string, options?: ExtractOptions): Promise<any[]> {\n    // Implementation\n  }\n  \n  async transformEntity(sourceEntity: any, sourceType: string, targetType: string): Promise<any> {\n    // Implementation\n  }\n  \n  getEntityMapping(): Record<string, string> {\n    // Implementation - maps Kaseya entities to Autotask entities\n  }\n  \n  getFieldMapping(sourceType: string, targetType: string): Record<string, string> {\n    // Implementation - maps fields between entities\n  }\n}\n```",
+        "testStrategy": "Test authentication with Kaseya API. Verify data extraction for all entity types. Test transformation logic with various entity types. Verify relationship mapping. Create integration tests with a test Kaseya environment to verify end-to-end migration works correctly.",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Kaseya VSA Authentication",
+            "description": "Create the authentication mechanism for the Kaseya VSA API, including token management and session handling.",
+            "dependencies": [],
+            "details": "Implement the `authenticate()` method in the KaseyaConnector class. Use the Kaseya API documentation to determine the correct authentication flow. Store authentication tokens securely and implement token refresh logic. Handle authentication errors gracefully with appropriate retry mechanisms. Create a KaseyaConfig interface that accepts necessary credentials and API endpoints.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with mocked API responses to verify authentication works correctly. Test error handling for invalid credentials, network failures, and token expiration scenarios. Create a mock Kaseya server for integration testing."
+          },
+          {
+            "id": 2,
+            "title": "Develop Entity Extraction from Kaseya VSA",
+            "description": "Implement the data extraction functionality to retrieve all relevant entities from Kaseya VSA.",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Implement the `extractEntities()` method to retrieve data for all relevant entity types (companies, contacts, tickets, assets, etc.). Use pagination to handle large datasets efficiently. Implement error handling and retry logic for API failures. Create entity-specific extraction methods for complex entities. Document all available entity types and their extraction parameters.",
+            "status": "pending",
+            "testStrategy": "Test extraction of each entity type with sample data. Verify pagination works correctly with large datasets. Test error handling and retry mechanisms. Create integration tests that verify actual data can be extracted from a test Kaseya environment."
+          },
+          {
+            "id": 3,
+            "title": "Create Kaseya to Autotask Data Transformation",
+            "description": "Develop the transformation logic to convert Kaseya VSA data formats to Autotask compatible formats.",
+            "dependencies": [
+              "13.2"
+            ],
+            "details": "Implement the `transformEntity()` method to convert Kaseya entities to Autotask format. Create mapping functions for each entity type. Handle data type conversions and field formatting. Implement validation to ensure transformed data meets Autotask requirements. Create utility functions for common transformation patterns.",
+            "status": "pending",
+            "testStrategy": "Create unit tests with sample Kaseya data and verify the transformed output matches expected Autotask format. Test edge cases like missing fields, unusual data formats, and maximum field lengths. Verify all required Autotask fields are populated correctly."
+          },
+          {
+            "id": 4,
+            "title": "Implement Entity and Field Mapping",
+            "description": "Create comprehensive mapping between Kaseya VSA and Autotask entities and their respective fields.",
+            "dependencies": [
+              "13.3"
+            ],
+            "details": "Implement the `getEntityMapping()` and `getFieldMapping()` methods to define relationships between Kaseya and Autotask entities and fields. Create a configuration-driven approach to allow customization of mappings. Handle special cases where direct mapping isn't possible. Document all mapping relationships for reference.",
+            "status": "pending",
+            "testStrategy": "Test that all entity types have appropriate mappings. Verify field mappings work correctly for different entity types. Test custom mapping configurations. Create validation tests to ensure no required mappings are missing."
+          },
+          {
+            "id": 5,
+            "title": "Develop Incremental Update Handling",
+            "description": "Implement functionality to support incremental updates and change tracking for efficient data synchronization.",
+            "dependencies": [
+              "13.4"
+            ],
+            "details": "Extend the connector to support incremental updates by tracking last sync timestamps. Implement delta detection to identify changed records since last synchronization. Create mechanisms to handle deleted entities. Implement conflict resolution strategies for data that has changed in both systems. Add logging for sync operations to support troubleshooting.",
+            "status": "pending",
+            "testStrategy": "Test incremental updates with various change scenarios. Verify only changed records are processed during incremental updates. Test handling of deleted records. Verify conflict resolution works as expected. Create end-to-end tests that simulate a full migration followed by incremental updates."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Implement Production Monitoring System",
+        "description": "Create a monitoring system with health checks, metrics collection, and alerting capabilities.",
+        "details": "Develop a production monitoring system that:\n1. Implements health check endpoints\n2. Adds metrics collection for performance and usage\n3. Creates performance dashboards\n4. Adds alerting capabilities\n5. Implements audit logging\n6. Adds usage analytics\n\nImplementation example:\n\n```typescript\ninterface HealthStatus {\n  status: 'healthy' | 'degraded' | 'unhealthy';\n  components: Record<string, ComponentHealth>;\n  timestamp: Date;\n  version: string;\n}\n\ninterface ComponentHealth {\n  status: 'healthy' | 'degraded' | 'unhealthy';\n  message?: string;\n  metrics?: Record<string, number>;\n}\n\nclass MonitoringSystem {\n  private metrics: MetricsCollector;\n  private alerting: AlertManager;\n  \n  constructor(options?: MonitoringOptions) {\n    this.metrics = new MetricsCollector(options?.metrics);\n    this.alerting = new AlertManager(options?.alerting);\n  }\n  \n  getHealthStatus(): HealthStatus {\n    // Implementation\n  }\n  \n  recordMetric(name: string, value: number, tags?: Record<string, string>): void {\n    // Implementation\n  }\n  \n  startTimer(name: string, tags?: Record<string, string>): () => void {\n    // Implementation - returns a function to stop the timer\n  }\n  \n  logAuditEvent(event: AuditEvent): void {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Test health check endpoint with various system states. Verify metrics collection accuracy. Test alerting with simulated threshold breaches. Verify audit logging captures all required information. Create integration tests that verify monitoring works correctly in a production-like environment.",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Health Check Endpoints",
+            "description": "Create a RESTful health check endpoint system that reports the status of various system components. The health check should provide detailed information about each component's status, including database connections, external service dependencies, and system resources.",
+            "dependencies": [],
+            "details": "Implement the HealthStatus and ComponentHealth interfaces. Create a HealthCheckController class that exposes endpoints for both overall system health and individual component health. Implement component-specific health checkers that can be registered with the main health system. The health check should return appropriate HTTP status codes (200 for healthy, 503 for unhealthy) and include detailed component statuses in the response body.",
+            "status": "pending",
+            "testStrategy": "Create unit tests for each component health checker. Implement integration tests that verify the health check endpoints return correct statuses when components are healthy or unhealthy. Test with mocked dependencies in various states to ensure accurate reporting."
+          },
+          {
+            "id": 2,
+            "title": "Develop Metrics Collection System",
+            "description": "Create a metrics collection system that captures performance metrics, usage statistics, and system health indicators. The system should support different metric types (counters, gauges, histograms) and include tagging capabilities for better categorization.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Implement the MetricsCollector class with methods for recording different types of metrics. Add support for timing operations with start/stop functionality. Implement integration with a time-series database (like Prometheus or InfluxDB) for metrics storage. Create utility methods for common metrics patterns. Include support for dimensional metrics with tags/labels.",
+            "status": "pending",
+            "testStrategy": "Test metric recording accuracy with various input types. Verify timer functionality correctly measures elapsed time. Test integration with the chosen metrics backend. Create mock scenarios that generate metrics and verify they are correctly recorded."
+          },
+          {
+            "id": 3,
+            "title": "Create Performance Dashboards",
+            "description": "Develop dashboards for visualizing system performance metrics, usage patterns, and health status. The dashboards should provide real-time and historical views of system performance and support filtering and drill-down capabilities.",
+            "dependencies": [
+              "14.2"
+            ],
+            "details": "Integrate with a visualization tool like Grafana. Create dashboard templates for different user personas (developers, operations, management). Implement dashboard panels for key metrics including response times, error rates, throughput, and resource utilization. Add alerting thresholds visualization on dashboards. Create both overview dashboards and detailed component-specific views.",
+            "status": "pending",
+            "testStrategy": "Verify dashboards correctly display metrics from the collection system. Test dashboard filtering and time range selection. Ensure dashboards are responsive and perform well with large datasets. Test dashboard sharing and export functionality."
+          },
+          {
+            "id": 4,
+            "title": "Implement Alerting System",
+            "description": "Create an alerting system that monitors metrics and health checks, triggering notifications when thresholds are exceeded or anomalies are detected. The system should support multiple notification channels and alert severity levels.",
+            "dependencies": [
+              "14.1",
+              "14.2"
+            ],
+            "details": "Implement the AlertManager class that defines alert rules based on metrics thresholds. Support multiple notification channels (email, Slack, PagerDuty, etc.). Add alert severity levels and routing based on severity. Implement alert grouping to prevent alert storms. Add support for alert acknowledgment and resolution tracking. Create a notification template system for consistent alert formatting.",
+            "status": "pending",
+            "testStrategy": "Test alert triggering with simulated threshold breaches. Verify notifications are sent through all configured channels. Test alert grouping functionality. Create integration tests with mocked metrics that trigger and resolve alerts. Test alert acknowledgment and escalation workflows."
+          },
+          {
+            "id": 5,
+            "title": "Implement Audit Logging and Usage Analytics",
+            "description": "Create a comprehensive audit logging system that records system events, user actions, and security-relevant information. Additionally, implement usage analytics to track feature usage, user behavior patterns, and system adoption metrics.",
+            "dependencies": [
+              "14.2"
+            ],
+            "details": "Implement the logAuditEvent method in the MonitoringSystem class. Create structured audit log entries with consistent fields (timestamp, user, action, resource, result). Implement log storage with appropriate retention policies. Add usage analytics tracking for key user interactions and feature usage. Create analytics dashboards for visualizing usage patterns. Implement privacy controls for sensitive data in logs and analytics.",
+            "status": "pending",
+            "testStrategy": "Verify audit logs capture all required information for different event types. Test log retention and rotation policies. Validate usage analytics data accuracy. Test privacy controls to ensure sensitive data is properly handled. Create integration tests that verify audit logs are generated for key system operations."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Implement Security Enhancements",
+        "description": "Add security features including credential encryption, API key rotation, and input sanitization.",
+        "details": "Develop security enhancements that:\n1. Implement credential encryption\n2. Add API key rotation support\n3. Create security audit logs\n4. Implement rate limiting per client\n5. Add input sanitization\n6. Implement OWASP best practices\n\nImplementation example:\n\n```typescript\nclass CredentialManager {\n  private encryptionKey: Buffer;\n  \n  constructor(options?: CredentialOptions) {\n    // Implementation\n  }\n  \n  encrypt(data: string): string {\n    // Implementation\n  }\n  \n  decrypt(encryptedData: string): string {\n    // Implementation\n  }\n  \n  rotateKey(): void {\n    // Implementation\n  }\n}\n\nclass InputSanitizer {\n  sanitize(input: any, context?: string): any {\n    // Implementation\n  }\n}\n\nclass RateLimiter {\n  isRateLimited(clientId: string): boolean {\n    // Implementation\n  }\n  \n  recordRequest(clientId: string): void {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Test credential encryption and decryption. Verify API key rotation works correctly. Test input sanitization with various attack vectors. Verify rate limiting prevents excessive requests. Create security-focused integration tests that attempt common attack patterns and verify they are blocked.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Credential Encryption System",
+            "description": "Create a CredentialManager class that handles secure encryption and decryption of sensitive credentials using industry-standard encryption algorithms.",
+            "dependencies": [],
+            "details": "Implement the CredentialManager class with the following features:\n1. Use AES-256-GCM for encryption with proper IV handling\n2. Implement secure key generation and storage\n3. Add methods for encrypting and decrypting credentials\n4. Include key derivation function (PBKDF2) for password-based encryption\n5. Add proper error handling for encryption/decryption failures\n\nThe implementation should follow the provided class structure with encrypt(), decrypt() methods and proper initialization in the constructor.",
+            "status": "pending",
+            "testStrategy": "Create unit tests that verify encryption and decryption work correctly. Test with various data types and sizes. Verify that encrypted data cannot be decrypted with incorrect keys. Test error handling for invalid inputs."
+          },
+          {
+            "id": 2,
+            "title": "Implement API Key Rotation Mechanism",
+            "description": "Develop a system for API key rotation that allows for graceful transition between old and new keys with configurable overlap periods.",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Extend the CredentialManager class to support API key rotation:\n1. Implement rotateKey() method that generates a new encryption key\n2. Add support for maintaining both old and new keys during transition period\n3. Create a key versioning system to track active and deprecated keys\n4. Implement automatic key rotation based on configurable schedule\n5. Add methods to validate keys and handle key expiration\n\nThe implementation should allow for zero-downtime key rotation and proper handling of in-flight requests during rotation periods.",
+            "status": "pending",
+            "testStrategy": "Test the key rotation process to ensure both old and new keys work during transition. Verify that expired keys are properly rejected. Test automatic rotation scheduling. Create integration tests that simulate key rotation during active operations."
+          },
+          {
+            "id": 3,
+            "title": "Implement Input Sanitization System",
+            "description": "Create an InputSanitizer class that handles sanitization of user inputs to prevent injection attacks and other security vulnerabilities.",
+            "dependencies": [],
+            "details": "Implement the InputSanitizer class with the following features:\n1. Create context-aware sanitization methods for different input types (SQL, HTML, JavaScript, etc.)\n2. Implement protection against common injection attacks (SQL, XSS, command injection)\n3. Add validation for expected data formats and types\n4. Create sanitization rules configuration system\n5. Implement logging of sanitization actions for security auditing\n\nThe sanitize() method should accept different context parameters to apply appropriate sanitization rules based on how the input will be used.",
+            "status": "pending",
+            "testStrategy": "Test sanitization with known attack vectors for SQL injection, XSS, etc. Verify that sanitized output is safe while preserving legitimate functionality. Test with edge cases like Unicode characters and special sequences. Create comprehensive tests with OWASP attack patterns."
+          },
+          {
+            "id": 4,
+            "title": "Implement Rate Limiting System",
+            "description": "Create a RateLimiter class that prevents abuse by limiting request rates per client, with configurable thresholds and time windows.",
+            "dependencies": [],
+            "details": "Implement the RateLimiter class with the following features:\n1. Create sliding window rate limiting algorithm\n2. Support for different rate limits based on client tiers/permissions\n3. Implement storage backends for rate limit counters (memory, Redis)\n4. Add methods to check if a client is rate limited and to record new requests\n5. Implement automatic response headers for rate limit information\n\nThe implementation should include isRateLimited() and recordRequest() methods as shown in the example, with proper time window handling and counter management.",
+            "status": "pending",
+            "testStrategy": "Test rate limiting with rapid request sequences. Verify that limits are properly enforced and reset after the time window. Test with different client IDs and permission levels. Create stress tests to ensure the system handles high concurrency correctly."
+          },
+          {
+            "id": 5,
+            "title": "Implement Security Audit Logging System",
+            "description": "Create a comprehensive security audit logging system that records security-relevant events with proper detail for compliance and forensic analysis.",
+            "dependencies": [
+              "15.1",
+              "15.3",
+              "15.4"
+            ],
+            "details": "Implement a SecurityAuditLogger class with the following features:\n1. Log security-relevant events (authentication, authorization, data access)\n2. Include detailed context information (user, IP, action, timestamp)\n3. Implement tamper-evident logging (hash chaining or digital signatures)\n4. Add log rotation and retention policies\n5. Support for different log destinations (file, database, SIEM)\n\nThe implementation should integrate with the other security components to log encryption operations, sanitization actions, and rate limiting events. Include proper log formatting that follows compliance requirements (GDPR, SOC2, etc.).",
+            "status": "pending",
+            "testStrategy": "Verify that all security events are properly logged with correct details. Test log integrity features to ensure logs cannot be tampered with. Test log rotation and retention. Create integration tests that verify security events from all components are captured correctly."
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Complete Entity Implementation for All 215+ Classes",
+        "description": "Finish implementing all entity classes with proper validation, relationships, and business logic.",
+        "details": "For each of the 215+ entity classes:\n1. Implement proper field definitions with types and constraints\n2. Add validation rules specific to each entity\n3. Define relationships with other entities\n4. Implement custom business logic\n5. Add proper serialization/deserialization\n\nImplementation approach:\n1. Create a base entity class with common functionality\n2. Implement entity-specific extensions\n3. Use the validation framework from Task #2\n4. Use the relationship system from Task #5\n5. Ensure all entities follow the same patterns\n\nExample for a single entity:\n\n```typescript\n@Entity('Ticket')\nclass Ticket extends BaseEntity {\n  @Field({ required: true, maxLength: 255 })\n  title: string;\n  \n  @Field({ required: true })\n  status: TicketStatus;\n  \n  @Field({ required: true })\n  @ForeignKey('Company', 'companyId')\n  companyId: number;\n  \n  @Relationship('Company', 'companyId')\n  company?: Company;\n  \n  // Additional fields and methods\n}\n```",
+        "testStrategy": "Create unit tests for each entity class. Test validation rules with valid and invalid data. Verify relationship loading works correctly. Test serialization/deserialization. Create integration tests that verify entities can be created, read, updated, and deleted through the Autotask API.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Base Entity Class with Common Functionality",
+            "description": "Develop a robust BaseEntity class that will serve as the foundation for all 215+ entity classes. This class should implement common functionality that all entities will inherit.",
+            "dependencies": [],
+            "details": "Implement the BaseEntity class with the following features:\n1. Common fields like id, createdDate, modifiedDate\n2. Basic CRUD operation methods\n3. Serialization/deserialization methods\n4. Integration with the validation framework from Task #2\n5. Support for the relationship system from Task #5\n6. Error handling mechanisms\n7. Logging capabilities\n\nExample implementation:\n```typescript\nabstract class BaseEntity {\n  @Field({ required: true, generated: true })\n  id: number;\n  \n  @Field({ required: true, generated: true })\n  createdDate: Date;\n  \n  @Field({ required: true, generated: true })\n  modifiedDate: Date;\n  \n  validate(): ValidationResult {\n    // Implementation using validation framework\n  }\n  \n  serialize(): Record<string, any> {\n    // Implementation\n  }\n  \n  static deserialize(data: Record<string, any>): BaseEntity {\n    // Implementation\n  }\n  \n  // Additional common methods\n}\n```",
+            "status": "pending",
+            "testStrategy": "Create unit tests for the BaseEntity class. Test all common functionality including validation, serialization/deserialization, and error handling. Verify that the class correctly integrates with the validation framework and relationship system."
+          },
+          {
+            "id": 2,
+            "title": "Implement Core Business Entities (First 50 Classes)",
+            "description": "Implement the first batch of 50 core business entity classes that are most frequently used in the system. These should include primary entities like Company, Contact, Ticket, Project, etc.",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "For each of the 50 core entity classes:\n1. Extend the BaseEntity class\n2. Define all required fields with proper types and constraints\n3. Implement entity-specific validation rules\n4. Define relationships with other entities\n5. Add custom business logic specific to each entity\n6. Ensure proper serialization/deserialization\n\nPrioritize entities that are most commonly used and have the most relationships. Follow the example pattern:\n\n```typescript\n@Entity('Company')\nclass Company extends BaseEntity {\n  @Field({ required: true, maxLength: 255 })\n  name: string;\n  \n  @Field({ required: true })\n  status: CompanyStatus;\n  \n  @Field({ required: false, maxLength: 1000 })\n  description?: string;\n  \n  @Relationship('Contact', 'companyId', { type: 'one-to-many' })\n  contacts?: Contact[];\n  \n  // Custom business logic methods\n  isActive(): boolean {\n    return this.status === CompanyStatus.Active;\n  }\n}\n```",
+            "status": "pending",
+            "testStrategy": "Create comprehensive unit tests for each entity class. Test validation rules with valid and invalid data. Verify relationship definitions are correct. Test custom business logic methods. Create integration tests to verify entities can be properly created, read, updated, and deleted."
+          },
+          {
+            "id": 3,
+            "title": "Implement Secondary Business Entities (Next 75 Classes)",
+            "description": "Implement the second batch of 75 entity classes that represent secondary business objects like configurations, settings, and supporting entities.",
+            "dependencies": [
+              "16.1",
+              "16.2"
+            ],
+            "details": "For each of the 75 secondary entity classes:\n1. Extend the BaseEntity class\n2. Define all required fields with proper types and constraints\n3. Implement entity-specific validation rules\n4. Define relationships with core entities implemented in subtask 16.2\n5. Add custom business logic specific to each entity\n6. Ensure proper serialization/deserialization\n\nFocus on entities that support the core business entities, such as TicketCategory, ProjectPhase, CompanyType, etc. Follow the established pattern:\n\n```typescript\n@Entity('TicketCategory')\nclass TicketCategory extends BaseEntity {\n  @Field({ required: true, maxLength: 100 })\n  name: string;\n  \n  @Field({ required: false })\n  displayOrder: number;\n  \n  @Field({ required: true })\n  isActive: boolean;\n  \n  @Field({ required: true })\n  @ForeignKey('Company', 'companyId')\n  companyId: number;\n  \n  @Relationship('Company', 'companyId')\n  company?: Company;\n  \n  @Relationship('Ticket', 'categoryId', { type: 'one-to-many' })\n  tickets?: Ticket[];\n}\n```",
+            "status": "pending",
+            "testStrategy": "Create unit tests for each secondary entity class. Test validation rules with valid and invalid data. Verify relationship definitions are correct, especially relationships with core entities. Test custom business logic methods. Create integration tests to verify entities can be properly created, read, updated, and deleted."
+          },
+          {
+            "id": 4,
+            "title": "Implement Auxiliary and System Entities (Next 90 Classes)",
+            "description": "Implement the remaining 90 entity classes that represent auxiliary objects, system configurations, and less frequently used entities.",
+            "dependencies": [
+              "16.1",
+              "16.3"
+            ],
+            "details": "For each of the 90 auxiliary and system entity classes:\n1. Extend the BaseEntity class\n2. Define all required fields with proper types and constraints\n3. Implement entity-specific validation rules\n4. Define relationships with previously implemented entities\n5. Add custom business logic specific to each entity\n6. Ensure proper serialization/deserialization\n\nThese entities include system settings, audit logs, notification templates, and other supporting objects. Follow the established pattern:\n\n```typescript\n@Entity('NotificationTemplate')\nclass NotificationTemplate extends BaseEntity {\n  @Field({ required: true, maxLength: 200 })\n  name: string;\n  \n  @Field({ required: true, maxLength: 200 })\n  subject: string;\n  \n  @Field({ required: true })\n  bodyTemplate: string;\n  \n  @Field({ required: true })\n  notificationType: NotificationType;\n  \n  @Field({ required: true })\n  isActive: boolean;\n  \n  // Custom business logic\n  renderTemplate(data: Record<string, any>): string {\n    // Implementation\n  }\n}\n```",
+            "status": "pending",
+            "testStrategy": "Create unit tests for each auxiliary entity class. Test validation rules with valid and invalid data. Verify relationship definitions are correct. Test custom business logic methods. Create integration tests to verify entities can be properly created, read, updated, and deleted. Test system-specific functionality like template rendering or configuration application."
+          },
+          {
+            "id": 5,
+            "title": "Implement Cross-Entity Validation and Business Rules",
+            "description": "Implement cross-entity validation rules and business logic that span multiple entities. This includes complex validation rules, cascading operations, and business processes that involve multiple entity types.",
+            "dependencies": [
+              "16.2",
+              "16.3",
+              "16.4"
+            ],
+            "details": "Develop a system for cross-entity validation and business rules:\n1. Create a BusinessRuleEngine class that can validate rules across multiple entities\n2. Implement complex validation rules that span multiple entities\n3. Define cascading business operations (e.g., when a Company is deactivated, all associated Projects should be marked accordingly)\n4. Create entity listeners for important business events\n5. Implement transaction support for operations that affect multiple entities\n\nExample implementation:\n\n```typescript\nclass BusinessRuleEngine {\n  validateCrossEntityRules(entities: BaseEntity[]): ValidationResult[] {\n    // Implementation\n  }\n  \n  applyBusinessRule(rule: BusinessRule, entities: BaseEntity[]): void {\n    // Implementation\n  }\n}\n\n// Example of a cross-entity business rule\nclass ProjectCompanyStatusRule implements BusinessRule {\n  apply(entities: BaseEntity[]): void {\n    const company = entities.find(e => e instanceof Company) as Company;\n    const projects = entities.filter(e => e instanceof Project) as Project[];\n    \n    if (company && !company.isActive()) {\n      projects.forEach(project => {\n        if (project.companyId === company.id && project.isActive()) {\n          project.status = ProjectStatus.OnHold;\n        }\n      });\n    }\n  }\n}\n```",
+            "status": "pending",
+            "testStrategy": "Create unit tests for the BusinessRuleEngine and individual business rules. Test cross-entity validation with various combinations of entities. Verify cascading operations work correctly. Create integration tests that simulate real-world business scenarios involving multiple entities. Test transaction support to ensure all operations succeed or fail together."
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Create Comprehensive Testing Infrastructure",
+        "description": "Develop a testing infrastructure with unit tests, integration tests, and a mock server for offline testing.",
+        "details": "Create a testing infrastructure that includes:\n1. Unit test framework for all components\n2. Integration tests with the actual Autotask API\n3. Mock server for offline testing\n4. Performance benchmarks\n5. Load testing scenarios\n\nImplementation example:\n\n```typescript\nclass AutotaskMockServer {\n  private entities: Map<string, Map<number, any>> = new Map();\n  private routes: Map<string, RouteHandler> = new Map();\n  \n  constructor(options?: MockServerOptions) {\n    this.setupDefaultRoutes();\n  }\n  \n  private setupDefaultRoutes(): void {\n    // Implementation\n  }\n  \n  addRoute(method: string, path: string, handler: RouteHandler): void {\n    // Implementation\n  }\n  \n  \n  start(port: number = 3000): Promise<void> {\n    // Implementation\n  }\n  \n  stop(): Promise<void> {\n    // Implementation\n  }\n  \n  reset(): void {\n    // Implementation\n  }\n}\n\nclass TestDataGenerator {\n  generateEntity(entityType: string, overrides?: Partial<any>): any {\n    // Implementation\n  }\n  \n  generateEntities(entityType: string, count: number, overrides?: Partial<any>): any[] {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Verify mock server correctly simulates Autotask API responses. Test data generator produces valid entities. Create meta-tests that verify test coverage is adequate. Ensure integration tests can run against both mock server and real Autotask API.",
+        "priority": "high",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Unit Test Framework",
+            "description": "Set up a comprehensive unit test framework for all components of the SDK, including test runners, assertion libraries, and mocking utilities.",
+            "dependencies": [],
+            "details": "1. Install and configure Jest or Mocha as the test runner\n2. Set up TypeScript support for the test framework\n3. Create a directory structure for tests that mirrors the source code\n4. Implement helper utilities for common testing patterns\n5. Create base test classes for different entity types\n6. Configure code coverage reporting\n7. Set up continuous integration for automated test runs",
+            "status": "pending",
+            "testStrategy": "Create meta-tests that verify the test framework itself works correctly. Ensure code coverage reports are accurate. Test the helper utilities with simple examples."
+          },
+          {
+            "id": 2,
+            "title": "Develop Mock Server for Offline Testing",
+            "description": "Create a mock server that simulates the Autotask API for offline testing, with the ability to store and retrieve mock entities.",
+            "dependencies": [
+              "17.1"
+            ],
+            "details": "1. Implement the AutotaskMockServer class with entity storage\n2. Create route handlers for standard CRUD operations\n3. Implement request validation similar to the actual API\n4. Add support for simulated latency and error conditions\n5. Create a simple HTTP server implementation\n6. Implement methods to start, stop, and reset the server\n7. Add configuration options for customizing server behavior",
+            "status": "pending",
+            "testStrategy": "Test the mock server against the same test suite used for the real API client. Verify it correctly handles all entity types. Test error conditions and edge cases."
+          },
+          {
+            "id": 3,
+            "title": "Create Test Data Generator",
+            "description": "Develop a system to generate realistic test data for all entity types supported by the SDK.",
+            "dependencies": [
+              "17.2"
+            ],
+            "details": "1. Implement the TestDataGenerator class\n2. Create templates for all entity types with realistic default values\n3. Add support for overriding specific fields\n4. Implement methods to generate single entities or collections\n5. Add support for generating related entities with proper relationships\n6. Create utility methods for common test data scenarios\n7. Ensure generated data passes all validation rules",
+            "status": "pending",
+            "testStrategy": "Verify generated entities pass validation. Test with various entity types. Ensure relationships between generated entities are correctly established."
+          },
+          {
+            "id": 4,
+            "title": "Implement Integration Tests with Actual API",
+            "description": "Create integration tests that can run against both the mock server and the actual Autotask API to verify SDK behavior.",
+            "dependencies": [
+              "17.2",
+              "17.3"
+            ],
+            "details": "1. Create a test configuration system to switch between mock and real API\n2. Implement integration test suites for all major SDK features\n3. Create test cases that verify correct handling of API responses\n4. Add tests for error conditions and edge cases\n5. Implement cleanup routines to remove test data after tests\n6. Create test fixtures for common test scenarios\n7. Add logging for debugging integration test failures",
+            "status": "pending",
+            "testStrategy": "Run tests against both mock server and real API (when credentials are available). Verify identical behavior. Use test data that won't interfere with production data."
+          },
+          {
+            "id": 5,
+            "title": "Develop Performance and Load Testing Framework",
+            "description": "Create a framework for performance benchmarking and load testing to ensure the SDK meets performance requirements under various conditions.",
+            "dependencies": [
+              "17.4"
+            ],
+            "details": "1. Implement performance benchmark utilities\n2. Create baseline performance tests for all critical operations\n3. Implement load testing scenarios with concurrent operations\n4. Add metrics collection for response times, throughput, and resource usage\n5. Create visualization tools for performance data\n6. Implement comparison tools to track performance changes over time\n7. Add configurable test parameters for different load scenarios",
+            "status": "pending",
+            "testStrategy": "Run benchmarks on different hardware to establish baselines. Compare performance against previous versions. Test with various load profiles to identify bottlenecks."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Create Comprehensive Documentation",
+        "description": "Develop complete API documentation, usage examples, migration guides, and troubleshooting information.",
+        "details": "Create documentation that includes:\n1. Complete API documentation for all methods\n2. Real-world usage examples\n3. Migration guides for different PSA systems\n4. Documentation for all breaking changes\n5. Troubleshooting guide\n6. Best practices guide\n\nImplementation approach:\n1. Use TypeDoc or similar tool for API documentation\n2. Create markdown files for guides and examples\n3. Include code snippets for common scenarios\n4. Create diagrams for complex workflows\n5. Include performance recommendations\n\nExample documentation structure:\n- API Reference\n  - Core Classes\n  - Entity Classes\n  - Utility Classes\n- Guides\n  - Getting Started\n  - Authentication\n  - Working with Entities\n  - Relationships\n  - Migration\n- Examples\n  - Basic CRUD Operations\n  - Complex Queries\n  - Migration Scenarios\n- Troubleshooting\n  - Common Errors\n  - Performance Issues\n  - API Limitations",
+        "testStrategy": "Review documentation for completeness and accuracy. Verify all public APIs are documented. Test examples to ensure they work as documented. Have team members review documentation for clarity and usefulness.",
+        "priority": "medium",
+        "dependencies": [
+          16,
+          17
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up API Documentation with TypeDoc",
+            "description": "Configure and implement TypeDoc or a similar tool to generate comprehensive API documentation from code comments. This includes setting up the documentation generation pipeline, configuring output formats, and establishing the documentation structure.",
+            "dependencies": [],
+            "details": "1. Install TypeDoc and required dependencies\n2. Configure TypeDoc to scan all source files\n3. Create a documentation template with proper styling\n4. Set up documentation build scripts in package.json\n5. Create a documentation generation pipeline that can be run manually or as part of CI/CD\n6. Establish folder structure for generated documentation\n7. Configure output formats (HTML, JSON, etc.)\n8. Add comprehensive JSDoc comments to all public APIs, classes, methods, and properties\n9. Include type information, parameter descriptions, return values, and examples in comments\n10. Create a script to verify documentation coverage",
+            "status": "pending",
+            "testStrategy": "Verify documentation is generated without errors. Check that all public APIs have documentation. Review generated documentation for completeness and accuracy. Create a documentation coverage report."
+          },
+          {
+            "id": 2,
+            "title": "Create Usage Examples and Code Snippets",
+            "description": "Develop a comprehensive set of real-world usage examples and code snippets that demonstrate how to use the SDK for common scenarios. These examples should cover basic operations, complex workflows, and best practices.",
+            "dependencies": [
+              "18.1"
+            ],
+            "details": "1. Identify key SDK usage scenarios (basic CRUD, authentication, complex queries, etc.)\n2. Create a dedicated 'examples' directory with categorized subdirectories\n3. Implement working code examples for each scenario with detailed comments\n4. Ensure examples follow best practices and demonstrate optimal usage patterns\n5. Include examples for error handling and edge cases\n6. Create runnable examples that users can execute to see results\n7. Document expected outputs for each example\n8. Include examples for different PSA systems integration\n9. Create examples showing migration scenarios\n10. Implement examples showing performance optimization techniques",
+            "status": "pending",
+            "testStrategy": "Verify all examples compile and run successfully. Test examples against the actual API to ensure they work as documented. Have team members review examples for clarity and usefulness."
+          },
+          {
+            "id": 3,
+            "title": "Develop Migration Guides and Breaking Changes Documentation",
+            "description": "Create comprehensive migration guides for different PSA systems and document all breaking changes. This includes step-by-step migration instructions, compatibility matrices, and detailed explanations of API changes between versions.",
+            "dependencies": [
+              "18.1"
+            ],
+            "details": "1. Identify all major PSA systems that users might migrate from\n2. Create a dedicated 'migration' directory with system-specific guides\n3. Document step-by-step migration processes for each system\n4. Create compatibility matrices showing feature support across systems\n5. Document all breaking changes between SDK versions\n6. Provide code examples showing before/after migration code\n7. Include migration scripts or utilities where applicable\n8. Create checklists for migration verification\n9. Document known limitations and workarounds\n10. Provide estimated effort levels for different migration scenarios",
+            "status": "pending",
+            "testStrategy": "Review migration guides with team members who have experience with different PSA systems. Verify migration steps by performing test migrations. Test migration scripts and utilities with sample data."
+          },
+          {
+            "id": 4,
+            "title": "Create Troubleshooting and Best Practices Guides",
+            "description": "Develop comprehensive troubleshooting documentation and best practices guides. This includes common error scenarios, performance optimization recommendations, and implementation patterns that follow best practices.",
+            "dependencies": [
+              "18.1",
+              "18.2"
+            ],
+            "details": "1. Create a 'troubleshooting' directory with categorized guides\n2. Document common error scenarios and their solutions\n3. Include error code references and explanations\n4. Create decision trees for diagnosing complex issues\n5. Document performance bottlenecks and optimization strategies\n6. Create a best practices guide covering:\n   - Authentication and security\n   - Data handling and validation\n   - Error handling and logging\n   - Performance optimization\n   - Rate limiting and backoff strategies\n   - Caching strategies\n7. Include anti-patterns to avoid\n8. Document known API limitations and workarounds\n9. Create performance benchmarks and recommendations\n10. Include logging and debugging recommendations",
+            "status": "pending",
+            "testStrategy": "Review troubleshooting guides for accuracy. Verify solutions actually resolve the described problems. Test performance recommendations to ensure they provide measurable improvements."
+          },
+          {
+            "id": 5,
+            "title": "Create Diagrams and Visual Documentation",
+            "description": "Develop visual documentation including workflow diagrams, entity relationship diagrams, and architecture overviews to complement the text-based documentation. This helps users understand complex relationships and processes.",
+            "dependencies": [
+              "18.1",
+              "18.2",
+              "18.3",
+              "18.4"
+            ],
+            "details": "1. Identify key workflows and processes that benefit from visual representation\n2. Create entity relationship diagrams showing connections between main entities\n3. Develop architecture diagrams showing SDK components and interactions\n4. Create sequence diagrams for complex operations\n5. Develop flowcharts for decision processes and business rules\n6. Create visual representations of authentication flows\n7. Design diagrams showing integration patterns with different systems\n8. Create diagrams in a format that can be maintained alongside code (e.g., PlantUML)\n9. Include diagrams in appropriate sections of the documentation\n10. Create a visual quick-start guide for new users\n11. Ensure diagrams follow a consistent style and notation\n12. Include legends explaining diagram notation",
+            "status": "pending",
+            "testStrategy": "Review diagrams with team members to ensure accuracy and clarity. Verify diagrams match actual implementation. Test diagrams with users to ensure they improve understanding."
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Implement Performance Benchmarks and Optimization",
+        "description": "Create performance benchmarks and optimize the SDK to meet performance requirements.",
+        "details": "Develop performance benchmarks and optimizations that:\n1. Measure response times for all operations\n2. Track memory usage during operations\n3. Optimize critical paths\n4. Implement performance recommendations\n5. Create performance reports\n\nImplementation example:\n\n```typescript\nclass PerformanceBenchmark {\n  private results: BenchmarkResult[] = [];\n  \n  async runBenchmark(name: string, operation: () => Promise<any>, iterations: number = 10): Promise<BenchmarkResult> {\n    // Implementation\n  }\n  \n  async runMemoryBenchmark(name: string, operation: () => Promise<any>): Promise<MemoryBenchmarkResult> {\n    // Implementation\n  }\n  \n  generateReport(): BenchmarkReport {\n    // Implementation\n  }\n}\n\nclass PerformanceOptimizer {\n  analyzeHotspots(benchmarkReport: BenchmarkReport): OptimizationRecommendation[] {\n    // Implementation\n  }\n  \n  applyOptimizations(recommendations: OptimizationRecommendation[]): void {\n    // Implementation\n  }\n}\n```",
+        "testStrategy": "Run benchmarks before and after optimizations to verify improvements. Test memory usage with large datasets. Verify the SDK meets performance requirements specified in the PRD. Create long-running tests to identify memory leaks or performance degradation over time.",
+        "priority": "medium",
+        "dependencies": [
+          7,
+          8,
+          16
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Performance Benchmark Framework",
+            "description": "Create a core benchmark framework that can measure execution time for operations and track memory usage during SDK operations.",
+            "dependencies": [],
+            "details": "Implement the PerformanceBenchmark class with methods to run time-based benchmarks and memory usage tracking. Include functionality to store benchmark results and basic statistics calculation. The implementation should use high-resolution timers and memory usage APIs appropriate for the runtime environment. For Node.js, use process.hrtime() for timing and process.memoryUsage() for memory tracking.",
+            "status": "pending",
+            "testStrategy": "Create unit tests that verify benchmark timing accuracy by testing against operations with known durations. Verify memory tracking by creating controlled memory allocation scenarios and checking the reported values."
+          },
+          {
+            "id": 2,
+            "title": "Develop Critical Path Analysis Tools",
+            "description": "Create tools to identify performance bottlenecks and critical paths in the SDK operations through profiling and analysis.",
+            "dependencies": [
+              "19.1"
+            ],
+            "details": "Implement the PerformanceOptimizer class with methods to analyze benchmark results and identify hotspots. Add functionality to trace execution paths and generate a dependency graph of operations. Include methods to calculate the critical path based on execution time. The implementation should support both synchronous and asynchronous operations, with proper handling of Promise chains and async/await patterns.",
+            "status": "pending",
+            "testStrategy": "Test with mock benchmark data representing various performance scenarios. Verify the critical path analysis correctly identifies the slowest components in a chain of operations. Create test cases with known bottlenecks and verify they are properly identified."
+          },
+          {
+            "id": 3,
+            "title": "Implement Performance Reporting System",
+            "description": "Create a comprehensive reporting system that generates detailed performance reports from benchmark results, including visualizations and trend analysis.",
+            "dependencies": [
+              "19.1"
+            ],
+            "details": "Extend the PerformanceBenchmark class to include a robust generateReport method that produces detailed performance reports. Implement functionality to compare current results against historical data to track performance changes over time. Include visualization data for charts (response time distributions, memory usage over time, etc.). The report should include statistical analysis such as percentiles, standard deviation, and outlier detection.",
+            "status": "pending",
+            "testStrategy": "Test report generation with various benchmark datasets. Verify the statistical calculations are accurate. Test the trend analysis with historical data sets to ensure changes are correctly identified and reported."
+          },
+          {
+            "id": 4,
+            "title": "Implement Performance Optimization Strategies",
+            "description": "Develop and implement specific optimization techniques for common performance issues identified in the SDK.",
+            "dependencies": [
+              "19.2"
+            ],
+            "details": "Extend the PerformanceOptimizer class with applyOptimizations method that implements common optimization strategies. Include techniques such as memoization for expensive calculations, connection pooling, batch processing for API calls, and lazy loading of resources. Implement smart retry strategies with exponential backoff. Create optimization patterns that can be applied automatically to identified hotspots.",
+            "status": "pending",
+            "testStrategy": "Benchmark each optimization strategy individually to measure its impact. Create before/after tests for each optimization technique. Test edge cases to ensure optimizations don't introduce bugs or regressions."
+          },
+          {
+            "id": 5,
+            "title": "Create Continuous Performance Monitoring System",
+            "description": "Implement a system for continuous performance monitoring that can be integrated into CI/CD pipelines and production environments.",
+            "dependencies": [
+              "19.1",
+              "19.3",
+              "19.4"
+            ],
+            "details": "Create a monitoring system that can run benchmarks automatically on a schedule or triggered by events (code changes, deployments). Implement functionality to store benchmark results in a persistent store for long-term trend analysis. Add alerting capabilities to notify when performance degrades beyond defined thresholds. Include integration with CI/CD systems to fail builds if performance requirements aren't met. The system should support exporting metrics to common monitoring platforms.",
+            "status": "pending",
+            "testStrategy": "Test the monitoring system with simulated performance degradation scenarios. Verify alerts are triggered appropriately. Test integration with CI/CD pipelines to ensure performance gates work correctly. Verify long-running tests correctly identify memory leaks or performance degradation over time."
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Final Integration and Production Readiness",
+        "description": "Perform final integration testing, ensure all acceptance criteria are met, and prepare for production release.",
+        "details": "Complete final preparation for production release:\n1. Verify all acceptance criteria are met\n2. Run full integration test suite\n3. Perform security audit\n4. Validate documentation completeness\n5. Prepare release notes\n6. Create migration path for existing users\n\nChecklist:\n- Zero placeholder implementations remaining\n- All tests passing with >90% coverage\n- Successfully migrate data from at least one PSA system\n- Handle 100+ concurrent API requests without errors\n- Process 10,000 entities in under 5 minutes\n- All business rules enforced correctly\n- Zero critical security vulnerabilities\n- Complete documentation for all features\n\nImplementation includes creating a final validation report that verifies all requirements have been met.",
+        "testStrategy": "Run comprehensive test suite covering all functionality. Perform load testing with production-like volumes. Conduct security penetration testing. Verify all documentation is complete and accurate. Have multiple team members review the release for quality and completeness.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Comprehensive Integration Testing",
+            "description": "Execute a full integration test suite to verify all components work together correctly. This includes API endpoint testing, data flow validation, and end-to-end scenario testing.",
+            "dependencies": [],
+            "details": "Create an integration test harness that runs through all critical paths in the application. Verify that all components interact correctly, data flows properly between systems, and end-to-end scenarios complete successfully. Test should include: API contract validation, database interactions, third-party service integrations, and user workflows. Generate a detailed test report highlighting any issues found.",
+            "status": "pending",
+            "testStrategy": "Use automated test suite with realistic test data. Implement load testing with 100+ concurrent API requests. Verify processing of 10,000 entities completes in under 5 minutes. Document test coverage and results in a structured report."
+          },
+          {
+            "id": 2,
+            "title": "Security Audit and Vulnerability Assessment",
+            "description": "Perform a comprehensive security audit to identify and remediate any vulnerabilities before production deployment.",
+            "dependencies": [
+              "20.1"
+            ],
+            "details": "Conduct a thorough security assessment including: code scanning for vulnerabilities, penetration testing, authentication/authorization validation, data encryption verification, and API security review. Use industry-standard tools like OWASP ZAP, SonarQube, and manual code review. Document all findings and implement fixes for any critical or high-priority issues.",
+            "status": "pending",
+            "testStrategy": "Run automated security scanning tools. Perform manual penetration testing. Verify proper implementation of authentication, authorization, and data protection. Document all findings and remediation steps."
+          },
+          {
+            "id": 3,
+            "title": "Documentation Completeness Validation",
+            "description": "Review and validate all documentation to ensure it is complete, accurate, and meets the needs of all stakeholders.",
+            "dependencies": [
+              "20.1"
+            ],
+            "details": "Review all documentation including: API documentation, user guides, administrator manuals, deployment guides, and developer documentation. Ensure documentation covers all features, is technically accurate, includes examples, and follows consistent formatting. Create a documentation gap analysis report and address any missing or incomplete sections.",
+            "status": "pending",
+            "testStrategy": "Have multiple team members review documentation for accuracy and completeness. Verify documentation against actual implementation. Test documentation by having someone unfamiliar with the system follow the guides to complete key tasks."
+          },
+          {
+            "id": 4,
+            "title": "Migration Path Implementation and Testing",
+            "description": "Finalize and test the migration path for existing users, ensuring data integrity and minimal disruption during transition.",
+            "dependencies": [
+              "20.1",
+              "20.2"
+            ],
+            "details": "Complete the implementation of migration tools and scripts for existing PSA system users. Create a step-by-step migration guide. Test migration with production-like data volumes. Verify data integrity post-migration. Implement rollback procedures in case of migration failure. Document performance metrics and expected downtime during migration.",
+            "status": "pending",
+            "testStrategy": "Perform full migration test with at least one complete PSA system dataset. Verify all data is correctly migrated with integrity checks. Test rollback procedures. Measure and optimize migration performance to minimize downtime."
+          },
+          {
+            "id": 5,
+            "title": "Production Release Preparation and Final Validation",
+            "description": "Create final validation report, prepare release notes, and complete all pre-production checklists to ensure readiness for deployment.",
+            "dependencies": [
+              "20.1",
+              "20.2",
+              "20.3",
+              "20.4"
+            ],
+            "details": "Compile a comprehensive validation report that verifies all requirements and acceptance criteria have been met. Prepare detailed release notes documenting new features, improvements, bug fixes, and known issues. Create deployment checklist and rollback plan. Verify all environments (staging, production) are properly configured. Ensure monitoring systems are operational. Conduct a final review meeting with all stakeholders to approve the release.",
+            "status": "pending",
+            "testStrategy": "Verify all items on the production readiness checklist. Confirm >90% test coverage. Validate that zero critical security vulnerabilities exist. Ensure all documentation is complete and accurate. Verify that the system can handle the required load and performance metrics."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-28T18:05:07.202Z",
+      "updated": "2025-08-28T18:32:23.143Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

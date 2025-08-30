@@ -415,8 +415,9 @@ ${entityInitializations}  }
       httpsAgent,
       headers: {
         'Content-Type': 'application/json',
-        'ApiIntegrationcode': config.integrationCode,
-        Authorization: \`Basic \${Buffer.from(\`\${config.username}:\${config.secret}\`).toString('base64')}\`,
+        'ApiIntegrationCode': config.integrationCode,
+        'UserName': config.username,
+        'Secret': config.secret,
       },
       transformRequest: [
         (data, headers) => {
