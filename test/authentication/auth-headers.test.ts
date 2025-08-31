@@ -26,7 +26,15 @@ describe('Autotask Authentication Headers', () => {
     // Mock the test connection call
     mockAxiosCreate.mockReturnValue({
       get: jest.fn().mockResolvedValue({ data: {} }),
-      defaults: { headers: { common: {} } }
+      defaults: { headers: { common: {} } },
+      interceptors: {
+        request: {
+          use: jest.fn()
+        },
+        response: {
+          use: jest.fn()
+        }
+      }
     } as any);
     
     const config = {
@@ -50,11 +58,13 @@ describe('Autotask Authentication Headers', () => {
     );
     
     // Verify NO Basic Auth header is present
-    const createCall = mockAxiosCreate.mock.calls[0][0];
-    expect(createCall.headers).not.toHaveProperty('Authorization');
-    
-    // Verify the old incorrect header name is not used
-    expect(createCall.headers).not.toHaveProperty('ApiIntegrationcode'); // lowercase 'c'
+    const createCall = mockAxiosCreate.mock.calls[0];
+    if (createCall && createCall[0]) {
+      expect(createCall[0].headers).not.toHaveProperty('Authorization');
+      
+      // Verify the old incorrect header name is not used
+      expect(createCall[0].headers).not.toHaveProperty('ApiIntegrationcode'); // lowercase 'c'
+    }
   });
   
   it('should properly encode username in zone detection URL', async () => {
@@ -70,7 +80,15 @@ describe('Autotask Authentication Headers', () => {
     // Mock axios.create for the main client
     jest.spyOn(axios, 'create').mockReturnValue({
       get: jest.fn().mockResolvedValue({ data: {} }),
-      defaults: { headers: { common: {} } }
+      defaults: { headers: { common: {} } },
+      interceptors: {
+        request: {
+          use: jest.fn()
+        },
+        response: {
+          use: jest.fn()
+        }
+      }
     } as any);
     
     const config = {

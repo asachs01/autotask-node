@@ -30,6 +30,31 @@ export class ValidationResult {
   private warnings: ValidationError[] = [];
 
   /**
+   * Create a successful validation result
+   */
+  static success(): ValidationResult {
+    return new ValidationResult();
+  }
+
+  /**
+   * Create a failed validation result with errors
+   */
+  static failure(errors: ValidationError[]): ValidationResult {
+    const result = new ValidationResult();
+    errors.forEach(error => result.addError(error));
+    return result;
+  }
+
+  /**
+   * Create a validation result with warnings only
+   */
+  static warning(warnings: ValidationError[]): ValidationResult {
+    const result = new ValidationResult();
+    warnings.forEach(warning => result.addError(warning));
+    return result;
+  }
+
+  /**
    * Add a validation error
    */
   addError(error: ValidationError): void {
@@ -43,7 +68,7 @@ export class ValidationResult {
   /**
    * Check if validation passed (no errors, warnings allowed)
    */
-  isValid(): boolean {
+  get isValid(): boolean {
     return this.errors.length === 0;
   }
 
@@ -190,7 +215,7 @@ export class ValidationRules {
   /**
    * Field is required (not null, undefined, or empty string)
    */
-  static required(field: string, message?: string): ValidationRule {
+  static required(field: string = '', message?: string): ValidationRule {
     return new ValidationRule(
       field,
       value => value !== null && value !== undefined && value !== '',
@@ -233,7 +258,7 @@ export class ValidationRules {
   /**
    * String length constraints
    */
-  static length(field: string, options: { min?: number, max?: number, exact?: number }, message?: string): ValidationRule {
+  static stringLength(field: string, options: { min?: number, max?: number, exact?: number }, message?: string): ValidationRule {
     return new ValidationRule(
       field,
       value => {
@@ -383,6 +408,57 @@ export class ValidationRules {
   }
 
   /**
+   * Convenience methods for common validations
+   */
+  static string(field: string = '', message?: string): ValidationRule {
+    return ValidationRules.type(field, 'string', message);
+  }
+
+  static number(field: string = '', message?: string): ValidationRule {
+    return ValidationRules.type(field, 'number', message);
+  }
+
+  static boolean(field: string = '', message?: string): ValidationRule {
+    return ValidationRules.type(field, 'boolean', message);
+  }
+
+  static minLength(min: number, field: string = '', message?: string): ValidationRule {
+    return ValidationRules.stringLength(field, { min }, message);
+  }
+
+  static maxLength(max: number, field: string = '', message?: string): ValidationRule {
+    return ValidationRules.stringLength(field, { max }, message);
+  }
+
+  static email(field: string = '', message?: string): ValidationRule {
+    return ValidationRules.format(field, 'email', message);
+  }
+
+  static url(field: string = '', message?: string): ValidationRule {
+    return ValidationRules.format(field, 'url', message);
+  }
+
+  static uuid(field: string = '', message?: string): ValidationRule {
+    return ValidationRules.format(field, 'uuid', message);
+  }
+
+  static enum(values: any[], field: string = '', message?: string): ValidationRule {
+    return new ValidationRule(
+      field,
+      value => {
+        if (value === null || value === undefined) return true;
+        return values.includes(value);
+      },
+      message || `${field} must be one of: ${values.join(', ')}`,
+      'ENUM'
+    );
+  }
+
+  static pattern(pattern: RegExp, field: string = '', message?: string): ValidationRule {
+    return ValidationRules.format(field, pattern, message);
+  }
+
+  /**
    * Nested object validation
    */
   static nested(field: string, rules: ValidationRule[], message?: string): ValidationRule {
@@ -394,7 +470,7 @@ export class ValidationRules {
         
         const validator = new EntityValidator();
         const result = await validator.validate(value, rules);
-        return result.isValid();
+        return result.isValid;
       },
       message || `${field} contains invalid data`,
       'NESTED'
@@ -465,6 +541,17 @@ export class ValidationSchema<T = any> {
   private entityRules: ((entity: T) => ValidationError[] | Promise<ValidationError[]>)[] = [];
 
   /**
+   * Get all validation rules
+   */
+  get allRules(): ValidationRule[] {
+    const allRules: ValidationRule[] = [];
+    for (const fieldRules of this.rules.values()) {
+      allRules.push(...fieldRules);
+    }
+    return allRules;
+  }
+
+  /**
    * Add field validation rules
    */
   field(field: keyof T & string): FieldBuilder<T> {
@@ -474,7 +561,8 @@ export class ValidationSchema<T = any> {
   /**
    * Add a rule directly
    */
-  addRule(field: string, rule: ValidationRule): this {
+  addRule(rule: ValidationRule): this {
+    const field = rule.field;
     if (!this.rules.has(field)) {
       this.rules.set(field, []);
     }
@@ -536,82 +624,82 @@ export class FieldBuilder<T> {
   ) {}
 
   required(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.required(this.field, message));
+    this.schema.addRule(ValidationRules.required(this.field, message));
     return this;
   }
 
   string(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.type(this.field, 'string', message));
+    this.schema.addRule(ValidationRules.type(this.field, 'string', message));
     return this;
   }
 
   number(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.type(this.field, 'number', message));
+    this.schema.addRule(ValidationRules.type(this.field, 'number', message));
     return this;
   }
 
   boolean(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.type(this.field, 'boolean', message));
+    this.schema.addRule(ValidationRules.type(this.field, 'boolean', message));
     return this;
   }
 
   date(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.type(this.field, 'date', message));
+    this.schema.addRule(ValidationRules.type(this.field, 'date', message));
     return this;
   }
 
   array(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.type(this.field, 'array', message));
+    this.schema.addRule(ValidationRules.type(this.field, 'array', message));
     return this;
   }
 
   object(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.type(this.field, 'object', message));
+    this.schema.addRule(ValidationRules.type(this.field, 'object', message));
     return this;
   }
 
   length(options: { min?: number, max?: number, exact?: number }, message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.length(this.field, options, message));
+    this.schema.addRule(ValidationRules.stringLength(this.field, options, message));
     return this;
   }
 
   email(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.format(this.field, 'email', message));
+    this.schema.addRule(ValidationRules.format(this.field, 'email', message));
     return this;
   }
 
   phone(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.format(this.field, 'phone', message));
+    this.schema.addRule(ValidationRules.format(this.field, 'phone', message));
     return this;
   }
 
   url(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.format(this.field, 'url', message));
+    this.schema.addRule(ValidationRules.format(this.field, 'url', message));
     return this;
   }
 
   uuid(message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.format(this.field, 'uuid', message));
+    this.schema.addRule(ValidationRules.format(this.field, 'uuid', message));
     return this;
   }
 
   pattern(pattern: RegExp, message: string): this {
-    this.schema.addRule(this.field, ValidationRules.format(this.field, pattern, message));
+    this.schema.addRule(ValidationRules.format(this.field, pattern, message));
     return this;
   }
 
   range(options: { min?: number, max?: number }, message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.range(this.field, options, message));
+    this.schema.addRule(ValidationRules.range(this.field, options, message));
     return this;
   }
 
   enum<V>(allowedValues: V[], message?: string): this {
-    this.schema.addRule(this.field, ValidationRules.enumeration(this.field, allowedValues, message));
+    this.schema.addRule(ValidationRules.enumeration(this.field, allowedValues, message));
     return this;
   }
 
   custom(validator: (value: any, entity?: T) => boolean | Promise<boolean>, message: string, code?: string): this {
-    this.schema.addRule(this.field, ValidationRules.custom(this.field, validator, message, code));
+    this.schema.addRule(ValidationRules.custom(this.field, validator, message, code));
     return this;
   }
 
@@ -620,9 +708,9 @@ export class FieldBuilder<T> {
     const tempBuilder = new FieldBuilder<T>(tempSchema, this.field);
     configureRule(tempBuilder);
     
-    const rules = tempSchema.getRules();
+    const rules = tempSchema.allRules;
     for (const rule of rules) {
-      this.schema.addRule(this.field, ValidationRules.conditional(this.field, condition, rule));
+      this.schema.addRule(ValidationRules.conditional(this.field, condition, rule));
     }
     
     return this;

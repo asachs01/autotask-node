@@ -1,5 +1,31 @@
 # Autotask Node SDK Release Notes
 
+## 2.0.1 - Authentication and Testing Improvements
+
+**August 30, 2025** — Bug fixes for authentication, TypeScript compilation, and enhanced security practices.
+
+### 🔒 SECURITY IMPROVEMENTS
+
+- **Enhanced credential management**: All test files now use environment variables exclusively
+- **Improved .env.example**: Added clear documentation for required API credentials
+- **Better credential handling**: SDK now supports both `AUTOTASK_*` and `AUTOTASK_API_*` environment variable naming conventions
+- **Security best practices**: Ensured no credentials are hardcoded in any project files
+
+### 🐛 BUG FIXES
+
+- Fixed TypeScript compilation errors in validation framework
+- Fixed authentication headers to use correct Autotask API format
+- Fixed test suite mock objects to include axios interceptors
+- Fixed SDK client to properly read credentials from environment
+- Added support for both `AUTOTASK_*` and `AUTOTASK_API_*` environment variables
+
+### 📊 IMPROVEMENTS
+
+- Enhanced credential security practices
+- Improved error messages for missing credentials
+- Better environment variable validation
+- Cleaned up temporary test files
+
 ## 2.0.0 - Production Ready Release 🎉
 
 **August 26, 2025** — Major release marking production readiness with complete API coverage, enterprise features, and comprehensive testing.

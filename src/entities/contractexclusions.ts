@@ -160,11 +160,22 @@ export class ContractExclusions extends BaseEntity {
       if (!Array.isArray(query.filter)) {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
-          filterArray.push({
-            op: 'eq',
-            field: field,
-            value: value,
-          });
+          // Handle nested objects like { id: { gte: 0 } }
+          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            // Extract operator and value from nested object
+            const [op, val] = Object.entries(value)[0] as [string, any];
+            filterArray.push({
+              op: op,
+              field: field,
+              value: val,
+            });
+          } else {
+            filterArray.push({
+              op: 'eq',
+              field: field,
+              value: value,
+            });
+          }
         }
         searchBody.filter = filterArray;
       } else {
@@ -174,12 +185,12 @@ export class ContractExclusions extends BaseEntity {
 
     if (query.sort) searchBody.sort = query.sort;
     if (query.page) searchBody.page = query.page;
-    if (query.pageSize) searchBody.pageSize = query.pageSize;
+    if (query.pageSize) searchBody.MaxRecords = query.pageSize;
 
     return this.executeQueryRequest(
-      async () => this.axios.get(`${this.endpoint}/query`, { params: searchBody }),
+      async () => this.axios.post(`${this.endpoint}/query`, searchBody),
       `${this.endpoint}/query`,
-      'GET'
+      'POST'
     );
   }
 }

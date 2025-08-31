@@ -240,16 +240,20 @@ export class AutotaskClient {
 
     // If no config is provided, try to use environment variables
     if (!config) {
+      // Support both naming conventions for environment variables
       config = {
-        username: process.env.AUTOTASK_USERNAME!,
-        integrationCode: process.env.AUTOTASK_INTEGRATION_CODE!,
-        secret: process.env.AUTOTASK_SECRET!,
+        username: process.env.AUTOTASK_USERNAME || process.env.AUTOTASK_API_USERNAME!,
+        integrationCode: process.env.AUTOTASK_INTEGRATION_CODE || process.env.AUTOTASK_API_INTEGRATION_CODE!,
+        secret: process.env.AUTOTASK_SECRET || process.env.AUTOTASK_API_SECRET!,
         apiUrl: process.env.AUTOTASK_API_URL,
       };
 
       if (!config.username || !config.integrationCode || !config.secret) {
         throw new ConfigurationError(
-          'Missing required environment variables: AUTOTASK_USERNAME, AUTOTASK_INTEGRATION_CODE, AUTOTASK_SECRET'
+          'Missing required environment variables. Please set either:\n' +
+          '  AUTOTASK_USERNAME, AUTOTASK_INTEGRATION_CODE, AUTOTASK_SECRET\n' +
+          'or:\n' +
+          '  AUTOTASK_API_USERNAME, AUTOTASK_API_INTEGRATION_CODE, AUTOTASK_API_SECRET'
         );
       }
     } else {
@@ -283,7 +287,12 @@ export class AutotaskClient {
             config.username
           )}`
         );
-        const zoneUrl = zoneResponse.data.url + 'v1.0/';
+        // Ensure proper URL formatting - zone URL already includes /ATServicesRest/
+        let zoneUrl = zoneResponse.data.url;
+        if (!zoneUrl.endsWith('/')) {
+          zoneUrl += '/';
+        }
+        zoneUrl += 'v1.0';
         config.apiUrl = zoneUrl;
         logger.info(`Auto-detected API URL: ${zoneUrl}`);
       } catch (error) {
@@ -350,7 +359,7 @@ export class AutotaskClient {
     // Test the connection with a simple request
     try {
       logger.info('Testing API connection...');
-      await axiosInstance.get('/CompanyCategories?$select=id&$top=1');
+      await axiosInstance.get('/Version');
       logger.info('API connection successful');
     } catch (error) {
       throw new ConfigurationError(
@@ -389,7 +398,7 @@ export class AutotaskClient {
    */
   async testConnection(): Promise<boolean> {
     try {
-      await this.axios.get('/CompanyCategories?$select=id&$top=1');
+      await this.axios.get('/Version');
       return true;
     } catch (error) {
       this.logger.error('Connection test failed:', error);

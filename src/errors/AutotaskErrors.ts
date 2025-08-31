@@ -61,7 +61,7 @@ export class AutotaskError extends Error {
   private sanitizeContext(context?: Record<string, any>): Record<string, any> | undefined {
     if (!context) return undefined;
     
-    const sensitiveKeys = ['password', 'token', 'apiKey', 'secret', 'authorization'];
+    const sensitiveKeys = ['password', 'token', 'apikey', 'secret', 'authorization'];
     const sanitized: Record<string, any> = {};
     
     for (const [key, value] of Object.entries(context)) {
@@ -141,8 +141,7 @@ export class AuthenticationError extends ApiError {
   constructor(message: string = 'Authentication failed', context?: Record<string, any>) {
     super(message, 401, undefined, undefined, context);
     this.name = 'AuthenticationError';
-    this.code = 'AUTHENTICATION_ERROR';
-    this.retryable = false;
+    // code and retryable are set by parent class
   }
 }
 
@@ -150,8 +149,7 @@ export class AuthorizationError extends ApiError {
   constructor(message: string = 'Authorization failed', context?: Record<string, any>) {
     super(message, 403, undefined, undefined, context);
     this.name = 'AuthorizationError';
-    this.code = 'AUTHORIZATION_ERROR';
-    this.retryable = false;
+    // code and retryable are set by parent class
   }
 }
 
@@ -174,8 +172,7 @@ export class RateLimitError extends ApiError {
   ) {
     super(message, 429, undefined, undefined, context);
     this.name = 'RateLimitError';
-    this.code = 'RATE_LIMIT_ERROR';
-    this.retryable = true;
+    // code and retryable are set by parent class
     this.retryAfter = retryAfter;
     this.limit = limit;
     this.remaining = remaining;
@@ -196,7 +193,7 @@ export class RateLimitError extends ApiError {
 /**
  * Validation errors
  */
-export class ValidationError extends AutotaskError {
+export class ValidationError extends ApiError {
   public readonly errors: Array<{
     field: string;
     message: string;
@@ -209,7 +206,7 @@ export class ValidationError extends AutotaskError {
     errors: Array<{ field: string; message: string; code?: string; value?: any }> = [],
     context?: Record<string, any>
   ) {
-    super(message, 'VALIDATION_ERROR', false, context);
+    super(message, 400, undefined, undefined, context);
     this.name = 'ValidationError';
     this.errors = errors;
   }
@@ -270,7 +267,7 @@ export class TimeoutError extends NetworkError {
     
     super(message, undefined, context);
     this.name = 'TimeoutError';
-    this.code = 'TIMEOUT_ERROR';
+    // code is set by parent class
     this.timeout = timeout;
   }
   
@@ -328,8 +325,7 @@ export class NotFoundError extends ApiError {
     
     super(message, 404, undefined, undefined, context);
     this.name = 'NotFoundError';
-    this.code = 'NOT_FOUND_ERROR';
-    this.retryable = false;
+    // code and retryable are set by parent class
     this.resourceType = resourceType;
     this.resourceId = resourceId;
   }

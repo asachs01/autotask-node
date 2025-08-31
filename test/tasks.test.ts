@@ -13,6 +13,14 @@ describe('Tasks', () => {
       get: jest.fn(),
       put: jest.fn(),
       delete: jest.fn(),
+      interceptors: {
+        request: {
+          use: jest.fn()
+        },
+        response: {
+          use: jest.fn()
+        }
+      }
     } as any;
     logger = winston.createLogger({ transports: [] });
     tasks = new Tasks(mockAxios as AxiosInstance, logger);

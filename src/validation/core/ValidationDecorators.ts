@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ValidationRule, ValidationRules, ValidationSchema } from './ValidationFramework';
+import { ValidationRule, ValidationRules, ValidationSchema, EntityValidator } from './ValidationFramework';
 
 // Decorator metadata keys
 const VALIDATION_METADATA_KEY = Symbol('validation:rules');
@@ -102,7 +102,7 @@ export const IsNumber = createValidationDecorator((options?: {
   const rules: ValidationRule[] = [ValidationRules.number()];
   
   if (options?.min !== undefined || options?.max !== undefined) {
-    rules.push(ValidationRules.range(options.min, options.max));
+    rules.push(ValidationRules.range('', { min: options?.min, max: options?.max }));
   }
   
   if (options?.integer) {
@@ -289,7 +289,8 @@ export function ValidateNested(validationClass?: any) {
         if (validationClass) {
           const schema = getValidationSchema(validationClass);
           if (schema) {
-            const result = await schema.validate(value);
+            const validator = new EntityValidator();
+            const result = await validator.validate(value, schema.allRules);
             return result.isValid;
           }
         }
@@ -398,7 +399,7 @@ export async function validateEntity(entity: any): Promise<{
   
   return {
     isValid: result.isValid,
-    errors: result.errors.map(e => ({
+    errors: result.getErrors().map(e => ({
       field: e.field,
       message: e.message,
       code: e.code

@@ -163,7 +163,7 @@ export class EntityValidator {
       if (!combinedResult.isValid) {
         this.logger.warn(`Validation failed for ${entityType}`, {
           context,
-          errors: combinedResult.errors
+          errors: combinedResult.getErrors()
         });
       }
       
@@ -229,7 +229,7 @@ export class EntityValidator {
     
     if (!result.isValid) {
       const error = new Error('Validation failed');
-      (error as any).validationErrors = result.errors;
+      (error as any).validationErrors = result.getErrors();
       throw error;
     }
   }
@@ -297,12 +297,14 @@ export class EntityValidator {
     const allWarnings: ValidationError[] = [];
     
     for (const result of results) {
-      allErrors.push(...result.errors);
-      allWarnings.push(...result.warnings);
+      allErrors.push(...result.getErrors());
+      allWarnings.push(...result.getWarnings());
     }
     
     if (allErrors.length > 0) {
-      return ValidationResult.failure(allErrors, allWarnings);
+      const result = ValidationResult.failure(allErrors);
+      allWarnings.forEach(warning => result.addError(warning));
+      return result;
     }
     
     if (allWarnings.length > 0) {
@@ -318,8 +320,8 @@ export class EntityValidator {
       return result;
     }
     
-    if (result.isValid !== undefined && Array.isArray(result.errors)) {
-      const errors = result.errors.map((e: any) => 
+    if (result.isValid !== undefined && (result.getErrors || Array.isArray(result.errors))) {
+      const errors = (result.getErrors ? result.getErrors() : result.errors).map((e: any) => 
         new ValidationError(
           e.field || 'unknown',
           e.message || 'Validation failed',
