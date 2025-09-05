@@ -138,12 +138,12 @@ describe('CircuitBreaker', () => {
       const operation = jest.fn<AsyncFn<string>>().mockResolvedValue('success');
       
       // Execute first success - should stay in half-open
-      let result1 = await testCircuitBreaker.execute(operation);
+      const result1 = await testCircuitBreaker.execute(operation);
       expect(result1.success).toBe(true);
       expect(testCircuitBreaker.getCurrentState()).toBe(CircuitBreakerState.HALF_OPEN);
       
       // Execute second success - should close circuit (successThreshold is 2)
-      let result2 = await testCircuitBreaker.execute(operation);
+      const result2 = await testCircuitBreaker.execute(operation);
       expect(result2.success).toBe(true);
       expect(testCircuitBreaker.getCurrentState()).toBe(CircuitBreakerState.CLOSED);
     });

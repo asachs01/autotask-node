@@ -157,7 +157,7 @@ function generateSummaryReport(testResult) {
 }
 
 // Display final results
-function displayResults(testResult, _summary) {
+function displayResults(testResult) {
   console.log('\n' + '='.repeat(70));
   console.log('COMPREHENSIVE INTEGRATION TEST RESULTS');
   console.log('='.repeat(70));

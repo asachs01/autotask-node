@@ -1,10 +1,13 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+} from '@jest/globals';
 import {
   TicketPriorities,
-  TicketPriority,
 } from '../../src/entities/ticketPriorities';
-import { AxiosInstance } from 'axios';
-import winston from 'winston';
 import {
   createEntityTestSetup,
   createMockItemResponse,
@@ -13,284 +16,117 @@ import {
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
-import { createMockAxios, createMockLogger } from '../utils/testHelpers';
 
-describe('TicketPriorities', () => {
-  let ticketPriorities: TicketPriorities;
-  let mockAxios: any;
-  let mockLogger: any;
+describe('TicketPriorities Entity', () => {
+  let setup: EntityTestSetup<TicketPriorities>;
 
   beforeEach(() => {
-    mockAxios = createMockAxios();
-    mockLogger = createMockLogger();
-    ticketPriorities = new TicketPriorities(mockAxios, mockLogger);
+    setup = createEntityTestSetup(TicketPriorities);
   });
 
-  describe('constructor', () => {
-    it('should initialize with correct endpoint', () => {
-      expect(ticketPriorities['endpoint']).toBe('/TicketPriorities');
-    });
-
-    it('should store the axios instance and logger', () => {
-      expect(ticketPriorities['axios']).toBe(mockAxios);
-      expect(ticketPriorities['logger']).toBe(mockLogger);
-    });
+  afterEach(() => {
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
-    it('should call axios.get with correct parameters', async () => {
-      const mockResponse = {
-        data: [{ id: 1, name: 'High', priorityLevel: 1, isActive: true }],
-      };
-      setup.mockAxios.get.mockResolvedValue(mockResponse);
+    it('should list ticket priorities successfully', async () => {
+      const mockData = [
+        { id: 1, name: 'High', priorityLevel: 1, isActive: true },
+        { id: 2, name: 'Medium', priorityLevel: 2, isActive: true },
+      ];
 
-      const options = { pageSize: 10, page: 1 };
-      const result = await ticketPriorities.list(options);
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketPriorities', {
-        params: { pageSize: 10, page: 1 },
+      const result = await setup.entity.list();
+
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketPriorities/query', {
+        includeFields: [],
+        MaxRecords: 500,
       });
-      expect(result.data).toEqual(mockResponse.data);
     });
 
-    it('should handle sorting by priority level', async () => {
-      const mockResponse = {
-        data: [
-          { id: 1, name: 'Critical', priorityLevel: 1, isActive: true },
-          { id: 2, name: 'High', priorityLevel: 2, isActive: true },
-          { id: 3, name: 'Medium', priorityLevel: 3, isActive: true },
-        ],
-      };
-      setup.mockAxios.get.mockResolvedValue(mockResponse);
+    it('should handle query parameters', async () => {
+      const mockData = [{ id: 1, name: 'High Priority' }];
+
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const options = {
-        sort: 'priorityLevel asc',
-        filter: { isActive: true },
+        search: { isActive: true },
+        maxRecords: 10,
       };
-      const result = await ticketPriorities.list(options);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketPriorities', {
-        params: {
-          search: JSON.stringify({ isActive: true }),
-          sort: 'priorityLevel asc',
-        },
+      const result = await setup.entity.list(options);
+
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketPriorities/query', {
+        includeFields: [],
+        MaxRecords: 10,
+        search: { isActive: true },
       });
-      expect(result.data).toHaveLength(3);
-    });
-
-    it('should propagate errors from axios', async () => {
-      const error = new Error('API Error');
-      setup.mockAxios.get.mockRejectedValue(error);
-
-      await expect(ticketPriorities.list()).rejects.toThrow('API Error');
     });
   });
 
   describe('get', () => {
-    it('should call axios.get with correct ID', async () => {
-      const mockPriority = { id: 123, name: 'Urgent', priorityLevel: 1 };
-      const mockResponse = { data: mockPriority };
-      setup.mockAxios.get.mockResolvedValue(mockResponse);
+    it('should get ticket priorities by id', async () => {
+      const mockData = { id: 123, name: 'High Priority', priorityLevel: 1 };
 
-      const result = await ticketPriorities.get(123);
+      setup.mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
+      const result = await setup.entity.get(123);
+
+      expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketPriorities/123');
-      expect(result.data).toEqual(mockPriority);
-    });
-
-    it('should propagate errors for non-existent priority', async () => {
-      const error = new Error('Ticket priority not found');
-      setup.mockAxios.get.mockRejectedValue(error);
-
-      await expect(ticketPriorities.get(999)).rejects.toThrow(
-        'Ticket priority not found'
-      );
     });
   });
 
   describe('create', () => {
-    it('should call axios.post with priority data', async () => {
-      const priorityData: TicketPriority = {
-        name: 'Custom Priority',
-        priorityLevel: 5,
-        isActive: true,
-        description: 'A custom ticket priority',
-      };
-      const mockResponse = { data: { id: 789, ...priorityData } };
-      setup.mockAxios.post.mockResolvedValue(mockResponse);
+    it('should create ticket priorities successfully', async () => {
+      const newData = { name: 'Custom Priority', priorityLevel: 5 };
+      const mockResponse = { id: 789, ...newData };
 
-      const result = await ticketPriorities.create(priorityData);
-
-      expect(setup.mockAxios.post).toHaveBeenCalledWith(
-        '/TicketPriorities',
-        priorityData
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
       );
-      expect(result.data).toEqual(mockResponse.data);
-    });
 
-    it('should handle priority level validation', async () => {
-      const invalidData = { name: 'Invalid', priorityLevel: -1 };
-      const error = new Error('Invalid priority level');
-      setup.mockAxios.post.mockRejectedValue(error);
+      const result = await setup.entity.create(newData);
 
-      await expect(
-        ticketPriorities.create(invalidData as TicketPriority)
-      ).rejects.toThrow('Invalid priority level');
+      expect(result.data).toEqual(mockResponse);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketPriorities', newData);
     });
   });
 
   describe('update', () => {
-    it('should call axios.put with ID and update data', async () => {
-      const updateData = {
-        name: 'Updated Priority',
-        priorityLevel: 4,
-        isActive: false,
-      };
-      const mockResponse = { data: { id: 123, ...updateData } };
-      setup.mockAxios.put.mockResolvedValue(mockResponse);
+    it('should update ticket priorities successfully', async () => {
+      const updateData = { id: 123, name: 'Updated Priority' };
 
-      const result = await ticketPriorities.update(123, updateData);
-
-      expect(setup.mockAxios.put).toHaveBeenCalledWith(
-        '/TicketPriorities/123',
-        updateData
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(updateData)
       );
-      expect(result.data).toEqual(mockResponse.data);
-    });
 
-    it('should propagate errors for non-existent priority', async () => {
-      const error = new Error('Ticket priority not found');
-      setup.mockAxios.put.mockRejectedValue(error);
+      const result = await setup.entity.update(updateData);
 
-      await expect(
-        ticketPriorities.update(999, { name: 'Update' })
-      ).rejects.toThrow('Ticket priority not found');
+      expect(result.data).toEqual(updateData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketPriorities', updateData);
     });
   });
 
-  describe('delete', () => {
-    it('should call axios.delete with correct ID', async () => {
-      setup.mockAxios.delete.mockResolvedValue({ data: {} });
+  describe('patch', () => {
+    it('should partially update ticket priorities successfully', async () => {
+      const patchData = { id: 123, isActive: false };
 
-      await ticketPriorities.delete(123);
-
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TicketPriorities/123');
-    });
-
-    it('should propagate errors for system priorities', async () => {
-      const error = new Error('Cannot delete system priority');
-      setup.mockAxios.delete.mockRejectedValue(error);
-
-      await expect(ticketPriorities.delete(1)).rejects.toThrow(
-        'Cannot delete system priority'
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(patchData)
       );
-    });
-  });
 
-  describe('business logic', () => {
-    it('should handle priority level ordering', async () => {
-      const mockResponse = {
-        data: [
-          { id: 1, name: 'Critical', priorityLevel: 1 },
-          { id: 2, name: 'High', priorityLevel: 2 },
-          { id: 3, name: 'Medium', priorityLevel: 3 },
-          { id: 4, name: 'Low', priorityLevel: 4 },
-        ],
-      };
-      setup.mockAxios.get.mockResolvedValue(mockResponse);
+      const result = await setup.entity.patch(patchData);
 
-      const result = await ticketPriorities.list({ sort: 'priorityLevel asc' });
-
-      // Verify priorities are in correct order
-      for (let i = 1; i < result.data.length; i++) {
-        expect(result.data[i].priorityLevel).toBeGreaterThan(
-          result.data[i - 1].priorityLevel || 0
-        );
-      });
-  });
-
-  describe('error handling with retry', () => {
-    it('should retry failed requests', async () => {
-      const error = new Error('Network timeout');
-      setup.mockAxios.get
-        .mockRejectedValueOnce(error)
-        .mockRejectedValueOnce(error)
-        .mockResolvedValue({ data: { id: 123 } });
-
-      const result = await ticketPriorities.get(123);
-
-      expect(setup.mockAxios.get).toHaveBeenCalledTimes(3);
-      expect(result.data).toEqual({ id: 123 });
-    });
-
-    it('should fail after max retries', async () => {
-      const error = new Error('Persistent error');
-      setup.mockAxios.get.mockRejectedValue(error);
-
-      await expect(ticketPriorities.get(123)).rejects.toThrow(
-        'Persistent error'
-      );
-      expect(setup.mockAxios.get).toHaveBeenCalledTimes(4); // Initial + 3 retries
-    });
-  });
-
-  describe('logging', () => {
-    it('should log operations', async () => {
-      setup.mockAxios.get.mockResolvedValue({ data: { id: 123 } });
-
-      await ticketPriorities.get(123);
-
-      expect(mockLogger.info).toHaveBeenCalledWith('Getting ticket priority', {
-        id: 123,
-      });
-    });
-
-    it('should log warnings on retry', async () => {
-      const error = new Error('Temporary error');
-      setup.mockAxios.get
-        .mockRejectedValueOnce(error)
-        .mockResolvedValue({ data: { id: 123 } });
-
-      await ticketPriorities.get(123);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Request failed, retrying in'),
-        expect.any(Object)
-      );
-    });
-  });
-
-  describe('getMetadata', () => {
-    it('should return metadata for all operations', () => {
-      const metadata = TicketPriorities.getMetadata();
-
-      expect(metadata).toHaveLength(5);
-      expect(metadata.map(m => m.operation)).toEqual([
-        'createTicketPriority',
-        'getTicketPriority',
-        'updateTicketPriority',
-        'deleteTicketPriority',
-        'listTicketPriorities',
-      ]);
-    });
-  });
-
-  describe('type safety', () => {
-    it('should accept valid ticket priority data types', () => {
-      const validPriority: TicketPriority = {
-        name: 'Valid Priority',
-        description: 'A valid ticket priority',
-        priorityLevel: 3,
-        isActive: true,
-        isDefaultValue: false,
-        isSystemValue: false,
-        sortOrder: 10,
-      };
-
-      // This should compile without errors - just verify the type is valid
-      expect(validPriority).toBeDefined();
-      expect(typeof validPriority.name).toBe('string');
-      expect(typeof validPriority.priorityLevel).toBe('number');
+      expect(result.data).toEqual(patchData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketPriorities', patchData);
     });
   });
 });

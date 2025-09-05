@@ -387,8 +387,8 @@ export class TTLManager {
   ): { ttl: number; confidence: number; reason: string } {
     const baseTtl = entityConfig?.defaultTtl || this.DEFAULT_TTLS[volatility];
     let ttl = baseTtl;
-    let confidence = 0.8;
-    let adjustments: string[] = [];
+    const confidence = 0.8;
+    const adjustments: string[] = [];
 
     // Business rules based on entity type
     switch (context.entityType.toLowerCase()) {

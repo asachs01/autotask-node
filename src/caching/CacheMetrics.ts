@@ -90,7 +90,7 @@ export class CacheMetricsCollector extends EventEmitter {
   private historicalData: HistoricalMetrics[] = [];
   private readonly maxDataPoints: number;
   private readonly maxHistoricalWindows: number;
-  private metricsTimer?: NodeJS.Timeout;
+  private metricsTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
     maxDataPoints: number = 10000,

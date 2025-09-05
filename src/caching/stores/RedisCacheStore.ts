@@ -1,4 +1,5 @@
 import { toError } from '../types';
+import { performance } from 'perf_hooks';
 /**
  * Redis Cache Store Implementation
  * 
@@ -353,7 +354,7 @@ export class RedisCacheStore implements ICacheStore {
       let processedValue: any = value;
       let size = this.calculateSize(value);
       let compressed = false;
-      let originalSize = size;
+      const originalSize = size;
 
       if (this.config.enableCompression && size > this.config.compressionThreshold) {
         try {

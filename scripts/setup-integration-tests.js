@@ -141,7 +141,7 @@ async function main() {
           }
         );
       });
-    } catch (_error) {
+    } catch {
       console.log('⚠️ Connection test encountered issues. You can run tests manually with:');
       console.log('  npm run test:integration:enhanced');
     }

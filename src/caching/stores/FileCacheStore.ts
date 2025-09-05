@@ -1,4 +1,5 @@
 import { toError } from '../types';
+import { performance } from 'perf_hooks';
 /**
  * File-based Cache Store Implementation
  * 
@@ -100,7 +101,7 @@ interface DirectoryStats {
 export class FileCacheStore implements ICacheStore {
   private config: FileCacheConfig;
   private logger: ErrorLogger;
-  private cleanupTimer?: NodeJS.Timeout;
+  private cleanupTimer?: ReturnType<typeof setTimeout>;
   private tagIndex: Map<string, Set<string>> = new Map();
   private keyIndex: Map<string, string> = new Map(); // key -> file path
   private initialized = false;
@@ -270,7 +271,7 @@ export class FileCacheStore implements ICacheStore {
       let processedValue: any = value;
       let size = this.calculateSize(value);
       let compressed = false;
-      let originalSize = size;
+      const originalSize = size;
 
       if (this.config.enableCompression && size > this.config.compressionThreshold) {
         try {

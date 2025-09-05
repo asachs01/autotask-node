@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --maxWorkers=1 --runInBand",
+    "test": "jest --runInBand",
     "test:unsafe": "jest",
     "test:unit": "jest --config jest.config.js",
     "test:unit:debug": "DEBUG_TESTS=true jest --config jest.config.js",

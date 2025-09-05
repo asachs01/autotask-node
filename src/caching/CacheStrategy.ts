@@ -6,6 +6,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { performance } from 'perf_hooks';
 import { ICacheStore, CacheStrategy, CacheKeyContext, CacheResult, toError } from './types';
 import { CacheKeyGenerator } from './CacheKeyGenerator';
 import { TTLManager } from './TTLManager';
@@ -104,7 +105,7 @@ export class CacheStrategyExecutor extends EventEmitter {
 
   // Write-behind state
   private pendingWrites = new Map<string, { context: StrategyContext; value: any; timestamp: number }>();
-  private writeBehindTimer?: NodeJS.Timeout;
+  private writeBehindTimer?: ReturnType<typeof setTimeout>;
   private writeBehindConfig: WriteBehindConfig = {
     writeDelay: 5000,
     maxPendingWrites: 1000,
