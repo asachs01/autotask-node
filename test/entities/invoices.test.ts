@@ -68,10 +68,9 @@ describe('Invoices Entity', () => {
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Invoices/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        },
       });
     });
   });

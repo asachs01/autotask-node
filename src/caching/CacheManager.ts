@@ -7,6 +7,7 @@ import { toError } from './types';
  */
 
 import { EventEmitter } from 'events';
+import { performance } from 'perf_hooks';
 import { 
   ICacheManager, 
   ICacheStore, 
