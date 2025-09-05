@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   Tags,
   ITags,
@@ -15,39 +23,14 @@ import {
 } from '../../src/entities/tags';
 
 describe('Tags Entity', () => {
-  let tags: Tags;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<Tags>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    tags = new Tags(mockAxios, mockLogger);
+    setup = createEntityTestSetup(Tags);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +40,15 @@ describe('Tags Entity', () => {
         { id: 2, name: 'Tags 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await tags.list();
+      const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tags/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tags/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
       });
     });
 
@@ -83,23 +60,15 @@ describe('Tags Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await tags.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tags/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tags/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        sort: 'id', page: 1, MaxRecords: 10,
       });
     });
   });
@@ -108,18 +77,14 @@ describe('Tags Entity', () => {
     it('should get tags by id', async () => {
       const mockData = { id: 1, name: 'Test Tags' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await tags.get(1);
+      const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tags/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tags/1');
     });
   });
 
@@ -128,18 +93,14 @@ describe('Tags Entity', () => {
       const tagsData = { name: 'New Tags' };
       const mockResponse = { id: 1, ...tagsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await tags.create(tagsData);
+      const result = await setup.entity.create(tagsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/Tags', tagsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tags', tagsData);
     });
   });
 
@@ -148,18 +109,14 @@ describe('Tags Entity', () => {
       const tagsData = { name: 'Updated Tags' };
       const mockResponse = { id: 1, ...tagsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await tags.update(1, tagsData);
+      const result = await setup.entity.update(1, tagsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/Tags/1', tagsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Tags/1', tagsData);
     });
   });
 
@@ -168,34 +125,26 @@ describe('Tags Entity', () => {
       const tagsData = { name: 'Patched Tags' };
       const mockResponse = { id: 1, ...tagsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await tags.patch(1, tagsData);
+      const result = await setup.entity.patch(1, tagsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/Tags/1', tagsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Tags/1', tagsData);
     });
   });
 
   describe('delete', () => {
     it('should delete tags successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
-      await tags.delete(1);
+      await setup.entity.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/Tags/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/Tags/1');
     });
   });
 });

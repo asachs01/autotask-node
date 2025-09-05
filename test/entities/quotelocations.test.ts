@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   QuoteLocations,
   IQuoteLocations,
@@ -57,22 +65,16 @@ describe('QuoteLocations Entity', () => {
         { id: 2, name: 'QuoteLocations 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await quoteLocations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/QuoteLocations/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/QuoteLocations/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('QuoteLocations Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await quoteLocations.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/QuoteLocations/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/QuoteLocations/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('QuoteLocations Entity', () => {
     it('should get quotelocations by id', async () => {
       const mockData = { id: 1, name: 'Test QuoteLocations' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await quoteLocations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/QuoteLocations/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/QuoteLocations/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('QuoteLocations Entity', () => {
       const quoteLocationsData = { name: 'New QuoteLocations' };
       const mockResponse = { id: 1, ...quoteLocationsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await quoteLocations.create(quoteLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/QuoteLocations', quoteLocationsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/QuoteLocations', quoteLocationsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('QuoteLocations Entity', () => {
       const quoteLocationsData = { name: 'Updated QuoteLocations' };
       const mockResponse = { id: 1, ...quoteLocationsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await quoteLocations.update(1, quoteLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/QuoteLocations/1', quoteLocationsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/QuoteLocations/1', quoteLocationsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('QuoteLocations Entity', () => {
       const quoteLocationsData = { name: 'Patched QuoteLocations' };
       const mockResponse = { id: 1, ...quoteLocationsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await quoteLocations.patch(1, quoteLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/QuoteLocations/1', quoteLocationsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/QuoteLocations/1', quoteLocationsData);
     });
   });
 
   describe('delete', () => {
     it('should delete quotelocations successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await quoteLocations.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/QuoteLocations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/QuoteLocations/1');
     });
   });
 });

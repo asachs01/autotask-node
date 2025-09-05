@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ClientPortalUsers,
   IClientPortalUsers,
@@ -57,22 +65,16 @@ describe('ClientPortalUsers Entity', () => {
         { id: 2, name: 'ClientPortalUsers 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await clientPortalUsers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ClientPortalUsers Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await clientPortalUsers.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ClientPortalUsers Entity', () => {
     it('should get clientportalusers by id', async () => {
       const mockData = { id: 1, name: 'Test ClientPortalUsers' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await clientPortalUsers.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ClientPortalUsers Entity', () => {
       const clientPortalUsersData = { name: 'New ClientPortalUsers' };
       const mockResponse = { id: 1, ...clientPortalUsersData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await clientPortalUsers.create(clientPortalUsersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ClientPortalUsers', clientPortalUsersData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ClientPortalUsers', clientPortalUsersData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ClientPortalUsers Entity', () => {
       const clientPortalUsersData = { name: 'Updated ClientPortalUsers' };
       const mockResponse = { id: 1, ...clientPortalUsersData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await clientPortalUsers.update(1, clientPortalUsersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ClientPortalUsers/1', clientPortalUsersData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ClientPortalUsers/1', clientPortalUsersData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ClientPortalUsers Entity', () => {
       const clientPortalUsersData = { name: 'Patched ClientPortalUsers' };
       const mockResponse = { id: 1, ...clientPortalUsersData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await clientPortalUsers.patch(1, clientPortalUsersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ClientPortalUsers/1', clientPortalUsersData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ClientPortalUsers/1', clientPortalUsersData);
     });
   });
 
   describe('delete', () => {
     it('should delete clientportalusers successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await clientPortalUsers.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ClientPortalUsers/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ClientPortalUsers/1');
     });
   });
 });

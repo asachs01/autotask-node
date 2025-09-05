@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   AdditionalInvoiceFieldValues,
   IAdditionalInvoiceFieldValues,
@@ -57,22 +65,16 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
         { id: 2, name: 'AdditionalInvoiceFieldValues 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await additionalInvoiceFieldValues.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await additionalInvoiceFieldValues.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
     it('should get additionalinvoicefieldvalues by id', async () => {
       const mockData = { id: 1, name: 'Test AdditionalInvoiceFieldValues' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await additionalInvoiceFieldValues.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
       const additionalInvoiceFieldValuesData = { name: 'New AdditionalInvoiceFieldValues' };
       const mockResponse = { id: 1, ...additionalInvoiceFieldValuesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await additionalInvoiceFieldValues.create(additionalInvoiceFieldValuesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues', additionalInvoiceFieldValuesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues', additionalInvoiceFieldValuesData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
       const additionalInvoiceFieldValuesData = { name: 'Updated AdditionalInvoiceFieldValues' };
       const mockResponse = { id: 1, ...additionalInvoiceFieldValuesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await additionalInvoiceFieldValues.update(1, additionalInvoiceFieldValuesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1', additionalInvoiceFieldValuesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1', additionalInvoiceFieldValuesData);
     });
   });
 
@@ -168,18 +152,14 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
       const additionalInvoiceFieldValuesData = { name: 'Patched AdditionalInvoiceFieldValues' };
       const mockResponse = { id: 1, ...additionalInvoiceFieldValuesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await additionalInvoiceFieldValues.patch(1, additionalInvoiceFieldValuesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1', additionalInvoiceFieldValuesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1', additionalInvoiceFieldValuesData);
     });
   });
 });

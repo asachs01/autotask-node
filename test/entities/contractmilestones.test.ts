@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ContractMilestones,
   IContractMilestones,
@@ -57,22 +65,16 @@ describe('ContractMilestones Entity', () => {
         { id: 2, name: 'ContractMilestones 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await contractMilestones.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractMilestones/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractMilestones/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ContractMilestones Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await contractMilestones.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractMilestones/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractMilestones/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ContractMilestones Entity', () => {
     it('should get contractmilestones by id', async () => {
       const mockData = { id: 1, name: 'Test ContractMilestones' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await contractMilestones.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractMilestones/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractMilestones/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ContractMilestones Entity', () => {
       const contractMilestonesData = { name: 'New ContractMilestones' };
       const mockResponse = { id: 1, ...contractMilestonesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await contractMilestones.create(contractMilestonesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ContractMilestones', contractMilestonesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractMilestones', contractMilestonesData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ContractMilestones Entity', () => {
       const contractMilestonesData = { name: 'Updated ContractMilestones' };
       const mockResponse = { id: 1, ...contractMilestonesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contractMilestones.update(1, contractMilestonesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ContractMilestones/1', contractMilestonesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractMilestones/1', contractMilestonesData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ContractMilestones Entity', () => {
       const contractMilestonesData = { name: 'Patched ContractMilestones' };
       const mockResponse = { id: 1, ...contractMilestonesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contractMilestones.patch(1, contractMilestonesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ContractMilestones/1', contractMilestonesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractMilestones/1', contractMilestonesData);
     });
   });
 
   describe('delete', () => {
     it('should delete contractmilestones successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await contractMilestones.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ContractMilestones/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractMilestones/1');
     });
   });
 });

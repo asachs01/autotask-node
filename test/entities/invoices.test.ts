@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   Invoices,
   IInvoices,
@@ -15,39 +23,14 @@ import {
 } from '../../src/entities/invoices';
 
 describe('Invoices Entity', () => {
-  let invoices: Invoices;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<Invoices>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    invoices = new Invoices(mockAxios, mockLogger);
+    setup = createEntityTestSetup(Invoices);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +40,15 @@ describe('Invoices Entity', () => {
         { id: 2, name: 'Invoices 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await invoices.list();
+      const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Invoices/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        },
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Invoices/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -83,22 +60,17 @@ describe('Invoices Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await invoices.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Invoices/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Invoices/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
+        page: 1,
+        MaxRecords: 10,
         },
       });
     });
@@ -108,18 +80,14 @@ describe('Invoices Entity', () => {
     it('should get invoices by id', async () => {
       const mockData = { id: 1, name: 'Test Invoices' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await invoices.get(1);
+      const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Invoices/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Invoices/1');
     });
   });
 
@@ -128,18 +96,14 @@ describe('Invoices Entity', () => {
       const invoicesData = { name: 'New Invoices' };
       const mockResponse = { id: 1, ...invoicesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await invoices.create(invoicesData);
+      const result = await setup.entity.create(invoicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/Invoices', invoicesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Invoices', invoicesData);
     });
   });
 
@@ -148,18 +112,14 @@ describe('Invoices Entity', () => {
       const invoicesData = { name: 'Updated Invoices' };
       const mockResponse = { id: 1, ...invoicesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await invoices.update(1, invoicesData);
+      const result = await setup.entity.update(1, invoicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/Invoices/1', invoicesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Invoices/1', invoicesData);
     });
   });
 
@@ -168,18 +128,14 @@ describe('Invoices Entity', () => {
       const invoicesData = { name: 'Patched Invoices' };
       const mockResponse = { id: 1, ...invoicesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await invoices.patch(1, invoicesData);
+      const result = await setup.entity.patch(1, invoicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/Invoices/1', invoicesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Invoices/1', invoicesData);
     });
   });
 });

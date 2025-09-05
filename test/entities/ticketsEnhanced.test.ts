@@ -39,7 +39,7 @@ describe('TicketsEnhanced', () => {
     ticketsEnhanced = new TicketsEnhanced(mockAxios, mockLogger);
 
     // Default mock response for query builder
-    mockAxios.get.mockResolvedValue({
+    setup.mockAxios.get.mockResolvedValue({
       data: [mockTicket],
       headers: {
         'x-total-count': '1',
@@ -51,40 +51,40 @@ describe('TicketsEnhanced', () => {
 
   describe('Traditional CRUD operations', () => {
     it('should create a ticket', async () => {
-      mockAxios.post.mockResolvedValue({ data: mockTicket });
+      setup.mockAxios.post.mockResolvedValue({ data: mockTicket });
 
       const result = await ticketsEnhanced.create(mockTicket);
 
-      expect(mockAxios.post).toHaveBeenCalledWith('/Tickets', mockTicket);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tickets', mockTicket);
       expect(result.data).toEqual(mockTicket);
     });
 
     it('should get a ticket by ID', async () => {
-      mockAxios.get.mockResolvedValue({ data: mockTicket });
+      setup.mockAxios.get.mockResolvedValue({ data: mockTicket });
 
       const result = await ticketsEnhanced.get(1);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets/1');
       expect(result.data).toEqual(mockTicket);
     });
 
     it('should update a ticket', async () => {
       const updateData = { title: 'Updated Title' };
       const updatedTicket = { ...mockTicket, ...updateData };
-      mockAxios.put.mockResolvedValue({ data: updatedTicket });
+      setup.mockAxios.put.mockResolvedValue({ data: updatedTicket });
 
       const result = await ticketsEnhanced.update(1, updateData);
 
-      expect(mockAxios.put).toHaveBeenCalledWith('/Tickets/1', updateData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Tickets/1', updateData);
       expect(result.data).toEqual(updatedTicket);
     });
 
     it('should delete a ticket', async () => {
-      mockAxios.delete.mockResolvedValue({});
+      setup.mockAxios.delete.mockResolvedValue({});
 
       await ticketsEnhanced.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/Tickets/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/Tickets/1');
     });
   });
 
@@ -105,7 +105,7 @@ describe('TicketsEnhanced', () => {
     it('should find by ID using query builder', async () => {
       const result = await ticketsEnhanced.findById(1);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'id eq 1',
           pageSize: 1,
@@ -117,7 +117,7 @@ describe('TicketsEnhanced', () => {
     it('should find all tickets', async () => {
       const result = await ticketsEnhanced.findAll();
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.any(Object),
       });
       expect(result).toEqual([mockTicket]);
@@ -126,7 +126,7 @@ describe('TicketsEnhanced', () => {
     it('should find paginated tickets', async () => {
       const result = await ticketsEnhanced.findPaginated(2, 25);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           page: 2,
           pageSize: 25,
@@ -138,14 +138,14 @@ describe('TicketsEnhanced', () => {
     it('should count all tickets', async () => {
       const count = await ticketsEnhanced.countAll();
 
-      expect(mockAxios.get).toHaveBeenCalled();
+      expect(setup.mockAxios.get).toHaveBeenCalled();
       expect(count).toBe(1);
     });
 
     it('should check if tickets exist', async () => {
       const exists = await ticketsEnhanced.exists('accountId', 123);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'accountId eq 123',
           pageSize: 1,
@@ -159,7 +159,7 @@ describe('TicketsEnhanced', () => {
     it('should find tickets by status', async () => {
       const result = await ticketsEnhanced.findByStatus(1);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'status eq 1',
           sort: 'createdDate desc',
@@ -171,7 +171,7 @@ describe('TicketsEnhanced', () => {
     it('should find tickets by account', async () => {
       const result = await ticketsEnhanced.findByAccount(123);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'accountId eq 123',
           sort: 'lastActivityDate desc',
@@ -183,7 +183,7 @@ describe('TicketsEnhanced', () => {
     it('should find open tickets for resource', async () => {
       const result = await ticketsEnhanced.findOpenTicketsForResource(456);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'assignedResourceId eq 456 AND status in (1,5,8)',
           sort: 'priority desc,dueDateTime asc',
@@ -196,7 +196,7 @@ describe('TicketsEnhanced', () => {
       const now = new Date().toISOString();
       const result = await ticketsEnhanced.findOverdueTickets();
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: expect.stringContaining('dueDateTime lt'),
           sort: 'dueDateTime asc',
@@ -213,7 +213,7 @@ describe('TicketsEnhanced', () => {
         endDate
       );
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: `createdDate gte '${startDate}' AND createdDate lte '${endDate}'`,
           sort: 'createdDate desc',
@@ -225,7 +225,7 @@ describe('TicketsEnhanced', () => {
     it('should find high priority tickets', async () => {
       const result = await ticketsEnhanced.findHighPriorityTickets();
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'priority in (1,2) AND status in (1,5,8)',
           sort: 'priority asc,createdDate asc',
@@ -237,7 +237,7 @@ describe('TicketsEnhanced', () => {
     it('should find tickets with complex conditions', async () => {
       const result = await ticketsEnhanced.findComplexTickets();
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: expect.stringContaining('accountId eq 123'),
           sort: 'createdDate desc',
@@ -251,7 +251,7 @@ describe('TicketsEnhanced', () => {
       const searchTerm = 'urgent issue';
       const result = await ticketsEnhanced.searchTickets(searchTerm);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: expect.stringContaining('title contains'),
           sort: 'lastActivityDate desc',
@@ -266,7 +266,7 @@ describe('TicketsEnhanced', () => {
         'value'
       );
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: "customField1 eq 'value'",
           sort: 'createdDate desc',
@@ -279,7 +279,7 @@ describe('TicketsEnhanced', () => {
   describe('Advanced Features', () => {
     it('should get ticket statistics', async () => {
       // Mock different responses for different queries
-      mockAxios.get
+      setup.mockAxios.get
         .mockResolvedValueOnce({
           data: [],
           headers: { 'x-total-count': '100' },
@@ -299,13 +299,13 @@ describe('TicketsEnhanced', () => {
         closed: 25,
         overdue: 10,
       });
-      expect(mockAxios.get).toHaveBeenCalledTimes(4);
+      expect(setup.mockAxios.get).toHaveBeenCalledTimes(4);
     });
 
     it('should find tickets with includes', async () => {
       const result = await ticketsEnhanced.findTicketsWithAccount(123);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'accountId eq 123',
           include: 'Account,AssignedResource',
@@ -318,7 +318,7 @@ describe('TicketsEnhanced', () => {
     it('should find tickets with includes (no account filter)', async () => {
       const result = await ticketsEnhanced.findTicketsWithAccount();
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           include: 'Account,AssignedResource',
           sort: 'createdDate desc',
@@ -330,7 +330,7 @@ describe('TicketsEnhanced', () => {
     it('should get paginated tickets', async () => {
       const result = await ticketsEnhanced.getTicketsPaginated(2, 25);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           search: 'status ne 5',
           sort: 'priority asc,createdDate desc',
@@ -344,7 +344,7 @@ describe('TicketsEnhanced', () => {
     it('should get paginated tickets with defaults', async () => {
       const result = await ticketsEnhanced.getTicketsPaginated();
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tickets', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tickets', {
         params: expect.objectContaining({
           page: 1,
           pageSize: 25,
@@ -357,7 +357,7 @@ describe('TicketsEnhanced', () => {
   describe('Error Handling', () => {
     it('should handle API errors in query execution', async () => {
       const error = new Error('API Error');
-      mockAxios.get.mockRejectedValue(error);
+      setup.mockAxios.get.mockRejectedValue(error);
 
       await expect(ticketsEnhanced.findByStatus(1)).rejects.toThrow(
         'API Error'
@@ -366,7 +366,7 @@ describe('TicketsEnhanced', () => {
 
     it('should handle API errors in CRUD operations', async () => {
       const error = new Error('Create failed');
-      mockAxios.post.mockRejectedValue(error);
+      setup.mockAxios.post.mockRejectedValue(error);
 
       await expect(ticketsEnhanced.create(mockTicket)).rejects.toThrow(
         'Create failed'

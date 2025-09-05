@@ -6,48 +6,31 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
 import {
   TimeOffRequests,
   ITimeOffRequests,
   ITimeOffRequestsQuery,
 } from '../../src/entities/timeoffrequests';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 
 describe('TimeOffRequests Entity', () => {
-  let timeOffRequests: TimeOffRequests;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<TimeOffRequests>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    timeOffRequests = new TimeOffRequests(mockAxios, mockLogger);
+    setup = createEntityTestSetup(describe);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +40,15 @@ describe('TimeOffRequests Entity', () => {
         { id: 2, name: 'TimeOffRequests 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await timeOffRequests.list();
+      const result = await setup.setup.entity.list();
 
-      expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TimeOffRequests/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
+      expect(setup.entity.data).toEqual(mockData);
+      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/TimeOffRequests/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
       });
     });
 
@@ -83,23 +60,15 @@ describe('TimeOffRequests Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await timeOffRequests.list(query);
+      await setup.setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TimeOffRequests/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
+      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/TimeOffRequests/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        sort: 'id', page: 1, MaxRecords: 10,
       });
     });
   });
@@ -108,18 +77,14 @@ describe('TimeOffRequests Entity', () => {
     it('should get timeoffrequests by id', async () => {
       const mockData = { id: 1, name: 'Test TimeOffRequests' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await timeOffRequests.get(1);
+      const result = await setup.setup.entity.get(1);
 
-      expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TimeOffRequests/1');
+      expect(setup.entity.data).toEqual(mockData);
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeOffRequests/1');
     });
   });
 
@@ -128,18 +93,14 @@ describe('TimeOffRequests Entity', () => {
       const timeOffRequestsData = { name: 'New TimeOffRequests' };
       const mockResponse = { id: 1, ...timeOffRequestsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await timeOffRequests.create(timeOffRequestsData);
+      const result = await setup.setup.entity.create(timeOffRequestsData);
 
-      expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/TimeOffRequests', timeOffRequestsData);
+      expect(setup.entity.data).toEqual(mockResponse);
+      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/TimeOffRequests', timeOffRequestsData);
     });
   });
 
@@ -148,18 +109,14 @@ describe('TimeOffRequests Entity', () => {
       const timeOffRequestsData = { name: 'Updated TimeOffRequests' };
       const mockResponse = { id: 1, ...timeOffRequestsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await timeOffRequests.update(1, timeOffRequestsData);
+      const result = await setup.setup.entity.update(1, timeOffRequestsData);
 
-      expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/TimeOffRequests/1', timeOffRequestsData);
+      expect(setup.entity.data).toEqual(mockResponse);
+      expect(setup.setup.mockAxios.put).toHaveBeenCalledWith('/TimeOffRequests/1', timeOffRequestsData);
     });
   });
 
@@ -168,34 +125,26 @@ describe('TimeOffRequests Entity', () => {
       const timeOffRequestsData = { name: 'Patched TimeOffRequests' };
       const mockResponse = { id: 1, ...timeOffRequestsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await timeOffRequests.patch(1, timeOffRequestsData);
+      const result = await setup.setup.entity.patch(1, timeOffRequestsData);
 
-      expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/TimeOffRequests/1', timeOffRequestsData);
+      expect(setup.entity.data).toEqual(mockResponse);
+      expect(setup.setup.mockAxios.patch).toHaveBeenCalledWith('/TimeOffRequests/1', timeOffRequestsData);
     });
   });
 
   describe('delete', () => {
     it('should delete timeoffrequests successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
-      await timeOffRequests.delete(1);
+      await setup.setup.entity.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/TimeOffRequests/1');
+      expect(setup.setup.mockAxios.delete).toHaveBeenCalledWith('/TimeOffRequests/1');
     });
   });
 });

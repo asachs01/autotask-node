@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   TicketChecklistItems,
   ITicketChecklistItems,
@@ -57,22 +65,16 @@ describe('TicketChecklistItems Entity', () => {
         { id: 2, name: 'TicketChecklistItems 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await ticketChecklistItems.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('TicketChecklistItems Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await ticketChecklistItems.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('TicketChecklistItems Entity', () => {
     it('should get ticketchecklistitems by id', async () => {
       const mockData = { id: 1, name: 'Test TicketChecklistItems' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await ticketChecklistItems.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('TicketChecklistItems Entity', () => {
       const ticketChecklistItemsData = { name: 'New TicketChecklistItems' };
       const mockResponse = { id: 1, ...ticketChecklistItemsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await ticketChecklistItems.create(ticketChecklistItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/TicketChecklistItems', ticketChecklistItemsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketChecklistItems', ticketChecklistItemsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('TicketChecklistItems Entity', () => {
       const ticketChecklistItemsData = { name: 'Updated TicketChecklistItems' };
       const mockResponse = { id: 1, ...ticketChecklistItemsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await ticketChecklistItems.update(1, ticketChecklistItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/TicketChecklistItems/1', ticketChecklistItemsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TicketChecklistItems/1', ticketChecklistItemsData);
     });
   });
 
@@ -168,18 +152,14 @@ describe('TicketChecklistItems Entity', () => {
       const ticketChecklistItemsData = { name: 'Patched TicketChecklistItems' };
       const mockResponse = { id: 1, ...ticketChecklistItemsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await ticketChecklistItems.patch(1, ticketChecklistItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/TicketChecklistItems/1', ticketChecklistItemsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketChecklistItems/1', ticketChecklistItemsData);
     });
   });
 });

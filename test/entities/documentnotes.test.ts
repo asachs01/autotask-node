@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   DocumentNotes,
   IDocumentNotes,
@@ -57,22 +65,16 @@ describe('DocumentNotes Entity', () => {
         { id: 2, name: 'DocumentNotes 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await documentNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('DocumentNotes Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await documentNotes.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('DocumentNotes Entity', () => {
     it('should get documentnotes by id', async () => {
       const mockData = { id: 1, name: 'Test DocumentNotes' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await documentNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('DocumentNotes Entity', () => {
       const documentNotesData = { name: 'New DocumentNotes' };
       const mockResponse = { id: 1, ...documentNotesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await documentNotes.create(documentNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/DocumentNotes', documentNotesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentNotes', documentNotesData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('DocumentNotes Entity', () => {
       const documentNotesData = { name: 'Updated DocumentNotes' };
       const mockResponse = { id: 1, ...documentNotesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await documentNotes.update(1, documentNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/DocumentNotes/1', documentNotesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/DocumentNotes/1', documentNotesData);
     });
   });
 
@@ -168,18 +152,14 @@ describe('DocumentNotes Entity', () => {
       const documentNotesData = { name: 'Patched DocumentNotes' };
       const mockResponse = { id: 1, ...documentNotesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await documentNotes.patch(1, documentNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/DocumentNotes/1', documentNotesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/DocumentNotes/1', documentNotesData);
     });
   });
 });

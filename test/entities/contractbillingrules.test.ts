@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ContractBillingRules,
   IContractBillingRules,
@@ -57,22 +65,16 @@ describe('ContractBillingRules Entity', () => {
         { id: 2, name: 'ContractBillingRules 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await contractBillingRules.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractBillingRules/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractBillingRules/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ContractBillingRules Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await contractBillingRules.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractBillingRules/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractBillingRules/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ContractBillingRules Entity', () => {
     it('should get contractbillingrules by id', async () => {
       const mockData = { id: 1, name: 'Test ContractBillingRules' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await contractBillingRules.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractBillingRules/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractBillingRules/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ContractBillingRules Entity', () => {
       const contractBillingRulesData = { name: 'New ContractBillingRules' };
       const mockResponse = { id: 1, ...contractBillingRulesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await contractBillingRules.create(contractBillingRulesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ContractBillingRules', contractBillingRulesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractBillingRules', contractBillingRulesData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ContractBillingRules Entity', () => {
       const contractBillingRulesData = { name: 'Updated ContractBillingRules' };
       const mockResponse = { id: 1, ...contractBillingRulesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contractBillingRules.update(1, contractBillingRulesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ContractBillingRules/1', contractBillingRulesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractBillingRules/1', contractBillingRulesData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ContractBillingRules Entity', () => {
       const contractBillingRulesData = { name: 'Patched ContractBillingRules' };
       const mockResponse = { id: 1, ...contractBillingRulesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contractBillingRules.patch(1, contractBillingRulesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ContractBillingRules/1', contractBillingRulesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractBillingRules/1', contractBillingRulesData);
     });
   });
 
   describe('delete', () => {
     it('should delete contractbillingrules successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await contractBillingRules.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ContractBillingRules/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractBillingRules/1');
     });
   });
 });

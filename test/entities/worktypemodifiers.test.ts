@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   WorkTypeModifiers,
   IWorkTypeModifiers,
@@ -15,39 +23,14 @@ import {
 } from '../../src/entities/worktypemodifiers';
 
 describe('WorkTypeModifiers Entity', () => {
-  let workTypeModifiers: WorkTypeModifiers;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<WorkTypeModifiers>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    workTypeModifiers = new WorkTypeModifiers(mockAxios, mockLogger);
+    setup = createEntityTestSetup(WorkTypeModifiers);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +40,15 @@ describe('WorkTypeModifiers Entity', () => {
         { id: 2, name: 'WorkTypeModifiers 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await workTypeModifiers.list();
+      const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/WorkTypeModifiers/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/WorkTypeModifiers/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
       });
     });
 
@@ -83,23 +60,17 @@ describe('WorkTypeModifiers Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await workTypeModifiers.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/WorkTypeModifiers/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/WorkTypeModifiers/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        sort: 'id',
+        page: 1,
+        MaxRecords: 10,
       });
     });
   });
@@ -108,18 +79,14 @@ describe('WorkTypeModifiers Entity', () => {
     it('should get worktypemodifiers by id', async () => {
       const mockData = { id: 1, name: 'Test WorkTypeModifiers' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await workTypeModifiers.get(1);
+      const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/WorkTypeModifiers/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/WorkTypeModifiers/1');
     });
   });
 });

@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   Tasks,
   ITasks,
@@ -15,39 +23,14 @@ import {
 } from '../../src/entities/tasks';
 
 describe('Tasks Entity', () => {
-  let tasks: Tasks;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<Tasks>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    tasks = new Tasks(mockAxios, mockLogger);
+    setup = createEntityTestSetup(Tasks);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +40,15 @@ describe('Tasks Entity', () => {
         { id: 2, name: 'Tasks 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await tasks.list();
+      const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tasks/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tasks/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
       });
     });
 
@@ -83,23 +60,15 @@ describe('Tasks Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await tasks.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tasks/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tasks/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        sort: 'id', page: 1, MaxRecords: 10,
       });
     });
   });
@@ -108,18 +77,14 @@ describe('Tasks Entity', () => {
     it('should get tasks by id', async () => {
       const mockData = { id: 1, name: 'Test Tasks' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await tasks.get(1);
+      const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Tasks/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Tasks/1');
     });
   });
 
@@ -128,18 +93,14 @@ describe('Tasks Entity', () => {
       const tasksData = { name: 'New Tasks' };
       const mockResponse = { id: 1, ...tasksData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await tasks.create(tasksData);
+      const result = await setup.entity.create(tasksData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/Tasks', tasksData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tasks', tasksData);
     });
   });
 
@@ -148,18 +109,14 @@ describe('Tasks Entity', () => {
       const tasksData = { name: 'Updated Tasks' };
       const mockResponse = { id: 1, ...tasksData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await tasks.update(1, tasksData);
+      const result = await setup.entity.update(1, tasksData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/Tasks/1', tasksData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Tasks/1', tasksData);
     });
   });
 
@@ -168,18 +125,14 @@ describe('Tasks Entity', () => {
       const tasksData = { name: 'Patched Tasks' };
       const mockResponse = { id: 1, ...tasksData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await tasks.patch(1, tasksData);
+      const result = await setup.entity.patch(1, tasksData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/Tasks/1', tasksData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Tasks/1', tasksData);
     });
   });
 });

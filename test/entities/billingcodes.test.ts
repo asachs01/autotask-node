@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   BillingCodes,
   IBillingCodes,
@@ -57,22 +65,16 @@ describe('BillingCodes Entity', () => {
         { id: 2, name: 'BillingCodes 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await billingCodes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('BillingCodes Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await billingCodes.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('BillingCodes Entity', () => {
     it('should get billingcodes by id', async () => {
       const mockData = { id: 1, name: 'Test BillingCodes' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await billingCodes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/BillingCodes/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('BillingCodes Entity', () => {
       const billingCodesData = { name: 'New BillingCodes' };
       const mockResponse = { id: 1, ...billingCodesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await billingCodes.create(billingCodesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/BillingCodes', billingCodesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/BillingCodes', billingCodesData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('BillingCodes Entity', () => {
       const billingCodesData = { name: 'Updated BillingCodes' };
       const mockResponse = { id: 1, ...billingCodesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await billingCodes.update(1, billingCodesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/BillingCodes/1', billingCodesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/BillingCodes/1', billingCodesData);
     });
   });
 
@@ -168,18 +152,14 @@ describe('BillingCodes Entity', () => {
       const billingCodesData = { name: 'Patched BillingCodes' };
       const mockResponse = { id: 1, ...billingCodesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await billingCodes.patch(1, billingCodesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/BillingCodes/1', billingCodesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/BillingCodes/1', billingCodesData);
     });
   });
 });

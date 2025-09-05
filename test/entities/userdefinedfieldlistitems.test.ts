@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   UserDefinedFieldListItems,
   IUserDefinedFieldListItems,
@@ -15,39 +23,17 @@ import {
 } from '../../src/entities/userdefinedfieldlistitems';
 
 describe('UserDefinedFieldListItems Entity', () => {
-  let userDefinedFieldListItems: UserDefinedFieldListItems;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<describe>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
+    setup = createEntityTestSetup(describe);
+  });
 
     userDefinedFieldListItems = new UserDefinedFieldListItems(mockAxios, mockLogger);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,22 +43,16 @@ describe('UserDefinedFieldListItems Entity', () => {
         { id: 2, name: 'UserDefinedFieldListItems 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await userDefinedFieldListItems.list();
+      const result = await setup.entity.list();
 
-      expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.entity.data).toEqual(mockData);
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +63,18 @@ describe('UserDefinedFieldListItems Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await userDefinedFieldListItems.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +82,14 @@ describe('UserDefinedFieldListItems Entity', () => {
     it('should get userdefinedfieldlistitems by id', async () => {
       const mockData = { id: 1, name: 'Test UserDefinedFieldListItems' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await userDefinedFieldListItems.get(1);
+      const result = await setup.entity.get(1);
 
-      expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/1');
+      expect(setup.entity.data).toEqual(mockData);
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/1');
     });
   });
 });

@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ExpenseItemAttachments,
   IExpenseItemAttachments,
@@ -57,22 +65,16 @@ describe('ExpenseItemAttachments Entity', () => {
         { id: 2, name: 'ExpenseItemAttachments 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await expenseItemAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ExpenseItemAttachments/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ExpenseItemAttachments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ExpenseItemAttachments Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await expenseItemAttachments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ExpenseItemAttachments/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ExpenseItemAttachments/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ExpenseItemAttachments Entity', () => {
     it('should get expenseitemattachments by id', async () => {
       const mockData = { id: 1, name: 'Test ExpenseItemAttachments' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await expenseItemAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ExpenseItemAttachments/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ExpenseItemAttachments/1');
     });
   });
 
@@ -128,34 +120,26 @@ describe('ExpenseItemAttachments Entity', () => {
       const expenseItemAttachmentsData = { name: 'New ExpenseItemAttachments' };
       const mockResponse = { id: 1, ...expenseItemAttachmentsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await expenseItemAttachments.create(expenseItemAttachmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ExpenseItemAttachments', expenseItemAttachmentsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ExpenseItemAttachments', expenseItemAttachmentsData);
     });
   });
 
   describe('delete', () => {
     it('should delete expenseitemattachments successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await expenseItemAttachments.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ExpenseItemAttachments/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ExpenseItemAttachments/1');
     });
   });
 });

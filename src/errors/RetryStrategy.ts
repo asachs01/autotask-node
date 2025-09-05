@@ -37,6 +37,26 @@ export interface RetryOptions {
 }
 
 /**
+ * Legacy alias for backward compatibility
+ */
+export type ExponentialBackoffOptions = RetryOptions;
+
+/**
+ * Legacy alias for backward compatibility 
+ */
+export type ExponentialBackoffStrategy = RetryStrategy;
+
+/**
+ * Legacy alias for backward compatibility
+ */
+export type LinearBackoffStrategy = RetryStrategy;
+
+/**
+ * Legacy alias for backward compatibility
+ */
+export type FixedDelayStrategy = RetryStrategy;
+
+/**
  * Result of a retry operation
  */
 export interface RetryResult<T> {

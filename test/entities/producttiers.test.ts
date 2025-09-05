@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ProductTiers,
   IProductTiers,
@@ -57,22 +65,16 @@ describe('ProductTiers Entity', () => {
         { id: 2, name: 'ProductTiers 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await productTiers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ProductTiers/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProductTiers/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ProductTiers Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await productTiers.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ProductTiers/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProductTiers/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ProductTiers Entity', () => {
     it('should get producttiers by id', async () => {
       const mockData = { id: 1, name: 'Test ProductTiers' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await productTiers.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ProductTiers/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProductTiers/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ProductTiers Entity', () => {
       const productTiersData = { name: 'New ProductTiers' };
       const mockResponse = { id: 1, ...productTiersData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await productTiers.create(productTiersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ProductTiers', productTiersData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ProductTiers', productTiersData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ProductTiers Entity', () => {
       const productTiersData = { name: 'Updated ProductTiers' };
       const mockResponse = { id: 1, ...productTiersData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await productTiers.update(1, productTiersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ProductTiers/1', productTiersData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ProductTiers/1', productTiersData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ProductTiers Entity', () => {
       const productTiersData = { name: 'Patched ProductTiers' };
       const mockResponse = { id: 1, ...productTiersData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await productTiers.patch(1, productTiersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ProductTiers/1', productTiersData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ProductTiers/1', productTiersData);
     });
   });
 
   describe('delete', () => {
     it('should delete producttiers successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await productTiers.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ProductTiers/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ProductTiers/1');
     });
   });
 });

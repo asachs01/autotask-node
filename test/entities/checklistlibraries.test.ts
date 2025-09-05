@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ChecklistLibraries,
   IChecklistLibraries,
@@ -57,22 +65,16 @@ describe('ChecklistLibraries Entity', () => {
         { id: 2, name: 'ChecklistLibraries 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await checklistLibraries.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ChecklistLibraries Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await checklistLibraries.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ChecklistLibraries Entity', () => {
     it('should get checklistlibraries by id', async () => {
       const mockData = { id: 1, name: 'Test ChecklistLibraries' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await checklistLibraries.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ChecklistLibraries Entity', () => {
       const checklistLibrariesData = { name: 'New ChecklistLibraries' };
       const mockResponse = { id: 1, ...checklistLibrariesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await checklistLibraries.create(checklistLibrariesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ChecklistLibraries', checklistLibrariesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ChecklistLibraries', checklistLibrariesData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ChecklistLibraries Entity', () => {
       const checklistLibrariesData = { name: 'Updated ChecklistLibraries' };
       const mockResponse = { id: 1, ...checklistLibrariesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await checklistLibraries.update(1, checklistLibrariesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ChecklistLibraries/1', checklistLibrariesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ChecklistLibraries/1', checklistLibrariesData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ChecklistLibraries Entity', () => {
       const checklistLibrariesData = { name: 'Patched ChecklistLibraries' };
       const mockResponse = { id: 1, ...checklistLibrariesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await checklistLibraries.patch(1, checklistLibrariesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ChecklistLibraries/1', checklistLibrariesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ChecklistLibraries/1', checklistLibrariesData);
     });
   });
 
   describe('delete', () => {
     it('should delete checklistlibraries successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await checklistLibraries.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ChecklistLibraries/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ChecklistLibraries/1');
     });
   });
 });

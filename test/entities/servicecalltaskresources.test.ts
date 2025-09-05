@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ServiceCallTaskResources,
   IServiceCallTaskResources,
@@ -57,22 +65,16 @@ describe('ServiceCallTaskResources Entity', () => {
         { id: 2, name: 'ServiceCallTaskResources 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await serviceCallTaskResources.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceCallTaskResources/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceCallTaskResources/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ServiceCallTaskResources Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await serviceCallTaskResources.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceCallTaskResources/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceCallTaskResources/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ServiceCallTaskResources Entity', () => {
     it('should get servicecalltaskresources by id', async () => {
       const mockData = { id: 1, name: 'Test ServiceCallTaskResources' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await serviceCallTaskResources.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceCallTaskResources/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceCallTaskResources/1');
     });
   });
 
@@ -128,34 +120,26 @@ describe('ServiceCallTaskResources Entity', () => {
       const serviceCallTaskResourcesData = { name: 'New ServiceCallTaskResources' };
       const mockResponse = { id: 1, ...serviceCallTaskResourcesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await serviceCallTaskResources.create(serviceCallTaskResourcesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ServiceCallTaskResources', serviceCallTaskResourcesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ServiceCallTaskResources', serviceCallTaskResourcesData);
     });
   });
 
   describe('delete', () => {
     it('should delete servicecalltaskresources successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await serviceCallTaskResources.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ServiceCallTaskResources/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ServiceCallTaskResources/1');
     });
   });
 });

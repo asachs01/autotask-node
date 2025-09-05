@@ -10,8 +10,11 @@ const config = {
     '<rootDir>/node_modules/',
   ],
 
-  // Setup files
-  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
+  // Setup files - CRITICAL: Network blocking must come first
+  setupFilesAfterEnv: [
+    '<rootDir>/test/setup/networkBlock.ts',
+    '<rootDir>/test/setup.ts'
+  ],
 
   // Coverage settings
   collectCoverage: false,
@@ -47,6 +50,9 @@ const config = {
 
   // Timeout for unit tests
   testTimeout: 10000,
+  
+  // CRITICAL: Single worker to prevent concurrent API calls
+  maxWorkers: 1,
 
   // Verbose output
   verbose: false,

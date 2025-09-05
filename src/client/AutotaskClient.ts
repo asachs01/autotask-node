@@ -5,6 +5,7 @@ import { RequestHandler } from '../utils/requestHandler';
 import { AutotaskAuth, PerformanceConfig, ConfigurationError } from '../types';
 import * as http from 'http';
 import * as https from 'https';
+import { ErrorLogger, LogContext, defaultErrorLogger } from '../errors/ErrorLogger';
 
 // Import all sub-clients
 import {
@@ -88,6 +89,7 @@ export class AutotaskClient {
   private rateLimiter: RateLimiter;
   private performanceConfig: Required<PerformanceConfig>;
   private logger: winston.Logger;
+  private errorLogger: ErrorLogger;
   private subClients: Map<string, ISubClient> = new Map();
   private isFullyInitialized = false;
 
@@ -122,7 +124,8 @@ export class AutotaskClient {
   private constructor(
     private config: AutotaskAuth,
     axiosInstance: AxiosInstance,
-    performanceConfig?: PerformanceConfig
+    performanceConfig?: PerformanceConfig,
+    errorLogger?: ErrorLogger
   ) {
     // Set default performance configuration
     this.performanceConfig = {
@@ -146,12 +149,14 @@ export class AutotaskClient {
       transports: [new winston.transports.Console()],
     });
 
+    this.errorLogger = errorLogger || defaultErrorLogger;
+
     this.axios = axiosInstance;
     this.requestHandler = new RequestHandler(this.axios, this.logger, {
       timeout: this.performanceConfig.timeout,
       retries: 3,
       baseDelay: 1000,
-    });
+    }, this.errorLogger);
 
     // Setup rate limiting interceptor
     this.setupRateLimitingInterceptor();
@@ -225,7 +230,8 @@ export class AutotaskClient {
    */
   static async create(
     config?: AutotaskAuth,
-    performanceConfig?: PerformanceConfig
+    performanceConfig?: PerformanceConfig,
+    errorLogger?: ErrorLogger
   ): Promise<AutotaskClient> {
     // Create a logger for this static method
     const logger = winston.createLogger({
@@ -295,7 +301,29 @@ export class AutotaskClient {
         zoneUrl += 'v1.0';
         config.apiUrl = zoneUrl;
         logger.info(`Auto-detected API URL: ${zoneUrl}`);
+
+        // Log successful zone detection
+        const tempErrorLogger = errorLogger || defaultErrorLogger;
+        const correlationId = tempErrorLogger.generateCorrelationId();
+        tempErrorLogger.info('Autotask zone detected successfully', {
+          correlationId,
+          operation: 'zone-detection',
+          request: {
+            url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`
+          }
+        }, { detectedUrl: zoneUrl });
       } catch (error) {
+        // Log zone detection failure
+        const tempErrorLogger = errorLogger || defaultErrorLogger;
+        const correlationId = tempErrorLogger.generateCorrelationId();
+        tempErrorLogger.error('Failed to detect Autotask zone', error as Error, {
+          correlationId,
+          operation: 'zone-detection',
+          request: {
+            url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`
+          }
+        });
+
         throw new ConfigurationError(
           'Failed to auto-detect API URL. Please provide apiUrl in config.',
           'apiUrl',
@@ -359,9 +387,36 @@ export class AutotaskClient {
     // Test the connection with a simple request
     try {
       logger.info('Testing API connection...');
-      await axiosInstance.get('/Version');
+      const versionResponse = await axiosInstance.get('/Version');
       logger.info('API connection successful');
+
+      // Log successful connection test
+      const tempErrorLogger = errorLogger || defaultErrorLogger;
+      const correlationId = tempErrorLogger.generateCorrelationId();
+      tempErrorLogger.info('Autotask API connection test successful', {
+        correlationId,
+        operation: 'connection-test',
+        request: {
+          method: 'GET',
+          url: config.apiUrl + '/Version'
+        }
+      }, { 
+        statusCode: versionResponse.status,
+        apiVersion: versionResponse.data 
+      });
     } catch (error) {
+      // Log connection test failure
+      const tempErrorLogger = errorLogger || defaultErrorLogger;
+      const correlationId = tempErrorLogger.generateCorrelationId();
+      tempErrorLogger.error('Failed to connect to Autotask API', error as Error, {
+        correlationId,
+        operation: 'connection-test',
+        request: {
+          method: 'GET',
+          url: config.apiUrl + '/Version'
+        }
+      });
+
       throw new ConfigurationError(
         'Failed to connect to Autotask API. Please check your credentials and API URL.',
         'connection',
@@ -369,7 +424,7 @@ export class AutotaskClient {
       );
     }
 
-    return new AutotaskClient(config, axiosInstance, performanceConfig);
+    return new AutotaskClient(config, axiosInstance, performanceConfig, errorLogger);
   }
 
   /**
@@ -520,6 +575,14 @@ export class AutotaskClient {
    */
   getLogger(): winston.Logger {
     return this.logger;
+  }
+
+  /**
+   * Get the error logger instance
+   * @returns ErrorLogger - The structured error logger
+   */
+  getErrorLogger(): ErrorLogger {
+    return this.errorLogger;
   }
 
   /**

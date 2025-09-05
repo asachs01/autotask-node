@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ConfigurationItems,
   IConfigurationItems,
@@ -57,22 +65,16 @@ describe('ConfigurationItems Entity', () => {
         { id: 2, name: 'ConfigurationItems 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await configurationItems.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ConfigurationItems/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItems/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ConfigurationItems Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await configurationItems.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ConfigurationItems/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItems/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ConfigurationItems Entity', () => {
     it('should get configurationitems by id', async () => {
       const mockData = { id: 1, name: 'Test ConfigurationItems' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await configurationItems.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ConfigurationItems/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItems/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ConfigurationItems Entity', () => {
       const configurationItemsData = { name: 'New ConfigurationItems' };
       const mockResponse = { id: 1, ...configurationItemsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await configurationItems.create(configurationItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ConfigurationItems', configurationItemsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ConfigurationItems', configurationItemsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ConfigurationItems Entity', () => {
       const configurationItemsData = { name: 'Updated ConfigurationItems' };
       const mockResponse = { id: 1, ...configurationItemsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await configurationItems.update(1, configurationItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ConfigurationItems/1', configurationItemsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ConfigurationItems/1', configurationItemsData);
     });
   });
 
@@ -168,18 +152,14 @@ describe('ConfigurationItems Entity', () => {
       const configurationItemsData = { name: 'Patched ConfigurationItems' };
       const mockResponse = { id: 1, ...configurationItemsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await configurationItems.patch(1, configurationItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ConfigurationItems/1', configurationItemsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ConfigurationItems/1', configurationItemsData);
     });
   });
 });

@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   InternalLocations,
   IInternalLocations,
@@ -57,22 +65,16 @@ describe('InternalLocations Entity', () => {
         { id: 2, name: 'InternalLocations 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await internalLocations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/InternalLocations/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InternalLocations/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('InternalLocations Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await internalLocations.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/InternalLocations/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InternalLocations/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('InternalLocations Entity', () => {
     it('should get internallocations by id', async () => {
       const mockData = { id: 1, name: 'Test InternalLocations' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await internalLocations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/InternalLocations/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InternalLocations/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('InternalLocations Entity', () => {
       const internalLocationsData = { name: 'New InternalLocations' };
       const mockResponse = { id: 1, ...internalLocationsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await internalLocations.create(internalLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/InternalLocations', internalLocationsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/InternalLocations', internalLocationsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('InternalLocations Entity', () => {
       const internalLocationsData = { name: 'Updated InternalLocations' };
       const mockResponse = { id: 1, ...internalLocationsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await internalLocations.update(1, internalLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/InternalLocations/1', internalLocationsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/InternalLocations/1', internalLocationsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('InternalLocations Entity', () => {
       const internalLocationsData = { name: 'Patched InternalLocations' };
       const mockResponse = { id: 1, ...internalLocationsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await internalLocations.patch(1, internalLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/InternalLocations/1', internalLocationsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/InternalLocations/1', internalLocationsData);
     });
   });
 
   describe('delete', () => {
     it('should delete internallocations successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await internalLocations.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/InternalLocations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/InternalLocations/1');
     });
   });
 });

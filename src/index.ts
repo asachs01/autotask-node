@@ -44,7 +44,9 @@ export {
   ValidationWarning
 } from './validation';
 
-// Webhook and Event Handling System
+// Note: Response Caching System exports moved to avoid conflicts
+
+// Webhook and Event Handling System  
 // Note: Use individual exports instead of wildcard to avoid conflicts
 export {
   WebhookManager,
@@ -85,8 +87,137 @@ export {
   RedisBackend,
   PriorityScheduler,
   CircuitBreakerManager,
-  BatchManager,
   QueueMonitor,
   createQueueManager,
   createDefaultConfiguration,
 } from './queue';
+
+// Business Rule Enforcement System
+// Note: Use individual exports instead of wildcard to avoid conflicts
+export {
+  BusinessRule,
+  BaseBusinessRule,
+  RequiredFieldRule,
+  PatternRule,
+  RangeRule,
+  CompositeRule,
+  RulePriority,
+  RuleContext,
+  ValidationResult as BusinessValidationResult,
+  ValidationSeverity,
+  ValidationIssue,
+  BusinessRuleEngine,
+  RuleEngineOptions,
+  RuleExecutionStats,
+  ConditionalRequiredRule,
+  DateRangeRule,
+  SumValidationRule,
+  MutuallyExclusiveRule,
+  DependentFieldsRule,
+  PercentageSumRule,
+  EntityRuleFactory,
+  TicketBusinessRules,
+  CompanyBusinessRules,
+  ContactBusinessRules,
+  ProjectBusinessRules,
+  ContractBusinessRules,
+  TaskBusinessRules,
+  TimeEntryBusinessRules,
+  BusinessRuleConfig,
+  RuleConfigurationManager,
+  DefaultRuleConfiguration,
+  BusinessRuleMiddleware,
+  BusinessRuleEnhancedClient,
+  ValidationError as BusinessValidationError,
+  ValidateEntity
+} from './business-rules';
+
+// Error Handling System
+export {
+  ErrorLogger,
+  LogLevel,
+  LogDestination,
+  LogContext,
+  ErrorContext,
+  defaultErrorLogger
+} from './errors/ErrorLogger';
+
+export {
+  CircuitBreaker,
+  CircuitBreakerState,
+  CircuitBreakerOptions,
+  CircuitBreakerMetrics
+} from './errors/CircuitBreaker';
+
+export {
+  RetryStrategy,
+  RetryOptions,
+  ExponentialBackoffOptions,
+  ExponentialBackoffStrategy,
+  LinearBackoffStrategy,
+  FixedDelayStrategy
+} from './errors/RetryStrategy';
+
+// Referential Integrity System
+export {
+  ReferentialIntegrityManager,
+  defaultIntegrityManager,
+  RelationshipType,
+  ReferentialAction,
+  EntityRelationship,
+  IntegrityConstraint,
+  IntegrityContext,
+  IntegrityViolation,
+  IntegrityManagerOptions,
+  RelationshipGraph,
+  GraphNode,
+  GraphEdge,
+  EntityPath,
+  DependencyInfo,
+  CycleInfo
+} from './referential-integrity';
+
+// Request Batching System
+export {
+  BatchManager,
+  BatchQueue,
+  BatchOptimizer,
+  BatchMetricsCollector,
+  SizeBasedStrategy,
+  TimeBasedStrategy,
+  HybridStrategy,
+  PriorityAwareStrategy,
+  AdaptiveStrategy,
+  BatchStrategyFactory,
+  BatchResultBuilder,
+  BatchResultAnalyzer,
+  createDefaultBatchConfig,
+  createHighThroughputBatchConfig,
+  createLowLatencyBatchConfig,
+  createDevelopmentBatchConfig,
+  createBatchRequest,
+  calculateOptimalBatchSize,
+  analyzeBatchPerformance
+} from './batching';
+
+// Response Caching System
+export {
+  CacheManager,
+  ICacheStore,
+  MemoryCacheStore,
+  RedisCacheStore,
+  FileCacheStore,
+  CacheInvalidator,
+  CacheKeyGenerator,
+  CacheMetricsCollector,
+  TTLManager,
+  createAutotaskCacheManager,
+  CacheConfigBuilder,
+  CacheStrategyExecutor,
+  KeyStrategy,
+  TTLStrategy,
+  VolatilityLevel,
+  MetricEvent,
+  cached,
+  DEFAULT_ENTITY_CONFIGS
+} from './caching';

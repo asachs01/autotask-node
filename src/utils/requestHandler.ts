@@ -16,6 +16,7 @@ import {
   CircuitBreakerRegistry,
   CircuitBreakerState 
 } from '../errors/CircuitBreaker';
+import { ErrorLogger, LogContext, defaultErrorLogger } from '../errors/ErrorLogger';
 
 export interface RequestOptions {
   retries?: number;
@@ -67,12 +68,15 @@ export class RequestHandler {
   private performanceMonitor: PerformanceMonitor;
   private retryStrategy: RetryStrategy;
   private circuitBreakerRegistry: CircuitBreakerRegistry;
+  private errorLogger: ErrorLogger;
 
   constructor(
     private axios: AxiosInstance,
     private logger: winston.Logger,
-    private globalOptions: Partial<RequestOptions> = {}
+    private globalOptions: Partial<RequestOptions> = {},
+    errorLogger?: ErrorLogger
   ) {
+    this.errorLogger = errorLogger || defaultErrorLogger;
     this.performanceMonitor = new PerformanceMonitor(this.logger);
     this.retryStrategy = new RetryStrategy({
       maxRetries: this.defaultOptions.retries,
@@ -202,6 +206,28 @@ export class RequestHandler {
       maxRetries: options.retries,
       initialDelay: options.baseDelay,
       onRetry: (error: Error, attempt: number, delay: number) => {
+        const logContext: LogContext = {
+          correlationId: context.requestId,
+          operation: `${context.method} ${context.endpoint}`,
+          request: {
+            method: context.method,
+            url: context.endpoint,
+          },
+          retry: {
+            attempt,
+            maxAttempts: options.retries,
+            totalTime: Date.now() - context.startTime
+          }
+        };
+
+        this.errorLogger.logRetry(
+          'Request failed, retrying with advanced strategy',
+          error,
+          { attempt, maxAttempts: options.retries, nextDelay: delay, totalTime: Date.now() - context.startTime },
+          logContext
+        );
+
+        // Fallback to winston for backward compatibility
         this.logger.warn('Advanced retry: Request failed, retrying', {
           requestId: context.requestId,
           endpoint: context.endpoint,
@@ -231,6 +257,30 @@ export class RequestHandler {
       try {
         const response = await requestFn();
         this.logResponse(context, response, options);
+        
+        // Log successful request with ErrorLogger
+        const logContext: LogContext = {
+          correlationId: context.requestId,
+          operation: `${context.method} ${context.endpoint}`,
+          request: {
+            method: context.method,
+            url: context.endpoint,
+          },
+          performance: {
+            startTime: context.startTime,
+            duration: Date.now() - context.startTime
+          }
+        };
+
+        this.errorLogger.info(
+          `Request completed successfully`,
+          logContext,
+          { 
+            statusCode: response.status,
+            statusText: response.statusText,
+            responseSize: JSON.stringify(response.data).length 
+          }
+        );
         
         // Record successful performance metrics
         if (performanceTimer) {
@@ -270,6 +320,23 @@ export class RequestHandler {
       } catch (error) {
         // Handle circuit breaker specific errors
         if (error instanceof CircuitBreakerError) {
+          const logContext: LogContext = {
+            correlationId: context.requestId,
+            operation: `${context.method} ${context.endpoint}`,
+            request: {
+              method: context.method,
+              url: context.endpoint,
+            },
+            circuitBreaker: {
+              name: circuitBreakerName,
+              state: 'open',
+              metrics: {} as any // Will be populated by circuit breaker
+            }
+          };
+
+          this.errorLogger.warn('Circuit breaker is open', error, logContext);
+
+          // Fallback to winston for backward compatibility
           this.logger.warn('Circuit breaker is open', {
             requestId: context.requestId,
             endpoint: context.endpoint,
@@ -360,6 +427,28 @@ export class RequestHandler {
             options.baseDelay
           );
 
+          const logContext: LogContext = {
+            correlationId: context.requestId,
+            operation: `${context.method} ${context.endpoint}`,
+            request: {
+              method: context.method,
+              url: context.endpoint,
+            },
+            retry: {
+              attempt,
+              maxAttempts: options.retries,
+              totalTime: Date.now() - context.startTime
+            }
+          };
+
+          this.errorLogger.logRetry(
+            'Request failed, retrying with legacy strategy',
+            autotaskError,
+            { attempt, maxAttempts: options.retries, nextDelay: delay, totalTime: Date.now() - context.startTime },
+            logContext
+          );
+
+          // Fallback to winston for backward compatibility
           this.logger.warn(`Legacy retry: Request failed, retrying in ${delay}ms`, {
             requestId: context.requestId,
             endpoint: context.endpoint,
@@ -473,25 +562,50 @@ export class RequestHandler {
   ): void {
     const duration = Date.now() - context.startTime;
 
-    const logData = {
-      requestId: context.requestId,
-      endpoint: context.endpoint,
-      method: context.method,
+    const logContext: LogContext = {
+      correlationId: context.requestId,
+      operation: `${context.method} ${context.endpoint}`,
+      request: {
+        method: context.method,
+        url: context.endpoint,
+      },
+      performance: {
+        startTime: context.startTime,
+        duration
+      }
+    };
+
+    const extraData = {
       attempt: context.attempt,
-      duration,
       errorType: error.constructor.name,
-      errorMessage: error.message,
       statusCode: error.statusCode,
-      timestamp: new Date().toISOString(),
       isRetryable: isRetryableError(error),
     };
 
     if (error.statusCode && error.statusCode >= 500) {
-      this.logger.error('Server error occurred', logData);
+      this.errorLogger.error('Server error occurred', error, logContext, extraData);
+      this.logger.error('Server error occurred', {
+        requestId: context.requestId,
+        endpoint: context.endpoint,
+        method: context.method,
+        ...extraData
+      });
     } else if (error.statusCode && error.statusCode >= 400) {
-      this.logger.warn('Client error occurred', logData);
+      this.errorLogger.warn('Client error occurred', error, logContext, extraData);
+      this.logger.warn('Client error occurred', {
+        requestId: context.requestId,
+        endpoint: context.endpoint,
+        method: context.method,
+        ...extraData
+      });
     } else {
-      this.logger.error('Network or unknown error occurred', logData);
+      this.errorLogger.error('Network or unknown error occurred', error, logContext, extraData);
+      this.logger.error('Network or unknown error occurred', {
+        requestId: context.requestId,
+        endpoint: context.endpoint,
+        method: context.method,
+        ...extraData
+      });
     }
   }
 

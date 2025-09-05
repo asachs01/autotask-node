@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   UserDefinedFieldDefinitions,
   IUserDefinedFieldDefinitions,
@@ -15,39 +23,17 @@ import {
 } from '../../src/entities/userdefinedfielddefinitions';
 
 describe('UserDefinedFieldDefinitions Entity', () => {
-  let userDefinedFieldDefinitions: UserDefinedFieldDefinitions;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<describe>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
+    setup = createEntityTestSetup(describe);
+  });
 
     userDefinedFieldDefinitions = new UserDefinedFieldDefinitions(mockAxios, mockLogger);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,22 +43,16 @@ describe('UserDefinedFieldDefinitions Entity', () => {
         { id: 2, name: 'UserDefinedFieldDefinitions 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await userDefinedFieldDefinitions.list();
+      const result = await setup.entity.list();
 
-      expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldDefinitions/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.entity.data).toEqual(mockData);
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldDefinitions/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +63,18 @@ describe('UserDefinedFieldDefinitions Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await userDefinedFieldDefinitions.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldDefinitions/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldDefinitions/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +82,14 @@ describe('UserDefinedFieldDefinitions Entity', () => {
     it('should get userdefinedfielddefinitions by id', async () => {
       const mockData = { id: 1, name: 'Test UserDefinedFieldDefinitions' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await userDefinedFieldDefinitions.get(1);
+      const result = await setup.entity.get(1);
 
-      expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldDefinitions/1');
+      expect(setup.entity.data).toEqual(mockData);
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldDefinitions/1');
     });
   });
 });

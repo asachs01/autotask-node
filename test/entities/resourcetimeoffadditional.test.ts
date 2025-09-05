@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ResourceTimeOffAdditional,
   IResourceTimeOffAdditional,
@@ -57,22 +65,16 @@ describe('ResourceTimeOffAdditional Entity', () => {
         { id: 2, name: 'ResourceTimeOffAdditional 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await resourceTimeOffAdditional.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffAdditional/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffAdditional/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ResourceTimeOffAdditional Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await resourceTimeOffAdditional.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffAdditional/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffAdditional/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ResourceTimeOffAdditional Entity', () => {
     it('should get resourcetimeoffadditional by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceTimeOffAdditional' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await resourceTimeOffAdditional.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ResourceTimeOffAdditional Entity', () => {
       const resourceTimeOffAdditionalData = { name: 'New ResourceTimeOffAdditional' };
       const mockResponse = { id: 1, ...resourceTimeOffAdditionalData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await resourceTimeOffAdditional.create(resourceTimeOffAdditionalData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ResourceTimeOffAdditional', resourceTimeOffAdditionalData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ResourceTimeOffAdditional', resourceTimeOffAdditionalData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ResourceTimeOffAdditional Entity', () => {
       const resourceTimeOffAdditionalData = { name: 'Updated ResourceTimeOffAdditional' };
       const mockResponse = { id: 1, ...resourceTimeOffAdditionalData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await resourceTimeOffAdditional.update(1, resourceTimeOffAdditionalData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1', resourceTimeOffAdditionalData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1', resourceTimeOffAdditionalData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ResourceTimeOffAdditional Entity', () => {
       const resourceTimeOffAdditionalData = { name: 'Patched ResourceTimeOffAdditional' };
       const mockResponse = { id: 1, ...resourceTimeOffAdditionalData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await resourceTimeOffAdditional.patch(1, resourceTimeOffAdditionalData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1', resourceTimeOffAdditionalData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1', resourceTimeOffAdditionalData);
     });
   });
 
   describe('delete', () => {
     it('should delete resourcetimeoffadditional successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await resourceTimeOffAdditional.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ResourceTimeOffAdditional/1');
     });
   });
 });

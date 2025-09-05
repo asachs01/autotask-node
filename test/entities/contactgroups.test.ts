@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ContactGroups,
   IContactGroups,
@@ -57,22 +65,16 @@ describe('ContactGroups Entity', () => {
         { id: 2, name: 'ContactGroups 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await contactGroups.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContactGroups/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContactGroups/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ContactGroups Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await contactGroups.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContactGroups/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContactGroups/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ContactGroups Entity', () => {
     it('should get contactgroups by id', async () => {
       const mockData = { id: 1, name: 'Test ContactGroups' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await contactGroups.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContactGroups/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContactGroups/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ContactGroups Entity', () => {
       const contactGroupsData = { name: 'New ContactGroups' };
       const mockResponse = { id: 1, ...contactGroupsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await contactGroups.create(contactGroupsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ContactGroups', contactGroupsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContactGroups', contactGroupsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ContactGroups Entity', () => {
       const contactGroupsData = { name: 'Updated ContactGroups' };
       const mockResponse = { id: 1, ...contactGroupsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contactGroups.update(1, contactGroupsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ContactGroups/1', contactGroupsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContactGroups/1', contactGroupsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ContactGroups Entity', () => {
       const contactGroupsData = { name: 'Patched ContactGroups' };
       const mockResponse = { id: 1, ...contactGroupsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contactGroups.patch(1, contactGroupsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ContactGroups/1', contactGroupsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContactGroups/1', contactGroupsData);
     });
   });
 
   describe('delete', () => {
     it('should delete contactgroups successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await contactGroups.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ContactGroups/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContactGroups/1');
     });
   });
 });

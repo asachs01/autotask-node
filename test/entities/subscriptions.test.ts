@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   Subscriptions,
   ISubscriptions,
@@ -15,39 +23,14 @@ import {
 } from '../../src/entities/subscriptions';
 
 describe('Subscriptions Entity', () => {
-  let subscriptions: Subscriptions;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<Subscriptions>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    subscriptions = new Subscriptions(mockAxios, mockLogger);
+    setup = createEntityTestSetup(Subscriptions);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +40,15 @@ describe('Subscriptions Entity', () => {
         { id: 2, name: 'Subscriptions 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await subscriptions.list();
+      const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Subscriptions/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Subscriptions/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
       });
     });
 
@@ -83,23 +60,15 @@ describe('Subscriptions Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await subscriptions.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/Subscriptions/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Subscriptions/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        sort: 'id', page: 1, MaxRecords: 10,
       });
     });
   });
@@ -108,18 +77,14 @@ describe('Subscriptions Entity', () => {
     it('should get subscriptions by id', async () => {
       const mockData = { id: 1, name: 'Test Subscriptions' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await subscriptions.get(1);
+      const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/Subscriptions/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Subscriptions/1');
     });
   });
 
@@ -128,18 +93,14 @@ describe('Subscriptions Entity', () => {
       const subscriptionsData = { name: 'New Subscriptions' };
       const mockResponse = { id: 1, ...subscriptionsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await subscriptions.create(subscriptionsData);
+      const result = await setup.entity.create(subscriptionsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/Subscriptions', subscriptionsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Subscriptions', subscriptionsData);
     });
   });
 
@@ -148,18 +109,14 @@ describe('Subscriptions Entity', () => {
       const subscriptionsData = { name: 'Updated Subscriptions' };
       const mockResponse = { id: 1, ...subscriptionsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await subscriptions.update(1, subscriptionsData);
+      const result = await setup.entity.update(1, subscriptionsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/Subscriptions/1', subscriptionsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Subscriptions/1', subscriptionsData);
     });
   });
 
@@ -168,34 +125,26 @@ describe('Subscriptions Entity', () => {
       const subscriptionsData = { name: 'Patched Subscriptions' };
       const mockResponse = { id: 1, ...subscriptionsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await subscriptions.patch(1, subscriptionsData);
+      const result = await setup.entity.patch(1, subscriptionsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/Subscriptions/1', subscriptionsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Subscriptions/1', subscriptionsData);
     });
   });
 
   describe('delete', () => {
     it('should delete subscriptions successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
-      await subscriptions.delete(1);
+      await setup.entity.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/Subscriptions/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/Subscriptions/1');
     });
   });
 });

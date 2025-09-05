@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ContractExclusionSetExcludedRoles,
   IContractExclusionSetExcludedRoles,
@@ -57,22 +65,16 @@ describe('ContractExclusionSetExcludedRoles Entity', () => {
         { id: 2, name: 'ContractExclusionSetExcludedRoles 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await contractExclusionSetExcludedRoles.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ContractExclusionSetExcludedRoles Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await contractExclusionSetExcludedRoles.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ContractExclusionSetExcludedRoles Entity', () => {
     it('should get contractexclusionsetexcludedroles by id', async () => {
       const mockData = { id: 1, name: 'Test ContractExclusionSetExcludedRoles' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await contractExclusionSetExcludedRoles.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/1');
     });
   });
 
@@ -128,34 +120,26 @@ describe('ContractExclusionSetExcludedRoles Entity', () => {
       const contractExclusionSetExcludedRolesData = { name: 'New ContractExclusionSetExcludedRoles' };
       const mockResponse = { id: 1, ...contractExclusionSetExcludedRolesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await contractExclusionSetExcludedRoles.create(contractExclusionSetExcludedRolesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles', contractExclusionSetExcludedRolesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles', contractExclusionSetExcludedRolesData);
     });
   });
 
   describe('delete', () => {
     it('should delete contractexclusionsetexcludedroles successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await contractExclusionSetExcludedRoles.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractExclusionSetExcludedRoles/1');
     });
   });
 });

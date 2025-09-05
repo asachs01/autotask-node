@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ResourceSkills,
   IResourceSkills,
@@ -57,22 +65,16 @@ describe('ResourceSkills Entity', () => {
         { id: 2, name: 'ResourceSkills 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await resourceSkills.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ResourceSkills Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await resourceSkills.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ResourceSkills Entity', () => {
     it('should get resourceskills by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceSkills' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await resourceSkills.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ResourceSkills Entity', () => {
       const resourceSkillsData = { name: 'New ResourceSkills' };
       const mockResponse = { id: 1, ...resourceSkillsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await resourceSkills.create(resourceSkillsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ResourceSkills', resourceSkillsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ResourceSkills', resourceSkillsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ResourceSkills Entity', () => {
       const resourceSkillsData = { name: 'Updated ResourceSkills' };
       const mockResponse = { id: 1, ...resourceSkillsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await resourceSkills.update(1, resourceSkillsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ResourceSkills/1', resourceSkillsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ResourceSkills/1', resourceSkillsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ResourceSkills Entity', () => {
       const resourceSkillsData = { name: 'Patched ResourceSkills' };
       const mockResponse = { id: 1, ...resourceSkillsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await resourceSkills.patch(1, resourceSkillsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ResourceSkills/1', resourceSkillsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ResourceSkills/1', resourceSkillsData);
     });
   });
 
   describe('delete', () => {
     it('should delete resourceskills successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await resourceSkills.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ResourceSkills/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ResourceSkills/1');
     });
   });
 });

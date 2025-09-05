@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   DocumentChecklistItems,
   IDocumentChecklistItems,
@@ -57,22 +65,16 @@ describe('DocumentChecklistItems Entity', () => {
         { id: 2, name: 'DocumentChecklistItems 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await documentChecklistItems.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentChecklistItems/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentChecklistItems/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('DocumentChecklistItems Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await documentChecklistItems.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentChecklistItems/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentChecklistItems/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('DocumentChecklistItems Entity', () => {
     it('should get documentchecklistitems by id', async () => {
       const mockData = { id: 1, name: 'Test DocumentChecklistItems' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await documentChecklistItems.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentChecklistItems/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentChecklistItems/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('DocumentChecklistItems Entity', () => {
       const documentChecklistItemsData = { name: 'New DocumentChecklistItems' };
       const mockResponse = { id: 1, ...documentChecklistItemsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await documentChecklistItems.create(documentChecklistItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/DocumentChecklistItems', documentChecklistItemsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentChecklistItems', documentChecklistItemsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('DocumentChecklistItems Entity', () => {
       const documentChecklistItemsData = { name: 'Updated DocumentChecklistItems' };
       const mockResponse = { id: 1, ...documentChecklistItemsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await documentChecklistItems.update(1, documentChecklistItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/DocumentChecklistItems/1', documentChecklistItemsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/DocumentChecklistItems/1', documentChecklistItemsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('DocumentChecklistItems Entity', () => {
       const documentChecklistItemsData = { name: 'Patched DocumentChecklistItems' };
       const mockResponse = { id: 1, ...documentChecklistItemsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await documentChecklistItems.patch(1, documentChecklistItemsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/DocumentChecklistItems/1', documentChecklistItemsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/DocumentChecklistItems/1', documentChecklistItemsData);
     });
   });
 
   describe('delete', () => {
     it('should delete documentchecklistitems successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await documentChecklistItems.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/DocumentChecklistItems/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/DocumentChecklistItems/1');
     });
   });
 });

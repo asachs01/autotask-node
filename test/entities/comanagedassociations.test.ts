@@ -6,7 +6,15 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import winston from 'winston';
 import {
   ComanagedAssociations,
@@ -15,39 +23,14 @@ import {
 } from '../../src/entities/comanagedassociations';
 
 describe('ComanagedAssociations Entity', () => {
-  let comanagedAssociations: ComanagedAssociations;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<ComanagedAssociations>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    comanagedAssociations = new ComanagedAssociations(mockAxios, mockLogger);
+    setup = createEntityTestSetup(ComanagedAssociations);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +40,15 @@ describe('ComanagedAssociations Entity', () => {
         { id: 2, name: 'ComanagedAssociations 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await comanagedAssociations.list();
+      const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ComanagedAssociations/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ComanagedAssociations/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
       });
     });
 
@@ -83,23 +60,17 @@ describe('ComanagedAssociations Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await comanagedAssociations.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ComanagedAssociations/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ComanagedAssociations/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        sort: 'id',
+        page: 1,
+        MaxRecords: 10,
       });
     });
   });
@@ -108,18 +79,14 @@ describe('ComanagedAssociations Entity', () => {
     it('should get comanagedassociations by id', async () => {
       const mockData = { id: 1, name: 'Test ComanagedAssociations' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await comanagedAssociations.get(1);
+      const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ComanagedAssociations/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ComanagedAssociations/1');
     });
   });
 
@@ -128,34 +95,26 @@ describe('ComanagedAssociations Entity', () => {
       const comanagedAssociationsData = { name: 'New ComanagedAssociations' };
       const mockResponse = { id: 1, ...comanagedAssociationsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await comanagedAssociations.create(comanagedAssociationsData);
+      const result = await setup.entity.create(comanagedAssociationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ComanagedAssociations', comanagedAssociationsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ComanagedAssociations', comanagedAssociationsData);
     });
   });
 
   describe('delete', () => {
     it('should delete comanagedassociations successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
-      await comanagedAssociations.delete(1);
+      await setup.entity.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ComanagedAssociations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ComanagedAssociations/1');
     });
   });
 });

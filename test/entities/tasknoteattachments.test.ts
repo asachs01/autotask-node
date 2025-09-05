@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   TaskNoteAttachments,
   ITaskNoteAttachments,
@@ -57,22 +65,16 @@ describe('TaskNoteAttachments Entity', () => {
         { id: 2, name: 'TaskNoteAttachments 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await taskNoteAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('TaskNoteAttachments Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await taskNoteAttachments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('TaskNoteAttachments Entity', () => {
     it('should get tasknoteattachments by id', async () => {
       const mockData = { id: 1, name: 'Test TaskNoteAttachments' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await taskNoteAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/1');
     });
   });
 
@@ -128,34 +120,26 @@ describe('TaskNoteAttachments Entity', () => {
       const taskNoteAttachmentsData = { name: 'New TaskNoteAttachments' };
       const mockResponse = { id: 1, ...taskNoteAttachmentsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await taskNoteAttachments.create(taskNoteAttachmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/TaskNoteAttachments', taskNoteAttachmentsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TaskNoteAttachments', taskNoteAttachmentsData);
     });
   });
 
   describe('delete', () => {
     it('should delete tasknoteattachments successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await taskNoteAttachments.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/TaskNoteAttachments/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TaskNoteAttachments/1');
     });
   });
 });

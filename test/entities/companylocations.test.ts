@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   CompanyLocations,
   ICompanyLocations,
@@ -57,22 +65,16 @@ describe('CompanyLocations Entity', () => {
         { id: 2, name: 'CompanyLocations 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await companyLocations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('CompanyLocations Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await companyLocations.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('CompanyLocations Entity', () => {
     it('should get companylocations by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyLocations' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await companyLocations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('CompanyLocations Entity', () => {
       const companyLocationsData = { name: 'New CompanyLocations' };
       const mockResponse = { id: 1, ...companyLocationsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await companyLocations.create(companyLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/CompanyLocations', companyLocationsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanyLocations', companyLocationsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('CompanyLocations Entity', () => {
       const companyLocationsData = { name: 'Updated CompanyLocations' };
       const mockResponse = { id: 1, ...companyLocationsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await companyLocations.update(1, companyLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/CompanyLocations/1', companyLocationsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/CompanyLocations/1', companyLocationsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('CompanyLocations Entity', () => {
       const companyLocationsData = { name: 'Patched CompanyLocations' };
       const mockResponse = { id: 1, ...companyLocationsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await companyLocations.patch(1, companyLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/CompanyLocations/1', companyLocationsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/CompanyLocations/1', companyLocationsData);
     });
   });
 
   describe('delete', () => {
     it('should delete companylocations successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await companyLocations.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/CompanyLocations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/CompanyLocations/1');
     });
   });
 });

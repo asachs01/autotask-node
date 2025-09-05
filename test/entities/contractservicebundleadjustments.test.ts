@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ContractServiceBundleAdjustments,
   IContractServiceBundleAdjustments,
@@ -57,22 +65,16 @@ describe('ContractServiceBundleAdjustments Entity', () => {
         { id: 2, name: 'ContractServiceBundleAdjustments 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await contractServiceBundleAdjustments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ContractServiceBundleAdjustments Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await contractServiceBundleAdjustments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ContractServiceBundleAdjustments Entity', () => {
     it('should get contractservicebundleadjustments by id', async () => {
       const mockData = { id: 1, name: 'Test ContractServiceBundleAdjustments' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await contractServiceBundleAdjustments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('ContractServiceBundleAdjustments Entity', () => {
       const contractServiceBundleAdjustmentsData = { name: 'New ContractServiceBundleAdjustments' };
       const mockResponse = { id: 1, ...contractServiceBundleAdjustmentsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await contractServiceBundleAdjustments.create(contractServiceBundleAdjustmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ContractServiceBundleAdjustments', contractServiceBundleAdjustmentsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractServiceBundleAdjustments', contractServiceBundleAdjustmentsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('ContractServiceBundleAdjustments Entity', () => {
       const contractServiceBundleAdjustmentsData = { name: 'Updated ContractServiceBundleAdjustments' };
       const mockResponse = { id: 1, ...contractServiceBundleAdjustmentsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contractServiceBundleAdjustments.update(1, contractServiceBundleAdjustmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1', contractServiceBundleAdjustmentsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1', contractServiceBundleAdjustmentsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('ContractServiceBundleAdjustments Entity', () => {
       const contractServiceBundleAdjustmentsData = { name: 'Patched ContractServiceBundleAdjustments' };
       const mockResponse = { id: 1, ...contractServiceBundleAdjustmentsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await contractServiceBundleAdjustments.patch(1, contractServiceBundleAdjustmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1', contractServiceBundleAdjustmentsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1', contractServiceBundleAdjustmentsData);
     });
   });
 
   describe('delete', () => {
     it('should delete contractservicebundleadjustments successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await contractServiceBundleAdjustments.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractServiceBundleAdjustments/1');
     });
   });
 });

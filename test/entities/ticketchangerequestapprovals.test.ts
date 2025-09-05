@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   TicketChangeRequestApprovals,
   ITicketChangeRequestApprovals,
@@ -57,22 +65,16 @@ describe('TicketChangeRequestApprovals Entity', () => {
         { id: 2, name: 'TicketChangeRequestApprovals 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await ticketChangeRequestApprovals.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('TicketChangeRequestApprovals Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await ticketChangeRequestApprovals.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('TicketChangeRequestApprovals Entity', () => {
     it('should get ticketchangerequestapprovals by id', async () => {
       const mockData = { id: 1, name: 'Test TicketChangeRequestApprovals' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await ticketChangeRequestApprovals.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('TicketChangeRequestApprovals Entity', () => {
       const ticketChangeRequestApprovalsData = { name: 'New TicketChangeRequestApprovals' };
       const mockResponse = { id: 1, ...ticketChangeRequestApprovalsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await ticketChangeRequestApprovals.create(ticketChangeRequestApprovalsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/TicketChangeRequestApprovals', ticketChangeRequestApprovalsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketChangeRequestApprovals', ticketChangeRequestApprovalsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('TicketChangeRequestApprovals Entity', () => {
       const ticketChangeRequestApprovalsData = { name: 'Updated TicketChangeRequestApprovals' };
       const mockResponse = { id: 1, ...ticketChangeRequestApprovalsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await ticketChangeRequestApprovals.update(1, ticketChangeRequestApprovalsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1', ticketChangeRequestApprovalsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1', ticketChangeRequestApprovalsData);
     });
   });
 
@@ -168,18 +152,14 @@ describe('TicketChangeRequestApprovals Entity', () => {
       const ticketChangeRequestApprovalsData = { name: 'Patched TicketChangeRequestApprovals' };
       const mockResponse = { id: 1, ...ticketChangeRequestApprovalsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await ticketChangeRequestApprovals.patch(1, ticketChangeRequestApprovalsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1', ticketChangeRequestApprovalsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1', ticketChangeRequestApprovalsData);
     });
   });
 });

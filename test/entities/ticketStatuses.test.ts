@@ -5,6 +5,14 @@ import {
 } from '../../src/entities/ticketStatuses';
 import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import { createMockAxios, createMockLogger } from '../utils/testHelpers';
 
 describe('TicketStatuses', () => {
@@ -34,12 +42,12 @@ describe('TicketStatuses', () => {
       const mockResponse = {
         data: [{ id: 1, name: 'Open', isActive: true, isSystemValue: true }],
       };
-      mockAxios.get.mockResolvedValue(mockResponse);
+      setup.mockAxios.get.mockResolvedValue(mockResponse);
 
       const options = { pageSize: 10, page: 1 };
       const result = await ticketStatuses.list(options);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketStatuses', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketStatuses', {
         params: { pageSize: 10, page: 1 },
       });
       expect(result.data).toEqual(mockResponse.data);
@@ -52,7 +60,7 @@ describe('TicketStatuses', () => {
           { id: 2, name: 'In Progress', isActive: true },
         ],
       };
-      mockAxios.get.mockResolvedValue(mockResponse);
+      setup.mockAxios.get.mockResolvedValue(mockResponse);
 
       const options = {
         filter: { isActive: true },
@@ -60,7 +68,7 @@ describe('TicketStatuses', () => {
       };
       const result = await ticketStatuses.list(options);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketStatuses', {
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketStatuses', {
         params: {
           search: JSON.stringify({ isActive: true }),
           sort: 'name asc',
@@ -71,7 +79,7 @@ describe('TicketStatuses', () => {
 
     it('should propagate errors from axios', async () => {
       const error = new Error('API Error');
-      mockAxios.get.mockRejectedValue(error);
+      setup.mockAxios.get.mockRejectedValue(error);
 
       await expect(ticketStatuses.list()).rejects.toThrow('API Error');
     });
@@ -81,17 +89,17 @@ describe('TicketStatuses', () => {
     it('should call axios.get with correct ID', async () => {
       const mockStatus = { id: 123, name: 'Closed', isActive: true };
       const mockResponse = { data: mockStatus };
-      mockAxios.get.mockResolvedValue(mockResponse);
+      setup.mockAxios.get.mockResolvedValue(mockResponse);
 
       const result = await ticketStatuses.get(123);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketStatuses/123');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketStatuses/123');
       expect(result.data).toEqual(mockStatus);
     });
 
     it('should propagate errors for non-existent status', async () => {
       const error = new Error('Ticket status not found');
-      mockAxios.get.mockRejectedValue(error);
+      setup.mockAxios.get.mockRejectedValue(error);
 
       await expect(ticketStatuses.get(999)).rejects.toThrow(
         'Ticket status not found'
@@ -107,11 +115,11 @@ describe('TicketStatuses', () => {
         description: 'A custom ticket status',
       };
       const mockResponse = { data: { id: 789, ...statusData } };
-      mockAxios.post.mockResolvedValue(mockResponse);
+      setup.mockAxios.post.mockResolvedValue(mockResponse);
 
       const result = await ticketStatuses.create(statusData);
 
-      expect(mockAxios.post).toHaveBeenCalledWith(
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/TicketStatuses',
         statusData
       );
@@ -121,7 +129,7 @@ describe('TicketStatuses', () => {
     it('should propagate validation errors', async () => {
       const invalidData = { description: 'Missing required name field' };
       const error = new Error('Validation failed');
-      mockAxios.post.mockRejectedValue(error);
+      setup.mockAxios.post.mockRejectedValue(error);
 
       await expect(
         ticketStatuses.create(invalidData as TicketStatus)
@@ -136,11 +144,11 @@ describe('TicketStatuses', () => {
         isActive: false,
       };
       const mockResponse = { data: { id: 123, ...updateData } };
-      mockAxios.put.mockResolvedValue(mockResponse);
+      setup.mockAxios.put.mockResolvedValue(mockResponse);
 
       const result = await ticketStatuses.update(123, updateData);
 
-      expect(mockAxios.put).toHaveBeenCalledWith(
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
         '/TicketStatuses/123',
         updateData
       );
@@ -149,7 +157,7 @@ describe('TicketStatuses', () => {
 
     it('should propagate errors for non-existent status', async () => {
       const error = new Error('Ticket status not found');
-      mockAxios.put.mockRejectedValue(error);
+      setup.mockAxios.put.mockRejectedValue(error);
 
       await expect(
         ticketStatuses.update(999, { name: 'Update' })
@@ -159,16 +167,16 @@ describe('TicketStatuses', () => {
 
   describe('delete', () => {
     it('should call axios.delete with correct ID', async () => {
-      mockAxios.delete.mockResolvedValue({ data: {} });
+      setup.mockAxios.delete.mockResolvedValue({ data: {} });
 
       await ticketStatuses.delete(123);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/TicketStatuses/123');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TicketStatuses/123');
     });
 
     it('should propagate errors for system statuses', async () => {
       const error = new Error('Cannot delete system status');
-      mockAxios.delete.mockRejectedValue(error);
+      setup.mockAxios.delete.mockRejectedValue(error);
 
       await expect(ticketStatuses.delete(1)).rejects.toThrow(
         'Cannot delete system status'
@@ -189,7 +197,7 @@ describe('TicketStatuses', () => {
           },
         ],
       };
-      mockAxios.get.mockResolvedValue(mockResponse);
+      setup.mockAxios.get.mockResolvedValue(mockResponse);
 
       const result = await ticketStatuses.list();
 
@@ -208,29 +216,29 @@ describe('TicketStatuses', () => {
   describe('error handling with retry', () => {
     it('should retry failed requests', async () => {
       const error = new Error('Network timeout');
-      mockAxios.get
+      setup.mockAxios.get
         .mockRejectedValueOnce(error)
         .mockRejectedValueOnce(error)
         .mockResolvedValue({ data: { id: 123 } });
 
       const result = await ticketStatuses.get(123);
 
-      expect(mockAxios.get).toHaveBeenCalledTimes(3);
+      expect(setup.mockAxios.get).toHaveBeenCalledTimes(3);
       expect(result.data).toEqual({ id: 123 });
     });
 
     it('should fail after max retries', async () => {
       const error = new Error('Persistent error');
-      mockAxios.get.mockRejectedValue(error);
+      setup.mockAxios.get.mockRejectedValue(error);
 
       await expect(ticketStatuses.get(123)).rejects.toThrow('Persistent error');
-      expect(mockAxios.get).toHaveBeenCalledTimes(4); // Initial + 3 retries
+      expect(setup.mockAxios.get).toHaveBeenCalledTimes(4); // Initial + 3 retries
     });
   });
 
   describe('logging', () => {
     it('should log operations', async () => {
-      mockAxios.get.mockResolvedValue({ data: { id: 123 } });
+      setup.mockAxios.get.mockResolvedValue({ data: { id: 123 } });
 
       await ticketStatuses.get(123);
 
@@ -241,7 +249,7 @@ describe('TicketStatuses', () => {
 
     it('should log warnings on retry', async () => {
       const error = new Error('Temporary error');
-      mockAxios.get
+      setup.mockAxios.get
         .mockRejectedValueOnce(error)
         .mockResolvedValue({ data: { id: 123 } });
 

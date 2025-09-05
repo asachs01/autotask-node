@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   TimeOffRequestsApprove,
   ITimeOffRequestsApprove,
@@ -15,39 +23,17 @@ import {
 } from '../../src/entities/timeoffrequestsapprove';
 
 describe('TimeOffRequestsApprove Entity', () => {
-  let timeOffRequestsApprove: TimeOffRequestsApprove;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<describe>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
+    setup = createEntityTestSetup(describe);
+  });
 
     timeOffRequestsApprove = new TimeOffRequestsApprove(mockAxios, mockLogger);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,22 +43,16 @@ describe('TimeOffRequestsApprove Entity', () => {
         { id: 2, name: 'TimeOffRequestsApprove 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await timeOffRequestsApprove.list();
+      const result = await setup.entity.list();
 
-      expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TimeOffRequestsApprove/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.entity.data).toEqual(mockData);
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeOffRequestsApprove/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +63,18 @@ describe('TimeOffRequestsApprove Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await timeOffRequestsApprove.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TimeOffRequestsApprove/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeOffRequestsApprove/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -109,18 +83,14 @@ describe('TimeOffRequestsApprove Entity', () => {
       const timeOffRequestsApproveData = { name: 'New TimeOffRequestsApprove' };
       const mockResponse = { id: 1, ...timeOffRequestsApproveData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await timeOffRequestsApprove.create(timeOffRequestsApproveData);
+      const result = await setup.entity.create(timeOffRequestsApproveData);
 
-      expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/TimeOffRequestsApprove', timeOffRequestsApproveData);
+      expect(setup.entity.data).toEqual(mockResponse);
+      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/TimeOffRequestsApprove', timeOffRequestsApproveData);
     });
   });
 });

@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   DocumentConfigurationItemAssociations,
   IDocumentConfigurationItemAssociations,
@@ -57,22 +65,16 @@ describe('DocumentConfigurationItemAssociations Entity', () => {
         { id: 2, name: 'DocumentConfigurationItemAssociations 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await documentConfigurationItemAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('DocumentConfigurationItemAssociations Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await documentConfigurationItemAssociations.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('DocumentConfigurationItemAssociations Entity', () => {
     it('should get documentconfigurationitemassociations by id', async () => {
       const mockData = { id: 1, name: 'Test DocumentConfigurationItemAssociations' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await documentConfigurationItemAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/1');
     });
   });
 
@@ -128,34 +120,26 @@ describe('DocumentConfigurationItemAssociations Entity', () => {
       const documentConfigurationItemAssociationsData = { name: 'New DocumentConfigurationItemAssociations' };
       const mockResponse = { id: 1, ...documentConfigurationItemAssociationsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await documentConfigurationItemAssociations.create(documentConfigurationItemAssociationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations', documentConfigurationItemAssociationsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations', documentConfigurationItemAssociationsData);
     });
   });
 
   describe('delete', () => {
     it('should delete documentconfigurationitemassociations successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await documentConfigurationItemAssociations.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/DocumentConfigurationItemAssociations/1');
     });
   });
 });

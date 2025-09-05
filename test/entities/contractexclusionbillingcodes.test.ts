@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   ContractExclusionBillingCodes,
   IContractExclusionBillingCodes,
@@ -57,22 +65,16 @@ describe('ContractExclusionBillingCodes Entity', () => {
         { id: 2, name: 'ContractExclusionBillingCodes 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await contractExclusionBillingCodes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusionBillingCodes/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionBillingCodes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('ContractExclusionBillingCodes Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await contractExclusionBillingCodes.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusionBillingCodes/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionBillingCodes/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('ContractExclusionBillingCodes Entity', () => {
     it('should get contractexclusionbillingcodes by id', async () => {
       const mockData = { id: 1, name: 'Test ContractExclusionBillingCodes' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await contractExclusionBillingCodes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusionBillingCodes/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionBillingCodes/1');
     });
   });
 
@@ -128,34 +120,26 @@ describe('ContractExclusionBillingCodes Entity', () => {
       const contractExclusionBillingCodesData = { name: 'New ContractExclusionBillingCodes' };
       const mockResponse = { id: 1, ...contractExclusionBillingCodesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await contractExclusionBillingCodes.create(contractExclusionBillingCodesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/ContractExclusionBillingCodes', contractExclusionBillingCodesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractExclusionBillingCodes', contractExclusionBillingCodesData);
     });
   });
 
   describe('delete', () => {
     it('should delete contractexclusionbillingcodes successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await contractExclusionBillingCodes.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/ContractExclusionBillingCodes/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractExclusionBillingCodes/1');
     });
   });
 });

@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   OrganizationalLevelAssociations,
   IOrganizationalLevelAssociations,
@@ -57,22 +65,16 @@ describe('OrganizationalLevelAssociations Entity', () => {
         { id: 2, name: 'OrganizationalLevelAssociations 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await organizationalLevelAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/OrganizationalLevelAssociations/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/OrganizationalLevelAssociations/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('OrganizationalLevelAssociations Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await organizationalLevelAssociations.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/OrganizationalLevelAssociations/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/OrganizationalLevelAssociations/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('OrganizationalLevelAssociations Entity', () => {
     it('should get organizationallevelassociations by id', async () => {
       const mockData = { id: 1, name: 'Test OrganizationalLevelAssociations' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await organizationalLevelAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/OrganizationalLevelAssociations/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/OrganizationalLevelAssociations/1');
     });
   });
 
@@ -128,34 +120,26 @@ describe('OrganizationalLevelAssociations Entity', () => {
       const organizationalLevelAssociationsData = { name: 'New OrganizationalLevelAssociations' };
       const mockResponse = { id: 1, ...organizationalLevelAssociationsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await organizationalLevelAssociations.create(organizationalLevelAssociationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/OrganizationalLevelAssociations', organizationalLevelAssociationsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/OrganizationalLevelAssociations', organizationalLevelAssociationsData);
     });
   });
 
   describe('delete', () => {
     it('should delete organizationallevelassociations successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await organizationalLevelAssociations.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/OrganizationalLevelAssociations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/OrganizationalLevelAssociations/1');
     });
   });
 });

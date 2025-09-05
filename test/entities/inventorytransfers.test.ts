@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   InventoryTransfers,
   IInventoryTransfers,
@@ -57,22 +65,16 @@ describe('InventoryTransfers Entity', () => {
         { id: 2, name: 'InventoryTransfers 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await inventoryTransfers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/InventoryTransfers/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryTransfers/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('InventoryTransfers Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await inventoryTransfers.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/InventoryTransfers/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryTransfers/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('InventoryTransfers Entity', () => {
     it('should get inventorytransfers by id', async () => {
       const mockData = { id: 1, name: 'Test InventoryTransfers' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await inventoryTransfers.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/InventoryTransfers/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryTransfers/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('InventoryTransfers Entity', () => {
       const inventoryTransfersData = { name: 'New InventoryTransfers' };
       const mockResponse = { id: 1, ...inventoryTransfersData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await inventoryTransfers.create(inventoryTransfersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/InventoryTransfers', inventoryTransfersData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/InventoryTransfers', inventoryTransfersData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('InventoryTransfers Entity', () => {
       const inventoryTransfersData = { name: 'Updated InventoryTransfers' };
       const mockResponse = { id: 1, ...inventoryTransfersData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await inventoryTransfers.update(1, inventoryTransfersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/InventoryTransfers/1', inventoryTransfersData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/InventoryTransfers/1', inventoryTransfersData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('InventoryTransfers Entity', () => {
       const inventoryTransfersData = { name: 'Patched InventoryTransfers' };
       const mockResponse = { id: 1, ...inventoryTransfersData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await inventoryTransfers.patch(1, inventoryTransfersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/InventoryTransfers/1', inventoryTransfersData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/InventoryTransfers/1', inventoryTransfersData);
     });
   });
 
   describe('delete', () => {
     it('should delete inventorytransfers successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await inventoryTransfers.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/InventoryTransfers/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/InventoryTransfers/1');
     });
   });
 });

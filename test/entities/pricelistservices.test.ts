@@ -6,48 +6,30 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
 import {
   PriceListServices,
   IPriceListServices,
   IPriceListServicesQuery,
 } from '../../src/entities/pricelistservices';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 
 describe('PriceListServices Entity', () => {
-  let priceListServices: PriceListServices;
-  let mockAxios: jest.Mocked<AxiosInstance>;
-  let mockLogger: winston.Logger;
+  let setup: EntityTestSetup<PriceListServices>;
 
   beforeEach(() => {
-    mockAxios = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      patch: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-      },
-    } as any;
-
-    mockLogger = winston.createLogger({
-      level: 'error',
-      transports: [new winston.transports.Console({ silent: true })],
-    });
-
-    priceListServices = new PriceListServices(mockAxios, mockLogger);
+    setup = createEntityTestSetup(PriceListServices);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    resetAllMocks(setup);
   });
 
   describe('list', () => {
@@ -57,21 +39,15 @@ describe('PriceListServices Entity', () => {
         { id: 2, name: 'PriceListServices 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
-      const result = await priceListServices.list();
+      const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListServices/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListServices/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
       });
     });
 
@@ -83,23 +59,15 @@ describe('PriceListServices Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
-      await priceListServices.list(query);
+      await setup.entity.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListServices/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListServices/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        sort: 'id', page: 1, MaxRecords: 10,
       });
     });
   });
@@ -108,18 +76,14 @@ describe('PriceListServices Entity', () => {
     it('should get pricelistservices by id', async () => {
       const mockData = { id: 1, name: 'Test PriceListServices' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
-      const result = await priceListServices.get(1);
+      const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListServices/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListServices/1');
     });
   });
 
@@ -128,18 +92,14 @@ describe('PriceListServices Entity', () => {
       const priceListServicesData = { name: 'New PriceListServices' };
       const mockResponse = { id: 1, ...priceListServicesData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
-      const result = await priceListServices.create(priceListServicesData);
+      const result = await setup.entity.create(priceListServicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/PriceListServices', priceListServicesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListServices', priceListServicesData);
     });
   });
 
@@ -148,18 +108,14 @@ describe('PriceListServices Entity', () => {
       const priceListServicesData = { name: 'Updated PriceListServices' };
       const mockResponse = { id: 1, ...priceListServicesData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await priceListServices.update(1, priceListServicesData);
+      const result = await setup.entity.update(1, priceListServicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/PriceListServices/1', priceListServicesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/PriceListServices/1', priceListServicesData);
     });
   });
 
@@ -168,34 +124,26 @@ describe('PriceListServices Entity', () => {
       const priceListServicesData = { name: 'Patched PriceListServices' };
       const mockResponse = { id: 1, ...priceListServicesData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
-      const result = await priceListServices.patch(1, priceListServicesData);
+      const result = await setup.entity.patch(1, priceListServicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/PriceListServices/1', priceListServicesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/PriceListServices/1', priceListServicesData);
     });
   });
 
   describe('delete', () => {
     it('should delete pricelistservices successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
-      await priceListServices.delete(1);
+      await setup.entity.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/PriceListServices/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/PriceListServices/1');
     });
   });
 });

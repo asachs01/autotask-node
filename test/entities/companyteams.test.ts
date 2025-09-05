@@ -6,8 +6,16 @@ import {
   afterEach,
   jest,
 } from '@jest/globals';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import winston from 'winston';
+import {
+  createEntityTestSetup,
+  createMockItemResponse,
+  createMockItemsResponse,
+  createMockDeleteResponse,
+  resetAllMocks,
+  EntityTestSetup,
+} from '../helpers/mockHelper';
 import {
   CompanyTeams,
   ICompanyTeams,
@@ -57,22 +65,16 @@ describe('CompanyTeams Entity', () => {
         { id: 2, name: 'CompanyTeams 2' },
       ];
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse(mockData)
+      );
 
       const result = await companyTeams.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
-        params: {
-          filter: [{ op: 'gte', field: 'id', value: 0 }]
-        }
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        });
     });
 
     it('should handle query parameters', async () => {
@@ -83,24 +85,18 @@ describe('CompanyTeams Entity', () => {
         pageSize: 10,
       };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { items: [] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemsResponse([])
+      );
 
       await companyTeams.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
-        params: {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
+        filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-          page: 1,
-          pageSize: 10,
-        }
-      });
+        page: 1,
+        MaxRecords: 10,
+        });
     });
   });
 
@@ -108,18 +104,14 @@ describe('CompanyTeams Entity', () => {
     it('should get companyteams by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyTeams' };
 
-      mockAxios.get.mockResolvedValueOnce({
-        data: { item: mockData },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await companyTeams.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/1');
     });
   });
 
@@ -128,18 +120,14 @@ describe('CompanyTeams Entity', () => {
       const companyTeamsData = { name: 'New CompanyTeams' };
       const mockResponse = { id: 1, ...companyTeamsData };
 
-      mockAxios.post.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.post.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse, 201)
+      );
 
       const result = await companyTeams.create(companyTeamsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.post).toHaveBeenCalledWith('/CompanyTeams', companyTeamsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanyTeams', companyTeamsData);
     });
   });
 
@@ -148,18 +136,14 @@ describe('CompanyTeams Entity', () => {
       const companyTeamsData = { name: 'Updated CompanyTeams' };
       const mockResponse = { id: 1, ...companyTeamsData };
 
-      mockAxios.put.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await companyTeams.update(1, companyTeamsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.put).toHaveBeenCalledWith('/CompanyTeams/1', companyTeamsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith('/CompanyTeams/1', companyTeamsData);
     });
   });
 
@@ -168,34 +152,26 @@ describe('CompanyTeams Entity', () => {
       const companyTeamsData = { name: 'Patched CompanyTeams' };
       const mockResponse = { id: 1, ...companyTeamsData };
 
-      mockAxios.patch.mockResolvedValueOnce({
-        data: { item: mockResponse },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.patch.mockResolvedValueOnce(
+        createMockItemResponse(mockResponse)
+      );
 
       const result = await companyTeams.patch(1, companyTeamsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(mockAxios.patch).toHaveBeenCalledWith('/CompanyTeams/1', companyTeamsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/CompanyTeams/1', companyTeamsData);
     });
   });
 
   describe('delete', () => {
     it('should delete companyteams successfully', async () => {
-      mockAxios.delete.mockResolvedValueOnce({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      setup.mockAxios.delete.mockResolvedValueOnce(
+        createMockDeleteResponse()
+      );
 
       await companyTeams.delete(1);
 
-      expect(mockAxios.delete).toHaveBeenCalledWith('/CompanyTeams/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/CompanyTeams/1');
     });
   });
 });

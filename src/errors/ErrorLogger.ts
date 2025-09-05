@@ -78,7 +78,46 @@ export interface LogContext {
     maxAttempts: number;
     totalTime: number;
   };
+  
+  /** Component name for business rules */
+  component?: string;
+  
+  /** Operation name for relationships */
+  operationName?: string;
+  
+  /** Configuration data for business rules */
+  config?: any;
+  
+  /** Errors collection for business rules */
+  errors?: any[];
+  
+  /** Duration of operation in milliseconds */
+  duration?: number;
+  
+  /** Entity count for batch operations */
+  entityCount?: number;
+  
+  /** Error information for context */
+  error?: any;
+  
+  /** Warning messages */
+  warnings?: string[];
+  
+  /** Context data (general) */
+  context?: any;
+  
+  /** Heap memory usage */
+  heapUsed?: number;
+  
+  /** Algorithm name for graph traversal */
+  algorithm?: string;
+  
 }
+
+/**
+ * Legacy alias for backward compatibility
+ */
+export type ErrorContext = LogContext;
 
 /**
  * Structured log entry
