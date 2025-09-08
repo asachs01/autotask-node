@@ -98,7 +98,7 @@
     "dompurify": "^3.2.6",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
-    "express-rate-limit": "^6.11.2",
+    "express-rate-limit": "^8.1.0",
     "glob": "^11.0.3",
     "ioredis": "^5.7.0",
     "joi": "^18.0.1",
