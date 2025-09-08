@@ -119,7 +119,7 @@
     "@types/jest": "^29.5.2",
     "@types/jsdom": "^21.1.7",
     "@types/lru-cache": "^7.10.9",
-    "@types/nock": "^10.0.3",
+    "@types/nock": "^11.1.0",
     "@types/node": "^22.15.30",
     "@types/reflect-metadata": "^0.0.5",
     "@types/validator": "^13.15.2",
