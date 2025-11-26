@@ -35,10 +35,11 @@ plans/
 .DS_Store 
 ww2*
 
-memory*
-claude*
-agent*
-reference_docs*
+# Temporary working files at root only
+/memory*
+/claude*
+/agent*
+/reference_docs*
 
 logs
 *.log

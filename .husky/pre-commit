@@ -1,15 +1,6 @@
 # Run lint-staged to check and fix code style
 npx lint-staged
 
-# Check if any TypeScript, JavaScript, or test files have been modified
-# If so, run unit tests. Skip tests for documentation-only changes.
-files_changed=$(git diff --cached --name-only --diff-filter=ACM)
-ts_js_files=$(echo "$files_changed" | grep -E '\.(ts|js)$' || true)
-
-if [ -n "$ts_js_files" ]; then
-  echo "TypeScript/JavaScript files changed, running unit tests..."
-  npm run test:unit
-else
-  echo "No TypeScript/JavaScript files changed, skipping tests."
-  echo "Changed files: $files_changed"
-fi
+# Note: Unit tests are skipped in pre-commit hook due to memory requirements.
+# Tests run automatically in CI on push to main/feature branches.
+# To run tests locally, use: NODE_OPTIONS="--max-old-space-size=8192" npm test
