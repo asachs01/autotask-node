@@ -27,7 +27,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "lts/*"
+          # Node 24 required for OIDC trusted publishing (see npm/cli#8730)
+          node-version: "24"
           # Note: Do NOT use registry-url here - it sets a default NODE_AUTH_TOKEN
           # that interferes with npm OIDC trusted publishing
 
@@ -104,3 +105,6 @@ jobs:
 
       - name: Publish to NPM
         run: npm publish --provenance --access public --loglevel verbose
+        env:
+          # Explicit provenance config required for OIDC (see npm/cli#8730)
+          NPM_CONFIG_PROVENANCE: true
