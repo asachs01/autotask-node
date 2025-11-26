@@ -27,8 +27,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
-          # Note: registry-url removed - OIDC trusted publishing handles authentication
-          # registry-url is only needed if you have private dependencies
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@latest
