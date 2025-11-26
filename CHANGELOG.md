@@ -1,8 +1,8 @@
 # Autotask Node SDK Release Notes
 
-## 2.0.4 - Build Fixes and Missing Modules
+## 2.0.4 - Build Fixes and npm Publishing
 
-**November 26, 2025** — Critical build fixes for missing modules.
+**November 26, 2025** — Critical build fixes for missing modules and npm trusted publishing support.
 
 ### 🐛 BUG FIXES
 
@@ -13,11 +13,14 @@
   - `MemoryBenchmark.ts` - Memory benchmarking utilities
 - Fixed `.gitignore` rules that were incorrectly ignoring source files
 - Removed unit tests from pre-commit hook (CI handles test execution)
+- Fixed type mismatch between `MemorySnapshot` and `MemoryMetrics` in PerformanceMonitor
 
 ### 🔧 IMPROVEMENTS
 
 - Updated dependencies (joi, ioredis, dompurify, validator)
 - Added missing type definitions (@types/bull, @types/ioredis, @types/joi)
+- Updated release workflow to support npm trusted publishing with OIDC
+- Added provenance attestation support for npm packages
 
 ---
 
