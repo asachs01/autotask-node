@@ -105,3 +105,4 @@ jobs:
         run: npm publish --provenance --access public --loglevel verbose
         env:
           NODE_AUTH_TOKEN: ''
+          NPM_CONFIG_PROVENANCE: 'true'
