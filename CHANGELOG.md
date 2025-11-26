@@ -1,5 +1,16 @@
 # Autotask Node SDK Release Notes
 
+## 2.0.2 - CI/CD Improvements
+
+**November 26, 2025** — Release workflow improvements.
+
+### 🔧 IMPROVEMENTS
+
+- Fixed release workflow memory issues by increasing Node.js heap size for tests
+- Updated release naming to be more dynamic
+
+---
+
 ## 2.0.1 - Authentication and Testing Improvements
 
 **August 30, 2025** — Bug fixes for authentication, TypeScript compilation, and enhanced security practices.
@@ -39,18 +50,21 @@
 ### ✨ NEW FEATURES
 
 **Complete API Coverage (215 Entities):**
+
 - Increased from ~27 to 215 entities (800% expansion)
 - 100% Autotask REST API coverage
 - Full CRUD operations for all supported entities
 - Convenience methods for common operations on all sub-clients
 
 **Enterprise Architecture:**
+
 - Category-based sub-clients (Core, Financial, Contracts, Configuration, etc.)
 - Lazy initialization for optimal performance
 - Connection pooling and rate limiting
 - Comprehensive error handling with retry logic
 
 **Production Features:**
+
 - Business logic validation layer
 - Entity relationship mapping and cascade operations
 - Data validation and sanitization
@@ -59,6 +73,7 @@
 - Offline queue system with multiple backends (Redis, SQLite, Memory)
 
 **Advanced Capabilities:**
+
 - Webhook processing and event handling system
 - PSA migration framework (ConnectWise, ServiceNow, Kaseya VSA)
 - Performance monitoring and optimization
@@ -91,6 +106,7 @@
 ### 🎯 PRODUCTION CERTIFICATION
 
 This release has been certified for production use with:
+
 - Clean TypeScript build
 - High test coverage (97.8%)
 - Complete feature implementation
@@ -127,7 +143,7 @@ See `PRODUCTION_VALIDATION_REPORT.md` for detailed certification metrics.
 **Developer Experience:**
 
 - **Simple API**: Easy-to-use APIs for quick migration setup and execution
-- **Configuration Builder**: Fluent configuration API for complex migration scenarios  
+- **Configuration Builder**: Fluent configuration API for complex migration scenarios
 - **Default Mappings**: Pre-built field mappings for common PSA systems
 - **Extensive Documentation**: Complete migration guide with examples and best practices
 

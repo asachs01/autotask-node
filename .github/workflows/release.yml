@@ -38,6 +38,8 @@ jobs:
 
       - name: Run unit tests
         run: npm run test:unit
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Build project
         run: npm run build --if-present
@@ -91,7 +93,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}: First Stable Release"
+          name: "Release ${{ github.ref_name }}"
           body_path: release-notes.md
           draft: false
           prerelease: false
