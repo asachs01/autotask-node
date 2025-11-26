@@ -110,6 +110,6 @@ jobs:
           echo "GitHub actor: $GITHUB_ACTOR"
 
       - name: Publish to NPM with provenance
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ''  # Clear the default token set by setup-node to use OIDC
+        # Clear NODE_AUTH_TOKEN that setup-node sets by default to enable OIDC
+        # See: https://github.com/actions/setup-node/issues/1440
+        run: NODE_AUTH_TOKEN="" npm publish --provenance --access public
