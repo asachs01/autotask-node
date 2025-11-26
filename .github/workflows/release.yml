@@ -123,8 +123,17 @@ jobs:
           # Also unset the env var
           unset NODE_AUTH_TOKEN
 
+      - name: Debug npm config
+        run: |
+          echo "=== npm config list ==="
+          npm config list
+          echo "=== Checking ACTIONS_ID_TOKEN_REQUEST_URL ==="
+          echo "ACTIONS_ID_TOKEN_REQUEST_URL is set: ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
+          echo "=== Environment variables ==="
+          env | grep -E "^(ACTIONS_|GITHUB_|NPM_|NODE_)" | sort || true
+
       - name: Publish to NPM with provenance
-        run: npm publish --provenance --access public
+        run: npm publish --provenance --access public --loglevel verbose
         env:
           # Explicitly clear NODE_AUTH_TOKEN to ensure OIDC is used
           NODE_AUTH_TOKEN: ''
