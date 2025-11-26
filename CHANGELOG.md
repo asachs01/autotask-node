@@ -1,5 +1,16 @@
 # Autotask Node SDK Release Notes
 
+## 2.0.3 - Release Workflow Fix
+
+**November 26, 2025** — Release workflow optimization.
+
+### 🔧 IMPROVEMENTS
+
+- Removed redundant unit tests from release workflow (tests already run in CI on push to main)
+- Streamlined release process for faster npm publishing
+
+---
+
 ## 2.0.2 - CI/CD Improvements
 
 **November 26, 2025** — Release workflow improvements.
