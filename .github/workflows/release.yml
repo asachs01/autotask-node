@@ -15,8 +15,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    # Note: environment removed - if using npm trusted publishing with environment,
-    # it must match exactly in npmjs.com package settings
+    environment: npm
 
     steps:
       - name: Checkout
