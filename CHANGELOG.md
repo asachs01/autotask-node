@@ -1,5 +1,26 @@
 # Autotask Node SDK Release Notes
 
+## 2.0.4 - Build Fixes and Missing Modules
+
+**November 26, 2025** — Critical build fixes for missing modules.
+
+### 🐛 BUG FIXES
+
+- Added missing Memory modules that were causing build failures:
+  - `MemoryBackend.ts` - Queue storage backend implementation
+  - `MemoryCacheStore.ts` - Cache store implementation with LRU eviction
+  - `MemoryTracker.ts` - Memory usage monitoring and leak detection
+  - `MemoryBenchmark.ts` - Memory benchmarking utilities
+- Fixed `.gitignore` rules that were incorrectly ignoring source files
+- Removed unit tests from pre-commit hook (CI handles test execution)
+
+### 🔧 IMPROVEMENTS
+
+- Updated dependencies (joi, ioredis, dompurify, validator)
+- Added missing type definitions (@types/bull, @types/ioredis, @types/joi)
+
+---
+
 ## 2.0.3 - Release Workflow Fix
 
 **November 26, 2025** — Release workflow optimization.
