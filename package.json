@@ -1,6 +1,6 @@
 {
   "name": "autotask-node",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "Production-ready Node.js SDK for Kaseya Autotask PSA REST API with 100% API coverage, TypeScript support, enterprise features, and comprehensive testing.",
   "type": "commonjs",
   "main": "dist/index.js",
