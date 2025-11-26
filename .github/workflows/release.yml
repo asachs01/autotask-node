@@ -28,7 +28,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
-          registry-url: 'https://registry.npmjs.org'
+          # Note: Do NOT use registry-url here - it sets a default NODE_AUTH_TOKEN
+          # that interferes with npm OIDC trusted publishing
 
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@latest
