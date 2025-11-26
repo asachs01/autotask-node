@@ -101,4 +101,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --provenance --access public --loglevel verbose
+        env:
+          NODE_AUTH_TOKEN: ''
