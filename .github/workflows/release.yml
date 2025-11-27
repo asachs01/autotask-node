@@ -104,6 +104,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to NPM
+        # Clear NODE_AUTH_TOKEN to avoid interference with OIDC trusted publishing
+        # See: https://github.com/actions/setup-node/issues/1440
         run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ''
         
 
