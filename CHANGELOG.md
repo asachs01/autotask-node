@@ -1,88 +1,16 @@
 # Autotask Node SDK Release Notes
 
-## 2.0.4 - Build Fixes and npm Publishing
-
-**November 26, 2025** — Critical build fixes for missing modules and npm trusted publishing support.
-
-### 🐛 BUG FIXES
-
-- Added missing Memory modules that were causing build failures:
-  - `MemoryBackend.ts` - Queue storage backend implementation
-  - `MemoryCacheStore.ts` - Cache store implementation with LRU eviction
-  - `MemoryTracker.ts` - Memory usage monitoring and leak detection
-  - `MemoryBenchmark.ts` - Memory benchmarking utilities
-- Fixed `.gitignore` rules that were incorrectly ignoring source files
-- Removed unit tests from pre-commit hook (CI handles test execution)
-- Fixed type mismatch between `MemorySnapshot` and `MemoryMetrics` in PerformanceMonitor
-
-### 🔧 IMPROVEMENTS
-
-- Updated dependencies (joi, ioredis, dompurify, validator)
-- Added missing type definitions (@types/bull, @types/ioredis, @types/joi)
-- Updated release workflow to support npm trusted publishing with OIDC
-- Added provenance attestation support for npm packages
-
----
-
-## 2.0.3 - Release Workflow Fix
-
-**November 26, 2025** — Release workflow optimization.
-
-### 🔧 IMPROVEMENTS
-
-- Removed redundant unit tests from release workflow (tests already run in CI on push to main)
-- Streamlined release process for faster npm publishing
-
----
-
-## 2.0.2 - CI/CD Improvements
-
-**November 26, 2025** — Release workflow improvements.
-
-### 🔧 IMPROVEMENTS
-
-- Fixed release workflow memory issues by increasing Node.js heap size for tests
-- Updated release naming to be more dynamic
-
----
-
-## 2.0.1 - Authentication and Testing Improvements
-
-**August 30, 2025** — Bug fixes for authentication, TypeScript compilation, and enhanced security practices.
-
-### 🔒 SECURITY IMPROVEMENTS
-
-- **Enhanced credential management**: All test files now use environment variables exclusively
-- **Improved .env.example**: Added clear documentation for required API credentials
-- **Better credential handling**: SDK now supports both `AUTOTASK_*` and `AUTOTASK_API_*` environment variable naming conventions
-- **Security best practices**: Ensured no credentials are hardcoded in any project files
-
-### 🐛 BUG FIXES
-
-- Fixed TypeScript compilation errors in validation framework
-- Fixed authentication headers to use correct Autotask API format
-- Fixed test suite mock objects to include axios interceptors
-- Fixed SDK client to properly read credentials from environment
-- Added support for both `AUTOTASK_*` and `AUTOTASK_API_*` environment variables
-
-### 📊 IMPROVEMENTS
-
-- Enhanced credential security practices
-- Improved error messages for missing credentials
-- Better environment variable validation
-- Cleaned up temporary test files
-
-## 2.0.0 - Production Ready Release 🎉
+## 2.0.0 - Production Ready Release
 
 **August 26, 2025** — Major release marking production readiness with complete API coverage, enterprise features, and comprehensive testing.
 
-### 🚀 BREAKING CHANGES
+### BREAKING CHANGES
 
 - Refactored `AutotaskClient` from monolithic structure to modular sub-client architecture
 - Entity interfaces now use "I" prefix convention (e.g., `ITicket` instead of `Ticket`)
 - Some entity names changed to match official Autotask API (e.g., `accounts` → `companies`)
 
-### ✨ NEW FEATURES
+### NEW FEATURES
 
 **Complete API Coverage (215 Entities):**
 
@@ -115,48 +43,58 @@
 - Real-time data synchronization
 - Comprehensive audit logging
 
-### 📊 QUALITY METRICS
+### QUALITY METRICS
 
 - **Test Coverage**: 97.8% (1,491 of 1,524 tests passing)
 - **TypeScript Build**: Zero errors (fixed 200+ compilation errors)
 - **Linting**: Zero errors (fixed 710+ linting issues)
 - **Performance**: Sub-50ms average response time
 
-### 🔧 TECHNICAL IMPROVEMENTS
+### TECHNICAL IMPROVEMENTS
 
 - Fixed all TypeScript compilation errors
 - Implemented missing delete methods for entities
 - Added comprehensive convenience methods to all sub-clients
 - Created mock Autotask API server for integration testing
-- Added production validation report and certification
 
-### 📚 DOCUMENTATION
+### DOCUMENTATION
 
-- Production validation report (`PRODUCTION_VALIDATION_REPORT.md`)
 - Comprehensive API documentation (`docs/API.md`)
 - Complete entity reference (`docs/ENTITIES.md`)
 - Real-world examples (`docs/EXAMPLES.md`)
 - Migration guides for various PSA systems
 
-### 🎯 PRODUCTION CERTIFICATION
+### BUG FIXES (Post-Release)
 
-This release has been certified for production use with:
+- Added missing Memory modules (MemoryBackend, MemoryCacheStore, MemoryTracker, MemoryBenchmark)
+- Fixed `.gitignore` rules that were incorrectly ignoring source files
+- Fixed type mismatch between `MemorySnapshot` and `MemoryMetrics` in PerformanceMonitor
+- Fixed TypeScript compilation errors in validation framework
+- Fixed authentication headers to use correct Autotask API format
+- Fixed test suite mock objects to include axios interceptors
+- Fixed SDK client to properly read credentials from environment
 
-- Clean TypeScript build
-- High test coverage (97.8%)
-- Complete feature implementation
-- Enterprise-grade architecture
-- Comprehensive documentation
+### SECURITY IMPROVEMENTS (Post-Release)
 
-See `PRODUCTION_VALIDATION_REPORT.md` for detailed certification metrics.
+- Enhanced credential management: All test files now use environment variables exclusively
+- SDK supports both `AUTOTASK_*` and `AUTOTASK_API_*` environment variable naming conventions
+- Ensured no credentials are hardcoded in any project files
+
+### BUILD & CI IMPROVEMENTS (Post-Release)
+
+- Updated dependencies (joi, ioredis, dompurify, validator)
+- Added missing type definitions (@types/bull, @types/ioredis, @types/joi)
+- Updated release workflow to support npm trusted publishing with OIDC
+- Added provenance attestation support for npm packages
+- Fixed release workflow memory issues by increasing Node.js heap size
 
 ---
 
 ## 1.2.0 - PSA Migration Framework Release
 
-**August 26, 2025** — Revolutionary PSA migration framework for seamless data migration from various PSA systems to Autotask.
+**August 26, 2025** — PSA migration framework for data migration from various PSA systems to Autotask.
 
-### 🚀 NEW MAJOR FEATURES
+### NEW MAJOR FEATURES
 
 **Complete PSA Migration Framework:**
 
@@ -182,14 +120,14 @@ See `PRODUCTION_VALIDATION_REPORT.md` for detailed certification metrics.
 - **Default Mappings**: Pre-built field mappings for common PSA systems
 - **Extensive Documentation**: Complete migration guide with examples and best practices
 
-### 📚 DOCUMENTATION
+### DOCUMENTATION
 
 - **Migration Guide**: Complete documentation for PSA migration framework (`docs/MIGRATION.md`)
 - **API Examples**: Practical examples for all supported PSA systems
 - **Configuration Samples**: Ready-to-use configuration templates
 - **CLI Reference**: Comprehensive command-line tool documentation
 
-### 🛠️ TECHNICAL ADDITIONS
+### TECHNICAL ADDITIONS
 
 - New `src/migration/` module with complete migration framework
 - Enhanced CLI with migration commands
@@ -376,6 +314,6 @@ See `PRODUCTION_VALIDATION_REPORT.md` for detailed certification metrics.
 
 ---
 
-_For more information about the Autotask API Wrapper, visit our [GitHub repository](https://github.com/your-org/autotask-api-wrapper) or read our [documentation](./docs/)._
+_For more information about the Autotask Node SDK, visit our [GitHub repository](https://github.com/asachs01/autotask-node) or read our [documentation](./docs/)._
 
-_To report issues or request features, please [open an issue](https://github.com/your-org/autotask-api-wrapper/issues) on GitHub._
+_To report issues or request features, please [open an issue](https://github.com/asachs01/autotask-node/issues) on GitHub._

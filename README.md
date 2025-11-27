@@ -1,45 +1,21 @@
-# Autotask Node SDK v2.0.0 - Enterprise Production Platform
+# Autotask Node SDK
 
-**The most comprehensive and advanced TypeScript/Node.js SDK for Kaseya Autotask PSA**. Not just an API wrapper - a complete enterprise-grade platform with intelligent business logic, advanced validation systems, performance optimization, and production monitoring.
+A TypeScript/Node.js SDK for the Kaseya Autotask PSA REST API with business logic validation, performance optimization, and production monitoring.
 
 [![npm version](https://badge.fury.io/js/autotask-node.svg)](https://www.npmjs.com/package/autotask-node)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Production Ready](https://img.shields.io/badge/Production-Ready-success)](./PRODUCTION_VALIDATION_REPORT.md)
-[![Test Coverage](https://img.shields.io/badge/Coverage-97.8%25-brightgreen)](./PRODUCTION_VALIDATION_REPORT.md)
 [![API Coverage](https://img.shields.io/badge/API%20Coverage-100%25-brightgreen)](./docs/ENTITIES.md)
-[![Build Status](https://img.shields.io/badge/Build-Passing-success)](./PRODUCTION_VALIDATION_REPORT.md)
-[![Enterprise Grade](https://img.shields.io/badge/Enterprise-Grade-orange)](./docs/ENTERPRISE.md)
 
-## 🏢 Enterprise Overview
+## Features
 
-Transform your Autotask integrations with enterprise-grade capabilities that go far beyond basic API access:
+- **215+ Autotask Entities**: Full CRUD operations across the entire Autotask API
+- **Business Logic Engine**: Validation, workflow automation, and relationship management
+- **Security & Compliance**: XSS/SQL injection protection, GDPR/SOX/PCI compliance validation
+- **Performance**: Request queuing, caching, circuit breakers, and retry strategies
+- **Type-Safe**: Complete TypeScript coverage with auto-completion support
 
-### **🧠 Intelligent Business Logic Engine**
-- **Smart Validation**: Understands Autotask business rules and prevents invalid operations
-- **Workflow Automation**: Automated business processes for tickets, time entries, and contracts
-- **Relationship Management**: Enforces referential integrity across all 215+ entities
-- **Business Analytics**: Built-in metrics and insights for operational intelligence
-
-### **🛡️ Enterprise Security & Compliance**
-- **Multi-Layer Validation**: Schema, business rule, and security validation
-- **GDPR/SOX/PCI Compliance**: Built-in regulatory compliance validation
-- **Data Sanitization**: XSS, SQL injection, and PII protection
-- **Audit Trails**: Comprehensive logging for enterprise governance
-
-### **🚀 Performance & Reliability**
-- **Intelligent Queue System**: Persistent, priority-based request queue with circuit breakers
-- **Advanced Caching**: Multi-tier caching with intelligent invalidation
-- **Request Optimization**: Automatic batching, deduplication, and compression
-- **Real-Time Monitoring**: Performance metrics, health checks, and alerting
-
-### **⚙️ Production Operations**
-- **Circuit Breakers**: Automatic failure isolation and recovery
-- **Retry Strategies**: Exponential backoff with intelligent retry logic
-- **Memory Management**: Optimized for high-throughput enterprise workloads
-- **Graceful Degradation**: Maintains service under adverse conditions
-
-## ⚡ Quick Start
+## Quick Start
 
 ### Installation
 
@@ -80,23 +56,27 @@ const urgentTickets = await client.tickets
   .execute();
 ```
 
-### 🔥 **Enterprise-Grade Queue System with Business Intelligence**
+### Advanced Usage with Business Logic
 
 ```typescript
-import { AutotaskClient, BusinessLogicEngine, QueueManager } from 'autotask-node';
+import {
+  AutotaskClient,
+  BusinessLogicEngine,
+  QueueManager,
+} from 'autotask-node';
 
 // Initialize enterprise client with all systems enabled
 const client = await AutotaskClient.create({
   username: process.env.AUTOTASK_USERNAME!,
   integrationCode: process.env.AUTOTASK_INTEGRATION_CODE!,
   secret: process.env.AUTOTASK_SECRET!,
-  
+
   // Enable enterprise features
   enableBusinessLogic: true,
   enableValidation: true,
   enableCompliance: true,
   enablePerformanceMonitoring: true,
-  
+
   // Advanced queue configuration
   queueConfig: {
     backend: 'redis',
@@ -104,28 +84,34 @@ const client = await AutotaskClient.create({
     persistence: true,
     circuitBreaker: {
       failureThreshold: 5,
-      resetTimeout: 30000
-    }
-  }
+      resetTimeout: 30000,
+    },
+  },
 });
 
 // Business-aware ticket creation with validation
 const businessEngine = client.getBusinessEngine();
-const ticketResult = await businessEngine.tickets.createTicket({
-  title: 'Critical Infrastructure Issue',
-  companyId: 123,
-  priority: 1, // Critical
-  description: 'Database server experiencing high memory usage'
-}, {
-  user: { id: 456, roles: ['technician'] },
-  validateSLA: true,
-  enforceBusinessRules: true
-});
+const ticketResult = await businessEngine.tickets.createTicket(
+  {
+    title: 'Critical Infrastructure Issue',
+    companyId: 123,
+    priority: 1, // Critical
+    description: 'Database server experiencing high memory usage',
+  },
+  {
+    user: { id: 456, roles: ['technician'] },
+    validateSLA: true,
+    enforceBusinessRules: true,
+  }
+);
 
 if (ticketResult.isValid) {
   // Automatic SLA calculation, resource assignment, and workflow triggers
   console.log('SLA Due Date:', ticketResult.processedTicket.dueDateTime);
-  console.log('Auto-assigned to:', ticketResult.processedTicket.assignedResourceName);
+  console.log(
+    'Auto-assigned to:',
+    ticketResult.processedTicket.assignedResourceName
+  );
 } else {
   // Detailed validation errors with business context
   ticketResult.validationResult.errors.forEach(error => {
@@ -141,51 +127,35 @@ console.log('Queue Health:', health.components.queue);
 console.log('Cache Hit Ratio:', health.components.cache.hitRatio);
 ```
 
-## 🚀 Enterprise-Grade Features
+## Feature Details
 
-### **Complete API Mastery**
-- **215+ Autotask Entities**: Full CRUD operations across entire Autotask ecosystem
-- **Intelligent Zone Detection**: Automatic region discovery and configuration
-- **Advanced Query Engine**: 14 operators, logical grouping, performance optimization
-- **Type-Safe Architecture**: Complete TypeScript coverage with intelligent auto-completion
+### API Coverage
 
-### **🧠 Business Intelligence Layer**
-- **Business Logic Engine**: Understands Autotask workflows and enforces business rules
-- **Entity Relationship Management**: Automated referential integrity and cascade operations
-- **Workflow Automation**: Built-in processes for tickets, contracts, time tracking, and projects
-- **Business Analytics**: Real-time metrics, SLA tracking, and operational insights
-- **Smart Validation**: Multi-layer validation (schema + business rules + security)
+- **215+ Autotask Entities**: Full CRUD operations
+- **Automatic Zone Detection**: No manual region configuration needed
+- **Query Builder**: 14 operators, logical grouping, includes, and pagination
+- **Type-Safe**: Complete TypeScript coverage
 
-### **🛡️ Enterprise Security Framework**
-- **Data Sanitization Engine**: XSS, SQL injection, and script injection protection
-- **Compliance Validation**: GDPR, SOX, PCI-DSS, HIPAA compliance built-in
-- **PII Detection & Masking**: Automatic identification and protection of sensitive data
-- **Security Audit Trails**: Comprehensive logging for enterprise governance
-- **Threat Detection**: Real-time analysis and prevention of security threats
+### Business Logic
 
-### **🚀 Performance & Reliability Systems**
-- **Advanced Queue Manager**: Multi-backend persistence (Redis, SQLite, Memory)
-- **Circuit Breaker Patterns**: Intelligent failure isolation per zone/endpoint
-- **Request Optimization**: Automatic batching, deduplication, compression
-- **Intelligent Caching**: Multi-tier caching with smart invalidation strategies
-- **Performance Monitoring**: Real-time metrics, health checks, alerting
-- **Memory Optimization**: Efficient handling of enterprise-scale datasets
+- **Validation Engine**: Schema, business rules, and security validation
+- **Workflow Automation**: Tickets, contracts, time tracking, and projects
+- **Entity Relationships**: Referential integrity and cascade operations
 
-### **⚙️ Production Operations**
-- **Graceful Degradation**: Maintains service quality under adverse conditions
-- **Health Monitoring**: Comprehensive system health checks and diagnostics
-- **Retry Strategies**: Exponential backoff with jitter and circuit breaking
-- **Load Balancing**: Intelligent request distribution across multiple zones
-- **Observability**: Winston-based logging with structured metrics and tracing
+### Security
 
-### **🔧 Developer Experience**
-- **CLI Tool**: Full-featured command-line interface for operations and testing
-- **Migration Framework**: Complete PSA migration system with 6+ connector types
-- **Extensive Testing**: 460+ unit tests plus comprehensive integration test suite
-- **Rich Documentation**: Complete API reference, guides, and real-world examples
-- **Modern Standards**: ESM + CJS support, semantic versioning, automated releases
+- **Data Sanitization**: XSS, SQL injection protection
+- **Compliance**: GDPR, SOX, PCI-DSS validation
+- **Audit Logging**: Comprehensive security trails
 
-## 📚 Supported Entities
+### Performance
+
+- **Queue Manager**: Redis, SQLite, or Memory backends
+- **Circuit Breakers**: Failure isolation and recovery
+- **Caching**: Multi-tier with intelligent invalidation
+- **Retry Strategies**: Exponential backoff with jitter
+
+## Supported Entities
 
 The SDK provides access to all major Autotask entity categories:
 
@@ -202,11 +172,12 @@ The SDK provides access to all major Autotask entity categories:
 
 [View complete entity reference →](docs/ENTITIES.md)
 
-## 🔧 Authentication & Setup
+## Authentication & Setup
 
 ### Authentication Method
 
 The SDK uses Autotask's header-based authentication with three required headers:
+
 - `ApiIntegrationCode`: Your Autotask API integration code
 - `UserName`: Your API username (email address)
 - `Secret`: Your API secret/password
@@ -259,7 +230,7 @@ const client = await AutotaskClient.create({
 });
 ```
 
-## 💡 Enterprise Usage Examples
+## Usage Examples
 
 ### Business-Aware CRUD Operations
 
@@ -267,60 +238,75 @@ const client = await AutotaskClient.create({
 // Enterprise ticket creation with business intelligence
 const businessEngine = client.getBusinessEngine();
 
-const ticketResult = await businessEngine.tickets.createTicket({
-  title: 'Server Performance Issue',
-  companyId: 123,
-  priority: 2, // High priority
-  description: 'Database queries taking >5 seconds'
-}, {
-  user: { id: 456, roles: ['senior-technician'] },
-  relatedEntities: {
-    Company: await client.companies.findById(123),
-    Contact: await client.contacts.findById(789)
+const ticketResult = await businessEngine.tickets.createTicket(
+  {
+    title: 'Server Performance Issue',
+    companyId: 123,
+    priority: 2, // High priority
+    description: 'Database queries taking >5 seconds',
   },
-  validateSLA: true,
-  autoAssign: true,
-  triggerWorkflows: true
-});
+  {
+    user: { id: 456, roles: ['senior-technician'] },
+    relatedEntities: {
+      Company: await client.companies.findById(123),
+      Contact: await client.contacts.findById(789),
+    },
+    validateSLA: true,
+    autoAssign: true,
+    triggerWorkflows: true,
+  }
+);
 
 if (ticketResult.isValid) {
   // Business logic automatically calculated SLA, assigned resource, triggered workflows
   console.log('✅ Ticket created with business intelligence');
   console.log('📅 SLA Due:', ticketResult.processedTicket.dueDateTime);
-  console.log('👤 Assigned to:', ticketResult.processedTicket.assignedResourceName);
+  console.log(
+    '👤 Assigned to:',
+    ticketResult.processedTicket.assignedResourceName
+  );
   console.log('🔄 Workflows triggered:', ticketResult.triggeredWorkflows);
 } else {
-  console.log('❌ Business validation failed:', ticketResult.validationResult.errors);
+  console.log(
+    '❌ Business validation failed:',
+    ticketResult.validationResult.errors
+  );
 }
 
 // Contract management with business rules
-const contractResult = await businessEngine.contracts.createContract({
-  companyId: 123,
-  contractName: 'Managed Services Agreement',
-  startDate: '2025-01-01',
-  endDate: '2025-12-31',
-  contractValue: 120000
-}, {
-  services: [
-    { name: 'Monitoring', type: 'recurring', monthlyRate: 5000 },
-    { name: 'Support', type: 'hourly', hourlyRate: 150 }
-  ],
-  validateServices: true,
-  calculateBilling: true
-});
+const contractResult = await businessEngine.contracts.createContract(
+  {
+    companyId: 123,
+    contractName: 'Managed Services Agreement',
+    startDate: '2025-01-01',
+    endDate: '2025-12-31',
+    contractValue: 120000,
+  },
+  {
+    services: [
+      { name: 'Monitoring', type: 'recurring', monthlyRate: 5000 },
+      { name: 'Support', type: 'hourly', hourlyRate: 150 },
+    ],
+    validateServices: true,
+    calculateBilling: true,
+  }
+);
 
 // Time entry with billing calculation and approval routing
-const timeResult = await businessEngine.timeEntries.createTimeEntry({
-  dateWorked: '2025-08-31',
-  hoursWorked: 8.5,
-  resourceId: 456,
-  ticketId: 789,
-  workTypeId: 1
-}, {
-  billingRates: { 456: 175 }, // $175/hour for this resource
-  contractInfo: { hasHourlyRate: true, rate: 150 },
-  approvalWorkflow: true
-});
+const timeResult = await businessEngine.timeEntries.createTimeEntry(
+  {
+    dateWorked: '2025-08-31',
+    hoursWorked: 8.5,
+    resourceId: 456,
+    ticketId: 789,
+    workTypeId: 1,
+  },
+  {
+    billingRates: { 456: 175 }, // $175/hour for this resource
+    contractInfo: { hasHourlyRate: true, rate: 150 },
+    approvalWorkflow: true,
+  }
+);
 
 console.log('💰 Billing Amount:', timeResult.billingCalculation.amount);
 console.log('📋 Approval Required:', timeResult.approvalRequired);
@@ -360,25 +346,32 @@ const lightweightTickets = await client.tickets
 ### Enterprise Security & Compliance
 
 ```typescript
-import { ValidationEngine, SecurityValidator, ComplianceValidator } from 'autotask-node';
+import {
+  ValidationEngine,
+  SecurityValidator,
+  ComplianceValidator,
+} from 'autotask-node';
 
 // Data sanitization and threat detection
 const sanitizedData = await SecurityValidator.sanitizeInput({
   companyName: 'Acme Corp <script>alert("xss")</script>',
-  description: "Company info'; DROP TABLE companies; --"
+  description: "Company info'; DROP TABLE companies; --",
 });
 
 // GDPR compliance validation for EU customers
-const complianceResult = await ComplianceValidator.checkCompliance({
-  firstName: 'John',
-  lastName: 'Doe',
-  emailAddress: 'john.doe@example.com',
-  phone: '+49-123-456-7890'
-}, {
-  jurisdiction: 'EU',
-  processingPurpose: ['service_delivery'],
-  consentStatus: 'granted'
-});
+const complianceResult = await ComplianceValidator.checkCompliance(
+  {
+    firstName: 'John',
+    lastName: 'Doe',
+    emailAddress: 'john.doe@example.com',
+    phone: '+49-123-456-7890',
+  },
+  {
+    jurisdiction: 'EU',
+    processingPurpose: ['service_delivery'],
+    consentStatus: 'granted',
+  }
+);
 
 if (!complianceResult.compliant) {
   console.log('GDPR violations detected:', complianceResult.violations);
@@ -389,7 +382,7 @@ const validationResult = await ValidationEngine.validateEntity(ticketData, {
   operation: 'create',
   entityType: 'Tickets',
   securityContext: { userId: '123', roles: ['technician'] },
-  businessContext: { company: companyData, slaLevel: 'premium' }
+  businessContext: { company: companyData, slaLevel: 'premium' },
 });
 
 if (!validationResult.isValid) {
@@ -407,7 +400,7 @@ if (!validationResult.isValid) {
 // Real-time performance monitoring
 const performanceMonitor = client.getPerformanceMonitor();
 
-performanceMonitor.on('alert', (alert) => {
+performanceMonitor.on('alert', alert => {
   if (alert.type === 'high_latency') {
     console.log(`⚠️ High latency detected: ${alert.value}ms`);
   } else if (alert.type === 'error_rate_spike') {
@@ -439,7 +432,7 @@ console.log(`  Ticket resolution time: ${businessMetrics.avgResolutionTime}h`);
 console.log(`  Resource utilization: ${businessMetrics.resourceUtilization}%`);
 ```
 
-## 🖥️ Command Line Interface
+## Command Line Interface
 
 The SDK includes a full-featured CLI for quick operations:
 
@@ -464,20 +457,20 @@ npx autotask-node tickets update 12345 '{
 npx autotask-node tickets get 12345 --include Company,AssignedResource
 ```
 
-## 📖 Enterprise Documentation
+## Documentation
 
-| Document                                     | Description                                           |
-| -------------------------------------------- | ----------------------------------------------------- |
-| [API Reference](docs/API.md)                 | Complete API documentation with all methods and types |
-| [Entity Reference](docs/ENTITIES.md)         | Detailed guide to all 215+ supported entities          |
-| [Business Logic Guide](src/business/README.md) | Enterprise business logic, workflows, and validation |
-| [Validation Framework](src/validation/README.md) | Security, compliance, and data quality systems |
-| [Query Builder Guide](docs/QUERY_BUILDER.md) | Advanced querying techniques and examples             |
-| [Migration Framework](docs/MIGRATION.md)     | Complete PSA migration system documentation          |
-| [Relationship System](docs/RELATIONSHIP_SYSTEM.md) | Entity relationships and referential integrity |
-| [Usage Examples](docs/EXAMPLES.md)           | Real-world scenarios and integration patterns         |
+| Document                                           | Description                                           |
+| -------------------------------------------------- | ----------------------------------------------------- |
+| [API Reference](docs/API.md)                       | Complete API documentation with all methods and types |
+| [Entity Reference](docs/ENTITIES.md)               | Detailed guide to all 215+ supported entities         |
+| [Business Logic Guide](src/business/README.md)     | Enterprise business logic, workflows, and validation  |
+| [Validation Framework](src/validation/README.md)   | Security, compliance, and data quality systems        |
+| [Query Builder Guide](docs/QUERY_BUILDER.md)       | Advanced querying techniques and examples             |
+| [Migration Framework](docs/MIGRATION.md)           | Complete PSA migration system documentation           |
+| [Relationship System](docs/RELATIONSHIP_SYSTEM.md) | Entity relationships and referential integrity        |
+| [Usage Examples](docs/EXAMPLES.md)                 | Real-world scenarios and integration patterns         |
 
-## 🏗️ Enterprise API Reference
+## API Reference
 
 ### Core Client Architecture
 
@@ -491,7 +484,7 @@ class AutotaskClient {
   projects: ProjectClient;
   contracts: ContractClient;
   timeEntries: TimeEntryClient;
-  
+
   // Enterprise systems access
   getBusinessEngine(): BusinessLogicEngine;
   getValidationEngine(): ValidationEngine;
@@ -499,11 +492,11 @@ class AutotaskClient {
   getPerformanceMonitor(): PerformanceMonitor;
   getSecurityValidator(): SecurityValidator;
   getComplianceValidator(): ComplianceValidator;
-  
+
   // System health and monitoring
   getSystemHealth(): Promise<SystemHealth>;
   getMetrics(): Promise<EnterpriseMetrics>;
-  
+
   // Advanced operations
   executeBatch(operations: BatchOperation[]): Promise<BatchResult>;
   migrateFromPSA(config: MigrationConfig): Promise<MigrationResult>;
@@ -521,11 +514,14 @@ class BusinessLogicEngine {
   projects: ProjectBusinessLogic;
   companies: CompanyBusinessLogic;
   contacts: ContactBusinessLogic;
-  
+
   // Analytics and insights
   generateBusinessMetrics(): Promise<BusinessMetrics>;
   analyzeEntityRelationships(entityType: string): RelationshipAnalysis;
-  validateWorkflow(workflowId: string, context: WorkflowContext): WorkflowValidationResult;
+  validateWorkflow(
+    workflowId: string,
+    context: WorkflowContext
+  ): WorkflowValidationResult;
 }
 ```
 
@@ -537,11 +533,11 @@ class QueueManager {
   // Queue operations
   enqueue(request: QueueRequest): Promise<QueuedRequest>;
   enqueueBatch(requests: QueueRequest[]): Promise<QueuedRequest[]>;
-  
+
   // Monitoring and health
   getHealth(): Promise<QueueHealth>;
   getMetrics(): Promise<QueueMetrics>;
-  
+
   // Configuration and control
   configureCircuitBreaker(zone: string, config: CircuitBreakerConfig): void;
   pauseProcessing(): Promise<void>;
@@ -550,9 +546,9 @@ class QueueManager {
 }
 ```
 
-## 🏗️ Advanced Features
+## Query Builder
 
-### Query Builder Operators
+### Operators
 
 | Operator                             | Description          | Example                                                         |
 | ------------------------------------ | -------------------- | --------------------------------------------------------------- |
@@ -563,25 +559,25 @@ class QueueManager {
 | `isNull`, `isNotNull`                | Null checking        | `.where('assignedResourceId', 'isNull')`                        |
 | `between`                            | Range queries        | `.where('createDate', 'between', ['2024-01-01', '2024-12-31'])` |
 
-## 🔧 Enterprise Configuration
+## Configuration
 
-### Complete System Configuration
+### Full Configuration Example
 
 ```typescript
 const client = await AutotaskClient.create({
   username: process.env.AUTOTASK_USERNAME!,
   integrationCode: process.env.AUTOTASK_INTEGRATION_CODE!,
   secret: process.env.AUTOTASK_SECRET!,
-  
+
   // Business Logic Engine Configuration
   businessLogicConfig: {
     enableWorkflows: true,
     strictValidation: true,
     enableBusinessRules: true,
     enableRelationshipValidation: true,
-    workflowTimeout: 300000
+    workflowTimeout: 300000,
   },
-  
+
   // Security & Compliance Configuration
   securityConfig: {
     enableXSSProtection: true,
@@ -589,9 +585,9 @@ const client = await AutotaskClient.create({
     enablePIIDetection: true,
     enableAuditTrails: true,
     complianceMode: 'gdpr', // 'gdpr', 'sox', 'pci', 'hipaa'
-    encryptionKey: process.env.ENCRYPTION_KEY
+    encryptionKey: process.env.ENCRYPTION_KEY,
   },
-  
+
   // Advanced Queue Configuration
   queueConfig: {
     backend: 'redis', // 'memory', 'sqlite', 'redis'
@@ -600,21 +596,21 @@ const client = await AutotaskClient.create({
     batchProcessing: {
       enabled: true,
       maxBatchSize: 50,
-      batchTimeout: 5000
+      batchTimeout: 5000,
     },
     circuitBreaker: {
       failureThreshold: 5,
       resetTimeout: 30000,
-      monitoringPeriod: 60000
+      monitoringPeriod: 60000,
     },
     retryStrategy: {
       maxRetries: 5,
       exponentialBackoff: true,
       jitter: true,
-      maxDelay: 30000
-    }
+      maxDelay: 30000,
+    },
   },
-  
+
   // Performance Monitoring Configuration
   performanceConfig: {
     enableMonitoring: true,
@@ -623,31 +619,31 @@ const client = await AutotaskClient.create({
     alertThresholds: {
       responseTime: 5000,
       errorRate: 0.05,
-      memoryUsage: 0.80,
-      queueDepth: 1000
+      memoryUsage: 0.8,
+      queueDepth: 1000,
     },
     caching: {
       enabled: true,
       strategy: 'intelligent', // 'lru', 'ttl', 'intelligent'
       ttl: 300000,
-      maxSize: 1000
-    }
+      maxSize: 1000,
+    },
   },
-  
+
   // Logging Configuration
   loggingConfig: {
     level: 'info',
     enableAuditLogs: true,
     enablePerformanceLogs: true,
     enableSecurityLogs: true,
-    logFile: './logs/autotask-sdk.log'
-  }
+    logFile: './logs/autotask-sdk.log',
+  },
 });
 ```
 
 ### Environment Variables
 
-Complete environment configuration for production deployments:
+All supported environment variables:
 
 ```bash
 # Core Authentication
@@ -708,232 +704,64 @@ const client = await AutotaskClient.create({
 });
 ```
 
-## 📈 Performance & Metrics
+## Performance
 
-### Enterprise Performance Characteristics
-
-**Benchmark Results** (tested on production-scale datasets):
-
-```
-📊 Performance Benchmarks:
-┌─────────────────────────┬─────────────┬─────────────────┬──────────────┐
-│ Operation               │ Throughput  │ Response Time   │ Memory Usage │
-├─────────────────────────┼─────────────┼─────────────────┼──────────────┤
-│ Simple Query            │ 450 req/s   │ 89ms avg       │ 12MB         │
-│ Complex Query (5 joins) │ 180 req/s   │ 245ms avg      │ 28MB         │
-│ Batch Operations (50)   │ 2,200 ops/s │ 1.2s batch     │ 45MB         │
-│ Business Logic Create   │ 320 req/s   │ 156ms avg      │ 18MB         │
-│ Validation + Sanitize   │ 850 ops/s   │ 12ms avg       │ 8MB          │
-│ Queue Processing        │ 1,500 req/s │ 0.8ms queue    │ 22MB         │
-└─────────────────────────┴─────────────┴─────────────────┴──────────────┘
-
-📈 Scalability Metrics:
-• Concurrent requests: Up to 100 without degradation
-• Queue capacity: 10,000+ requests with Redis backend
-• Memory efficiency: 65% reduction vs naive implementation
-• Cache hit ratio: 89% on typical workloads
-• Circuit breaker effectiveness: 99.7% uptime during outages
-```
-
-### Real-World Performance Benefits
+The SDK includes batching, caching, and query optimization:
 
 ```typescript
-// Without SDK: Manual implementation
-const tickets = [];
-for (let i = 0; i < 1000; i++) {
-  const ticket = await axios.get(`/Tickets/${i}`); // 1000 requests, ~60 seconds
-  tickets.push(ticket.data);
-}
-
-// With Enterprise SDK: Intelligent optimization
+// Optimized batch query
 const tickets = await client.tickets
   .query()
   .where('id', 'between', [1, 1000])
-  .batchSize(50) // Automatic batching
-  .execute(); // ~5 seconds with caching, 12 seconds without
+  .batchSize(50)
+  .execute();
 ```
 
-## 🧪 Comprehensive Testing
-
-The SDK includes enterprise-grade testing infrastructure:
+## Testing
 
 ```bash
-# Complete test suite
-npm test                              # All tests (unit + integration)
-npm run test:unit                     # 460+ unit tests
-npm run test:integration              # Real API validation
-npm run test:integration:enhanced     # Enterprise feature tests
-
-# Specific system tests
-npm run test src/business             # Business logic tests
-npm run test src/validation          # Security and compliance tests
-npm run test src/queue               # Queue system tests
-npm run test src/performance         # Performance benchmarks
-
-# Advanced testing
-npm run test:coverage                 # Generate coverage report
-npm run test:performance validation   # Performance validation
-npm run test:comprehensive           # Full system integration tests
+npm test                    # All tests
+npm run test:unit           # Unit tests only
+npm run test:integration    # Integration tests
+npm run test:coverage       # Coverage report
 ```
 
-**Enterprise Test Coverage:**
+## Contributing
 
-- **460+ Unit Tests**: Complete coverage of all functionality and edge cases
-- **Integration Tests**: Real API validation with intelligent rate limit management
-- **Security Tests**: XSS, SQL injection, PII detection, compliance validation
-- **Performance Tests**: Memory usage, throughput, latency benchmarks
-- **Business Logic Tests**: Workflow validation, business rule enforcement
-- **Compliance Tests**: GDPR, SOX, PCI-DSS regulatory validation
-- **Queue System Tests**: Persistence, circuit breakers, retry strategies
-- **Custom Matchers**: Autotask-specific test assertions and validators
+1. Fork the repository
+2. Create a feature branch
+3. Implement changes with tests
+4. Run `npm test` to verify
+5. Submit a pull request
 
-## 🏛️ Enterprise Architecture
-
-### System Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Autotask Client API                      │
-├─────────────────────────────────────────────────────────────┤
-│  Business Logic Engine  │  Validation Framework  │  Queue  │
-│  ├─ Entity Logic        │  ├─ Schema Validation   │  System │
-│  ├─ Workflow Engine     │  ├─ Business Rules      │  ├─ Redis│
-│  ├─ Analytics Engine    │  ├─ Security Layer      │  ├─ SQLite│
-│  └─ Relationship Mgr    │  └─ Compliance Layer    │  └─ Memory│
-├─────────────────────────────────────────────────────────────┤
-│           Performance & Monitoring Systems                  │
-│  ├─ Circuit Breakers   ├─ Intelligent Caching  ├─ Metrics │
-│  ├─ Retry Strategies   ├─ Request Optimization  ├─ Health  │
-│  └─ Load Balancing     └─ Memory Management     └─ Alerts  │
-├─────────────────────────────────────────────────────────────┤
-│                    Core HTTP Layer                         │
-│  ├─ Zone Detection     ├─ Authentication       ├─ Error   │
-│  ├─ Request Handling   ├─ Rate Limiting        ├─ Recovery │
-│  └─ Response Parsing   └─ Compression          └─ Logging │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Design Principles
-
-- **Separation of Concerns**: Business logic, validation, performance, and transport layers are decoupled
-- **Enterprise Patterns**: Circuit breakers, retry strategies, event-driven architecture
-- **Extensibility**: Plugin architecture for custom business rules and validation
-- **Observability**: Comprehensive logging, metrics, and health monitoring throughout
-- **Reliability**: Multiple failure modes handled with graceful degradation
-
-## 🤝 Contributing to Enterprise Platform
-
-We welcome enterprise-focused contributions! Our development process:
-
-### **Development Standards**
-1. **Enterprise Testing**: All new features require unit + integration + performance tests
-2. **Security Review**: Security-sensitive changes require additional review
-3. **Documentation**: Enterprise features must include comprehensive documentation
-4. **Performance**: All changes must meet performance benchmarks
-5. **Compliance**: Changes affecting data handling require compliance validation
-
-### **Contribution Process**
-1. Fork the repository and create a feature branch
-2. Implement changes with complete test coverage
-3. Run the full enterprise test suite: `npm run test:all:enhanced`
-4. Update documentation including performance impact
-5. Submit PR with detailed description of enterprise implications
-6. Address enterprise review feedback (security, performance, compliance)
-
-### **Enterprise Development Setup**
 ```bash
-# Clone and setup for enterprise development
 git clone https://github.com/asachs01/autotask-node.git
 cd autotask-node
 npm install
-
-# Setup enterprise test environment
-npm run setup:integration
 cp .env.example .env
-# Configure test credentials in .env
-
-# Run enterprise validation
-npm run test:comprehensive
-npm run test:performance validation
+npm test
 ```
 
-## 📋 Requirements
+## Requirements
 
 - **Node.js**: 18.0.0 or higher
 - **TypeScript**: 5.0+ (for development)
 - **Autotask API**: Valid integration credentials
 
-## 🔒 Security
+## License
 
-- Secure credential handling with environment variable support
-- Automatic token management and refresh
-- Request validation and sanitization
-- No sensitive data in logs or error messages
+MIT License - see [LICENSE](LICENSE) for details.
 
-## 📄 License
+## Support
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- **Issues**: [GitHub Issues](https://github.com/asachs01/autotask-node/issues)
+- **Documentation**: [docs/](docs/)
+- **Examples**: [docs/EXAMPLES.md](docs/EXAMPLES.md)
 
-## 🆘 Enterprise Support
+## Changelog
 
-### **Technical Support**
-- **GitHub Issues**: [Enterprise Issues & Feature Requests](https://github.com/asachs01/autotask-node/issues)
-- **Documentation**: [Complete Enterprise Documentation](docs/)
-- **Business Logic Guide**: [Enterprise Business Logic](src/business/README.md)
-- **Security & Compliance**: [Validation Framework](src/validation/README.md)
-- **Performance Guides**: [Optimization Documentation](src/performance/README.md)
-
-### **Community Resources**
-- **Real-world Examples**: [Enterprise Integration Patterns](docs/EXAMPLES.md)
-- **Migration Guides**: [PSA Migration Framework](docs/MIGRATION.md)
-- **Best Practices**: [Enterprise Best Practices](docs/BEST_PRACTICES.md)
-- **Troubleshooting**: [Enterprise Troubleshooting](docs/TROUBLESHOOTING.md)
-
-### **Enterprise Roadmap**
-
-**Planned Enterprise Enhancements:**
-
-**Q1 2025**
-- **Advanced Analytics Dashboard**: Real-time business intelligence visualizations
-- **Machine Learning Integration**: Predictive analytics for ticket routing and SLA management
-- **Enhanced Compliance**: ISO 27001 and additional regulatory framework support
-
-**Q2 2025**
-- **Multi-Tenant Architecture**: Enterprise multi-tenant support with data isolation
-- **Advanced Workflow Designer**: Visual workflow builder for complex business processes
-- **Enterprise Single Sign-On**: SAML/OAuth2 integration for enterprise authentication
-
-**Q3 2025**
-- **High Availability Mode**: Active-active clustering with automatic failover
-- **Advanced Reporting Engine**: Custom report generation with scheduling
-- **Integration Marketplace**: Pre-built connectors for common enterprise systems
-
-**Q4 2025**
-- **Enterprise API Gateway**: Rate limiting, API versioning, and access control
-- **Advanced Monitoring Suite**: APM integration with Datadog, New Relic, etc.
-- **Compliance Automation**: Automated compliance reporting and audit preparation
-
-## 📈 Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and migration guides.
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
 ---
 
-**🏢 Built for Enterprise. Powered by Intelligence. Secured by Design.**
-
-_The Autotask Node SDK is an independent, enterprise-grade platform that transforms Autotask API integration with intelligent business logic, advanced security, and production-ready reliability. Not officially affiliated with Kaseya or Autotask, but designed to exceed enterprise standards for mission-critical integrations._
-
-### **Why Choose the Enterprise Autotask SDK?**
-
-| Feature | Basic API Wrapper | **Enterprise Autotask SDK** |
-|---------|-------------------|------------------------------|
-| **API Coverage** | Partial, manual mapping | ✅ **Complete 215+ entities** |
-| **Business Logic** | None | ✅ **Intelligent workflows & validation** |
-| **Security** | Basic auth only | ✅ **Multi-layer security + compliance** |
-| **Performance** | No optimization | ✅ **Advanced caching + queue system** |
-| **Reliability** | Manual retry logic | ✅ **Circuit breakers + graceful degradation** |
-| **Monitoring** | Basic logging | ✅ **Real-time metrics + health monitoring** |
-| **Data Quality** | No validation | ✅ **Enterprise data validation + sanitization** |
-| **Production Ready** | Development use | ✅ **Enterprise production certified** |
-
-**The choice for organizations that demand enterprise-grade reliability, security, and intelligence in their Autotask integrations.**
+_This SDK is not officially affiliated with Kaseya or Autotask._
