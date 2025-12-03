@@ -65,16 +65,14 @@ describe('TicketNotes Entity', () => {
         { id: 2, name: 'TicketNotes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketNotes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('TicketNotes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketNotes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketNotes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('TicketNotes Entity', () => {
     it('should get ticketnotes by id', async () => {
       const mockData = { id: 1, name: 'Test TicketNotes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketNotes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketNotes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('TicketNotes Entity', () => {
       const ticketNotesData = { name: 'New TicketNotes' };
       const mockResponse = { id: 1, ...ticketNotesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await ticketNotes.create(ticketNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketNotes', ticketNotesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TicketNotes',
+        ticketNotesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('TicketNotes Entity', () => {
       const ticketNotesData = { name: 'Updated TicketNotes' };
       const mockResponse = { id: 1, ...ticketNotesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await ticketNotes.update(1, ticketNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TicketNotes/1', ticketNotesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/TicketNotes/1',
+        ticketNotesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('TicketNotes Entity', () => {
       const ticketNotesData = { name: 'Patched TicketNotes' };
       const mockResponse = { id: 1, ...ticketNotesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await ticketNotes.patch(1, ticketNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketNotes/1', ticketNotesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/TicketNotes/1',
+        ticketNotesData
+      );
     });
   });
 });

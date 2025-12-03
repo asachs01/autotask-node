@@ -1,9 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "mcp__smart-tree__project_overview"
+      "mcp__smart-tree__project_overview",
+      "mcp__smart-tree__quick_tree",
+      "Bash(xargs ls:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "disabledMcpjsonServers": ["task-master-ai"]
 }

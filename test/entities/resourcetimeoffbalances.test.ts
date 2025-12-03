@@ -51,7 +51,10 @@ describe('ResourceTimeOffBalances Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    resourceTimeOffBalances = new ResourceTimeOffBalances(mockAxios, mockLogger);
+    resourceTimeOffBalances = new ResourceTimeOffBalances(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ResourceTimeOffBalances Entity', () => {
         { id: 2, name: 'ResourceTimeOffBalances 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await resourceTimeOffBalances.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffBalances/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ResourceTimeOffBalances/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ResourceTimeOffBalances Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await resourceTimeOffBalances.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffBalances/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ResourceTimeOffBalances/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +109,12 @@ describe('ResourceTimeOffBalances Entity', () => {
     it('should get resourcetimeoffbalances by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceTimeOffBalances' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await resourceTimeOffBalances.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffBalances/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffBalances/1');
     });
   });
 });

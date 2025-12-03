@@ -51,7 +51,10 @@ describe('DocumentToArticleAssociations Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    documentToArticleAssociations = new DocumentToArticleAssociations(mockAxios, mockLogger);
+    documentToArticleAssociations = new DocumentToArticleAssociations(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('DocumentToArticleAssociations Entity', () => {
         { id: 2, name: 'DocumentToArticleAssociations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await documentToArticleAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentToArticleAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/DocumentToArticleAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('DocumentToArticleAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await documentToArticleAssociations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentToArticleAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/DocumentToArticleAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,49 @@ describe('DocumentToArticleAssociations Entity', () => {
     it('should get documenttoarticleassociations by id', async () => {
       const mockData = { id: 1, name: 'Test DocumentToArticleAssociations' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await documentToArticleAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentToArticleAssociations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/DocumentToArticleAssociations/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create documenttoarticleassociations successfully', async () => {
-      const documentToArticleAssociationsData = { name: 'New DocumentToArticleAssociations' };
+      const documentToArticleAssociationsData = {
+        name: 'New DocumentToArticleAssociations',
+      };
       const mockResponse = { id: 1, ...documentToArticleAssociationsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await documentToArticleAssociations.create(documentToArticleAssociationsData);
+      const result = await documentToArticleAssociations.create(
+        documentToArticleAssociationsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentToArticleAssociations', documentToArticleAssociationsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/DocumentToArticleAssociations',
+        documentToArticleAssociationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete documenttoarticleassociations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await documentToArticleAssociations.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/DocumentToArticleAssociations/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/DocumentToArticleAssociations/1'
+      );
     });
   });
 });

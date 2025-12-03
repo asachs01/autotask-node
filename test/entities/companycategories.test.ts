@@ -65,16 +65,14 @@ describe('CompanyCategories Entity', () => {
         { id: 2, name: 'CompanyCategories 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await companyCategories.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyCategories/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyCategories/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('CompanyCategories Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await companyCategories.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyCategories/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyCategories/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('CompanyCategories Entity', () => {
     it('should get companycategories by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyCategories' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await companyCategories.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyCategories/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyCategories/1');
     });
   });
 });

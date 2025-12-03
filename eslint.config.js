@@ -44,6 +44,12 @@ module.exports = [
         beforeAll: 'readonly',
         afterAll: 'readonly',
         jest: 'readonly',
+        fail: 'readonly',
+        // Web/Node.js built-in globals
+        performance: 'readonly',
+        URL: 'readonly',
+        TextEncoder: 'readonly',
+        NodeJS: 'readonly',
       },
     },
     plugins: {
@@ -64,6 +70,7 @@ module.exports = [
       'prefer-const': 'warn',
       'no-var': 'warn',
       'no-constant-condition': 'off',
+      'no-useless-escape': 'off',
     },
   },
 
@@ -97,6 +104,7 @@ module.exports = [
       'prefer-const': 'warn',
       'no-var': 'warn',
       'no-constant-condition': 'off',
+      'no-useless-escape': 'off',
     },
   },
 

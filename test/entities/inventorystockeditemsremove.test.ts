@@ -51,7 +51,10 @@ describe('InventoryStockedItemsRemove Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    inventoryStockedItemsRemove = new InventoryStockedItemsRemove(mockAxios, mockLogger);
+    inventoryStockedItemsRemove = new InventoryStockedItemsRemove(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('InventoryStockedItemsRemove Entity', () => {
         { id: 2, name: 'InventoryStockedItemsRemove 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await inventoryStockedItemsRemove.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryStockedItemsRemove/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryStockedItemsRemove/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,34 +89,42 @@ describe('InventoryStockedItemsRemove Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await inventoryStockedItemsRemove.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryStockedItemsRemove/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryStockedItemsRemove/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('create', () => {
     it('should create inventorystockeditemsremove successfully', async () => {
-      const inventoryStockedItemsRemoveData = { name: 'New InventoryStockedItemsRemove' };
+      const inventoryStockedItemsRemoveData = {
+        name: 'New InventoryStockedItemsRemove',
+      };
       const mockResponse = { id: 1, ...inventoryStockedItemsRemoveData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await inventoryStockedItemsRemove.create(inventoryStockedItemsRemoveData);
+      const result = await inventoryStockedItemsRemove.create(
+        inventoryStockedItemsRemoveData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/InventoryStockedItemsRemove', inventoryStockedItemsRemoveData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/InventoryStockedItemsRemove',
+        inventoryStockedItemsRemoveData
+      );
     });
   });
 });

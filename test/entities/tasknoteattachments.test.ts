@@ -65,16 +65,14 @@ describe('TaskNoteAttachments Entity', () => {
         { id: 2, name: 'TaskNoteAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await taskNoteAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('TaskNoteAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await taskNoteAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('TaskNoteAttachments Entity', () => {
     it('should get tasknoteattachments by id', async () => {
       const mockData = { id: 1, name: 'Test TaskNoteAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await taskNoteAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TaskNoteAttachments/1');
     });
   });
 
@@ -120,26 +114,27 @@ describe('TaskNoteAttachments Entity', () => {
       const taskNoteAttachmentsData = { name: 'New TaskNoteAttachments' };
       const mockResponse = { id: 1, ...taskNoteAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await taskNoteAttachments.create(taskNoteAttachmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TaskNoteAttachments', taskNoteAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TaskNoteAttachments',
+        taskNoteAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete tasknoteattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await taskNoteAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TaskNoteAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/TaskNoteAttachments/1');
     });
   });
 });

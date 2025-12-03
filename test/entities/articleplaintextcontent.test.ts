@@ -51,7 +51,10 @@ describe('ArticlePlainTextContent Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    articlePlainTextContent = new ArticlePlainTextContent(mockAxios, mockLogger);
+    articlePlainTextContent = new ArticlePlainTextContent(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ArticlePlainTextContent Entity', () => {
         { id: 2, name: 'ArticlePlainTextContent 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await articlePlainTextContent.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticlePlainTextContent/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ArticlePlainTextContent/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ArticlePlainTextContent Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await articlePlainTextContent.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticlePlainTextContent/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ArticlePlainTextContent/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +109,12 @@ describe('ArticlePlainTextContent Entity', () => {
     it('should get articleplaintextcontent by id', async () => {
       const mockData = { id: 1, name: 'Test ArticlePlainTextContent' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await articlePlainTextContent.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticlePlainTextContent/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ArticlePlainTextContent/1');
     });
   });
 });

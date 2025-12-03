@@ -65,16 +65,17 @@ describe('TicketNoteAttachments Entity', () => {
         { id: 2, name: 'TicketNoteAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketNoteAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketNoteAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketNoteAttachments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('TicketNoteAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketNoteAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketNoteAttachments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketNoteAttachments/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('TicketNoteAttachments Entity', () => {
     it('should get ticketnoteattachments by id', async () => {
       const mockData = { id: 1, name: 'Test TicketNoteAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketNoteAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketNoteAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketNoteAttachments/1');
     });
   });
 
@@ -120,26 +120,29 @@ describe('TicketNoteAttachments Entity', () => {
       const ticketNoteAttachmentsData = { name: 'New TicketNoteAttachments' };
       const mockResponse = { id: 1, ...ticketNoteAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await ticketNoteAttachments.create(ticketNoteAttachmentsData);
+      const result = await ticketNoteAttachments.create(
+        ticketNoteAttachmentsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketNoteAttachments', ticketNoteAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TicketNoteAttachments',
+        ticketNoteAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete ticketnoteattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await ticketNoteAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TicketNoteAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/TicketNoteAttachments/1');
     });
   });
 });

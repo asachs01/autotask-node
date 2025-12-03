@@ -17,6 +17,7 @@ import {
   createEntityTestSetup,
   createMockItemResponse,
   createMockItemsResponse,
+  createMockDeleteResponse,
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
@@ -46,9 +47,12 @@ describe('PriceListServices Entity', () => {
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListServices/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/PriceListServices/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -59,16 +63,19 @@ describe('PriceListServices Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListServices/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/PriceListServices/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -99,7 +106,10 @@ describe('PriceListServices Entity', () => {
       const result = await setup.entity.create(priceListServicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListServices', priceListServicesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/PriceListServices',
+        priceListServicesData
+      );
     });
   });
 
@@ -115,7 +125,10 @@ describe('PriceListServices Entity', () => {
       const result = await setup.entity.update(1, priceListServicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/PriceListServices/1', priceListServicesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/PriceListServices/1',
+        priceListServicesData
+      );
     });
   });
 
@@ -131,19 +144,22 @@ describe('PriceListServices Entity', () => {
       const result = await setup.entity.patch(1, priceListServicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/PriceListServices/1', priceListServicesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/PriceListServices/1',
+        priceListServicesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete pricelistservices successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/PriceListServices/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith(
+        '/PriceListServices/1'
+      );
     });
   });
 });

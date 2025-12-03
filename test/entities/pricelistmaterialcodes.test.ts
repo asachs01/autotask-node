@@ -65,16 +65,17 @@ describe('PriceListMaterialCodes Entity', () => {
         { id: 2, name: 'PriceListMaterialCodes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await priceListMaterialCodes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListMaterialCodes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListMaterialCodes/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('PriceListMaterialCodes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await priceListMaterialCodes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListMaterialCodes/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListMaterialCodes/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('PriceListMaterialCodes Entity', () => {
     it('should get pricelistmaterialcodes by id', async () => {
       const mockData = { id: 1, name: 'Test PriceListMaterialCodes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await priceListMaterialCodes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListMaterialCodes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListMaterialCodes/1');
     });
   });
 
@@ -120,58 +120,77 @@ describe('PriceListMaterialCodes Entity', () => {
       const priceListMaterialCodesData = { name: 'New PriceListMaterialCodes' };
       const mockResponse = { id: 1, ...priceListMaterialCodesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await priceListMaterialCodes.create(priceListMaterialCodesData);
+      const result = await priceListMaterialCodes.create(
+        priceListMaterialCodesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListMaterialCodes', priceListMaterialCodesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/PriceListMaterialCodes',
+        priceListMaterialCodesData
+      );
     });
   });
 
   describe('update', () => {
     it('should update pricelistmaterialcodes successfully', async () => {
-      const priceListMaterialCodesData = { name: 'Updated PriceListMaterialCodes' };
+      const priceListMaterialCodesData = {
+        name: 'Updated PriceListMaterialCodes',
+      };
       const mockResponse = { id: 1, ...priceListMaterialCodesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await priceListMaterialCodes.update(
+        1,
+        priceListMaterialCodesData
       );
 
-      const result = await priceListMaterialCodes.update(1, priceListMaterialCodesData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/PriceListMaterialCodes/1', priceListMaterialCodesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/PriceListMaterialCodes/1',
+        priceListMaterialCodesData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update pricelistmaterialcodes successfully', async () => {
-      const priceListMaterialCodesData = { name: 'Patched PriceListMaterialCodes' };
+      const priceListMaterialCodesData = {
+        name: 'Patched PriceListMaterialCodes',
+      };
       const mockResponse = { id: 1, ...priceListMaterialCodesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await priceListMaterialCodes.patch(1, priceListMaterialCodesData);
+      const result = await priceListMaterialCodes.patch(
+        1,
+        priceListMaterialCodesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/PriceListMaterialCodes/1', priceListMaterialCodesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/PriceListMaterialCodes/1',
+        priceListMaterialCodesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete pricelistmaterialcodes successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await priceListMaterialCodes.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/PriceListMaterialCodes/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/PriceListMaterialCodes/1'
+      );
     });
   });
 });

@@ -51,7 +51,10 @@ describe('TicketAdditionalContacts Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    ticketAdditionalContacts = new TicketAdditionalContacts(mockAxios, mockLogger);
+    ticketAdditionalContacts = new TicketAdditionalContacts(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('TicketAdditionalContacts Entity', () => {
         { id: 2, name: 'TicketAdditionalContacts 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketAdditionalContacts.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketAdditionalContacts/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketAdditionalContacts/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('TicketAdditionalContacts Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketAdditionalContacts.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketAdditionalContacts/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketAdditionalContacts/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,47 @@ describe('TicketAdditionalContacts Entity', () => {
     it('should get ticketadditionalcontacts by id', async () => {
       const mockData = { id: 1, name: 'Test TicketAdditionalContacts' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketAdditionalContacts.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketAdditionalContacts/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketAdditionalContacts/1');
     });
   });
 
   describe('create', () => {
     it('should create ticketadditionalcontacts successfully', async () => {
-      const ticketAdditionalContactsData = { name: 'New TicketAdditionalContacts' };
+      const ticketAdditionalContactsData = {
+        name: 'New TicketAdditionalContacts',
+      };
       const mockResponse = { id: 1, ...ticketAdditionalContactsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await ticketAdditionalContacts.create(ticketAdditionalContactsData);
+      const result = await ticketAdditionalContacts.create(
+        ticketAdditionalContactsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketAdditionalContacts', ticketAdditionalContactsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TicketAdditionalContacts',
+        ticketAdditionalContactsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete ticketadditionalcontacts successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await ticketAdditionalContacts.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TicketAdditionalContacts/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/TicketAdditionalContacts/1'
+      );
     });
   });
 });

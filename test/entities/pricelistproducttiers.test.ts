@@ -65,16 +65,17 @@ describe('PriceListProductTiers Entity', () => {
         { id: 2, name: 'PriceListProductTiers 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await priceListProductTiers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListProductTiers/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListProductTiers/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('PriceListProductTiers Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await priceListProductTiers.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListProductTiers/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListProductTiers/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('PriceListProductTiers Entity', () => {
     it('should get pricelistproducttiers by id', async () => {
       const mockData = { id: 1, name: 'Test PriceListProductTiers' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await priceListProductTiers.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListProductTiers/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListProductTiers/1');
     });
   });
 
@@ -120,58 +120,75 @@ describe('PriceListProductTiers Entity', () => {
       const priceListProductTiersData = { name: 'New PriceListProductTiers' };
       const mockResponse = { id: 1, ...priceListProductTiersData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await priceListProductTiers.create(priceListProductTiersData);
+      const result = await priceListProductTiers.create(
+        priceListProductTiersData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListProductTiers', priceListProductTiersData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/PriceListProductTiers',
+        priceListProductTiersData
+      );
     });
   });
 
   describe('update', () => {
     it('should update pricelistproducttiers successfully', async () => {
-      const priceListProductTiersData = { name: 'Updated PriceListProductTiers' };
+      const priceListProductTiersData = {
+        name: 'Updated PriceListProductTiers',
+      };
       const mockResponse = { id: 1, ...priceListProductTiersData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await priceListProductTiers.update(
+        1,
+        priceListProductTiersData
       );
 
-      const result = await priceListProductTiers.update(1, priceListProductTiersData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/PriceListProductTiers/1', priceListProductTiersData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/PriceListProductTiers/1',
+        priceListProductTiersData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update pricelistproducttiers successfully', async () => {
-      const priceListProductTiersData = { name: 'Patched PriceListProductTiers' };
+      const priceListProductTiersData = {
+        name: 'Patched PriceListProductTiers',
+      };
       const mockResponse = { id: 1, ...priceListProductTiersData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await priceListProductTiers.patch(1, priceListProductTiersData);
+      const result = await priceListProductTiers.patch(
+        1,
+        priceListProductTiersData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/PriceListProductTiers/1', priceListProductTiersData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/PriceListProductTiers/1',
+        priceListProductTiersData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete pricelistproducttiers successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await priceListProductTiers.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/PriceListProductTiers/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/PriceListProductTiers/1');
     });
   });
 });

@@ -65,16 +65,14 @@ describe('ResourceSkills Entity', () => {
         { id: 2, name: 'ResourceSkills 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await resourceSkills.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ResourceSkills Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await resourceSkills.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ResourceSkills Entity', () => {
     it('should get resourceskills by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceSkills' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await resourceSkills.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ResourceSkills Entity', () => {
       const resourceSkillsData = { name: 'New ResourceSkills' };
       const mockResponse = { id: 1, ...resourceSkillsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await resourceSkills.create(resourceSkillsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ResourceSkills', resourceSkillsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ResourceSkills',
+        resourceSkillsData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ResourceSkills Entity', () => {
       const resourceSkillsData = { name: 'Updated ResourceSkills' };
       const mockResponse = { id: 1, ...resourceSkillsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await resourceSkills.update(1, resourceSkillsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ResourceSkills/1', resourceSkillsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ResourceSkills/1',
+        resourceSkillsData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('ResourceSkills Entity', () => {
       const resourceSkillsData = { name: 'Patched ResourceSkills' };
       const mockResponse = { id: 1, ...resourceSkillsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await resourceSkills.patch(1, resourceSkillsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ResourceSkills/1', resourceSkillsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ResourceSkills/1',
+        resourceSkillsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete resourceskills successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await resourceSkills.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ResourceSkills/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ResourceSkills/1');
     });
   });
 });

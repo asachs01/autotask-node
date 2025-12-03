@@ -51,7 +51,10 @@ describe('ResourceDailyAvailabilities Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    resourceDailyAvailabilities = new ResourceDailyAvailabilities(mockAxios, mockLogger);
+    resourceDailyAvailabilities = new ResourceDailyAvailabilities(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ResourceDailyAvailabilities Entity', () => {
         { id: 2, name: 'ResourceDailyAvailabilities 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await resourceDailyAvailabilities.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceDailyAvailabilities/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ResourceDailyAvailabilities/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ResourceDailyAvailabilities Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await resourceDailyAvailabilities.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceDailyAvailabilities/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ResourceDailyAvailabilities/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +109,14 @@ describe('ResourceDailyAvailabilities Entity', () => {
     it('should get resourcedailyavailabilities by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceDailyAvailabilities' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await resourceDailyAvailabilities.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceDailyAvailabilities/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ResourceDailyAvailabilities/1'
+      );
     });
   });
 });

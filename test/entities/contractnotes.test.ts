@@ -65,16 +65,14 @@ describe('ContractNotes Entity', () => {
         { id: 2, name: 'ContractNotes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractNotes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ContractNotes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractNotes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractNotes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ContractNotes Entity', () => {
     it('should get contractnotes by id', async () => {
       const mockData = { id: 1, name: 'Test ContractNotes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractNotes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractNotes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ContractNotes Entity', () => {
       const contractNotesData = { name: 'New ContractNotes' };
       const mockResponse = { id: 1, ...contractNotesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await contractNotes.create(contractNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractNotes', contractNotesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractNotes',
+        contractNotesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ContractNotes Entity', () => {
       const contractNotesData = { name: 'Updated ContractNotes' };
       const mockResponse = { id: 1, ...contractNotesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await contractNotes.update(1, contractNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractNotes/1', contractNotesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ContractNotes/1',
+        contractNotesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('ContractNotes Entity', () => {
       const contractNotesData = { name: 'Patched ContractNotes' };
       const mockResponse = { id: 1, ...contractNotesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await contractNotes.patch(1, contractNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractNotes/1', contractNotesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ContractNotes/1',
+        contractNotesData
+      );
     });
   });
 });

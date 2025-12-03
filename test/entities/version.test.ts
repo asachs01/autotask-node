@@ -16,11 +16,7 @@ import {
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
-import {
-  Version,
-  IVersion,
-  IVersionQuery,
-} from '../../src/entities/version';
+import { Version, IVersion, IVersionQuery } from '../../src/entities/version';
 
 describe('Version Entity', () => {
   let setup: EntityTestSetup<Version>;
@@ -40,15 +36,15 @@ describe('Version Entity', () => {
         { id: 2, name: 'Version 2' },
       ];
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
-      const result = await setup.setup.entity.list();
+      const result = await setup.entity.list();
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/Version/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Version/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +56,15 @@ describe('Version Entity', () => {
         pageSize: 10,
       };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
 
-      await setup.setup.entity.list(query);
+      await setup.entity.list(query);
 
-      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/Version/query', {
+      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Version/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        MaxRecords: 10,
       });
     });
   });
@@ -77,14 +73,14 @@ describe('Version Entity', () => {
     it('should get version by id', async () => {
       const mockData = { id: 1, name: 'Test Version' };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemResponse(mockData)
       );
 
-      const result = await setup.setup.entity.get(1);
+      const result = await setup.entity.get(1);
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/Version/1');
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith('/Version/1');
     });
   });
 });

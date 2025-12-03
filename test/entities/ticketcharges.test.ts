@@ -17,6 +17,7 @@ import {
   createEntityTestSetup,
   createMockItemResponse,
   createMockItemsResponse,
+  createMockDeleteResponse,
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
@@ -46,9 +47,12 @@ describe('TicketCharges Entity', () => {
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketCharges/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/TicketCharges/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -59,16 +63,19 @@ describe('TicketCharges Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketCharges/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/TicketCharges/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -99,7 +106,10 @@ describe('TicketCharges Entity', () => {
       const result = await setup.entity.create(ticketChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketCharges', ticketChargesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/TicketCharges',
+        ticketChargesData
+      );
     });
   });
 
@@ -115,7 +125,10 @@ describe('TicketCharges Entity', () => {
       const result = await setup.entity.update(1, ticketChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TicketCharges/1', ticketChargesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/TicketCharges/1',
+        ticketChargesData
+      );
     });
   });
 
@@ -131,15 +144,16 @@ describe('TicketCharges Entity', () => {
       const result = await setup.entity.patch(1, ticketChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketCharges/1', ticketChargesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/TicketCharges/1',
+        ticketChargesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete ticketcharges successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

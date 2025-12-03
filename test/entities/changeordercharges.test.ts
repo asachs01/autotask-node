@@ -65,16 +65,14 @@ describe('ChangeOrderCharges Entity', () => {
         { id: 2, name: 'ChangeOrderCharges 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await changeOrderCharges.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ChangeOrderCharges Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await changeOrderCharges.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ChangeOrderCharges Entity', () => {
     it('should get changeordercharges by id', async () => {
       const mockData = { id: 1, name: 'Test ChangeOrderCharges' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await changeOrderCharges.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ChangeOrderCharges Entity', () => {
       const changeOrderChargesData = { name: 'New ChangeOrderCharges' };
       const mockResponse = { id: 1, ...changeOrderChargesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await changeOrderCharges.create(changeOrderChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ChangeOrderCharges', changeOrderChargesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ChangeOrderCharges',
+        changeOrderChargesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ChangeOrderCharges Entity', () => {
       const changeOrderChargesData = { name: 'Updated ChangeOrderCharges' };
       const mockResponse = { id: 1, ...changeOrderChargesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await changeOrderCharges.update(1, changeOrderChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ChangeOrderCharges/1', changeOrderChargesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ChangeOrderCharges/1',
+        changeOrderChargesData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('ChangeOrderCharges Entity', () => {
       const changeOrderChargesData = { name: 'Patched ChangeOrderCharges' };
       const mockResponse = { id: 1, ...changeOrderChargesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await changeOrderCharges.patch(1, changeOrderChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ChangeOrderCharges/1', changeOrderChargesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ChangeOrderCharges/1',
+        changeOrderChargesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete changeordercharges successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await changeOrderCharges.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ChangeOrderCharges/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ChangeOrderCharges/1');
     });
   });
 });

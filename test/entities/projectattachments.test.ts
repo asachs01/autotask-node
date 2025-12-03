@@ -65,16 +65,14 @@ describe('ProjectAttachments Entity', () => {
         { id: 2, name: 'ProjectAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await projectAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectAttachments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ProjectAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await projectAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectAttachments/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectAttachments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ProjectAttachments Entity', () => {
     it('should get projectattachments by id', async () => {
       const mockData = { id: 1, name: 'Test ProjectAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await projectAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectAttachments/1');
     });
   });
 
@@ -120,26 +114,27 @@ describe('ProjectAttachments Entity', () => {
       const projectAttachmentsData = { name: 'New ProjectAttachments' };
       const mockResponse = { id: 1, ...projectAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await projectAttachments.create(projectAttachmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ProjectAttachments', projectAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ProjectAttachments',
+        projectAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete projectattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await projectAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ProjectAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ProjectAttachments/1');
     });
   });
 });

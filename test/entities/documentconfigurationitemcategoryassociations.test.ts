@@ -51,7 +51,8 @@ describe('DocumentConfigurationItemCategoryAssociations Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    documentConfigurationItemCategoryAssociations = new DocumentConfigurationItemCategoryAssociations(mockAxios, mockLogger);
+    documentConfigurationItemCategoryAssociations =
+      new DocumentConfigurationItemCategoryAssociations(mockAxios, mockLogger);
   });
 
   afterEach(() => {
@@ -65,16 +66,17 @@ describe('DocumentConfigurationItemCategoryAssociations Entity', () => {
         { id: 2, name: 'DocumentConfigurationItemCategoryAssociations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await documentConfigurationItemCategoryAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemCategoryAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/DocumentConfigurationItemCategoryAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,61 +87,75 @@ describe('DocumentConfigurationItemCategoryAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await documentConfigurationItemCategoryAssociations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemCategoryAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/DocumentConfigurationItemCategoryAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('get', () => {
     it('should get documentconfigurationitemcategoryassociations by id', async () => {
-      const mockData = { id: 1, name: 'Test DocumentConfigurationItemCategoryAssociations' };
+      const mockData = {
+        id: 1,
+        name: 'Test DocumentConfigurationItemCategoryAssociations',
+      };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await documentConfigurationItemCategoryAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentConfigurationItemCategoryAssociations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/DocumentConfigurationItemCategoryAssociations/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create documentconfigurationitemcategoryassociations successfully', async () => {
-      const documentConfigurationItemCategoryAssociationsData = { name: 'New DocumentConfigurationItemCategoryAssociations' };
-      const mockResponse = { id: 1, ...documentConfigurationItemCategoryAssociationsData };
+      const documentConfigurationItemCategoryAssociationsData = {
+        name: 'New DocumentConfigurationItemCategoryAssociations',
+      };
+      const mockResponse = {
+        id: 1,
+        ...documentConfigurationItemCategoryAssociationsData,
+      };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await documentConfigurationItemCategoryAssociations.create(documentConfigurationItemCategoryAssociationsData);
+      const result = await documentConfigurationItemCategoryAssociations.create(
+        documentConfigurationItemCategoryAssociationsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentConfigurationItemCategoryAssociations', documentConfigurationItemCategoryAssociationsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/DocumentConfigurationItemCategoryAssociations',
+        documentConfigurationItemCategoryAssociationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete documentconfigurationitemcategoryassociations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await documentConfigurationItemCategoryAssociations.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/DocumentConfigurationItemCategoryAssociations/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/DocumentConfigurationItemCategoryAssociations/1'
+      );
     });
   });
 });

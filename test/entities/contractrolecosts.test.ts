@@ -65,16 +65,14 @@ describe('ContractRoleCosts Entity', () => {
         { id: 2, name: 'ContractRoleCosts 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractRoleCosts.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractRoleCosts/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractRoleCosts/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ContractRoleCosts Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractRoleCosts.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractRoleCosts/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractRoleCosts/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ContractRoleCosts Entity', () => {
     it('should get contractrolecosts by id', async () => {
       const mockData = { id: 1, name: 'Test ContractRoleCosts' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractRoleCosts.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractRoleCosts/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractRoleCosts/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ContractRoleCosts Entity', () => {
       const contractRoleCostsData = { name: 'New ContractRoleCosts' };
       const mockResponse = { id: 1, ...contractRoleCostsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await contractRoleCosts.create(contractRoleCostsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractRoleCosts', contractRoleCostsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractRoleCosts',
+        contractRoleCostsData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ContractRoleCosts Entity', () => {
       const contractRoleCostsData = { name: 'Updated ContractRoleCosts' };
       const mockResponse = { id: 1, ...contractRoleCostsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await contractRoleCosts.update(1, contractRoleCostsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractRoleCosts/1', contractRoleCostsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ContractRoleCosts/1',
+        contractRoleCostsData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('ContractRoleCosts Entity', () => {
       const contractRoleCostsData = { name: 'Patched ContractRoleCosts' };
       const mockResponse = { id: 1, ...contractRoleCostsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await contractRoleCosts.patch(1, contractRoleCostsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractRoleCosts/1', contractRoleCostsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ContractRoleCosts/1',
+        contractRoleCostsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete contractrolecosts successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await contractRoleCosts.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractRoleCosts/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ContractRoleCosts/1');
     });
   });
 });

@@ -23,13 +23,10 @@ import {
 } from '../../src/entities/userdefinedfieldlistitems';
 
 describe('UserDefinedFieldListItems Entity', () => {
-  let setup: EntityTestSetup<describe>;
+  let setup: EntityTestSetup<UserDefinedFieldListItems>;
 
   beforeEach(() => {
-    setup = createEntityTestSetup(describe);
-  });
-
-    userDefinedFieldListItems = new UserDefinedFieldListItems(mockAxios, mockLogger);
+    setup = createEntityTestSetup(UserDefinedFieldListItems);
   });
 
   afterEach(() => {
@@ -43,16 +40,19 @@ describe('UserDefinedFieldListItems Entity', () => {
         { id: 2, name: 'UserDefinedFieldListItems 2' },
       ];
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/UserDefinedFieldListItems/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -63,18 +63,19 @@ describe('UserDefinedFieldListItems Entity', () => {
         pageSize: 10,
       };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/UserDefinedFieldListItems/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -82,14 +83,16 @@ describe('UserDefinedFieldListItems Entity', () => {
     it('should get userdefinedfieldlistitems by id', async () => {
       const mockData = { id: 1, name: 'Test UserDefinedFieldListItems' };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemResponse(mockData)
       );
 
       const result = await setup.entity.get(1);
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/UserDefinedFieldListItems/1');
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/UserDefinedFieldListItems/1'
+      );
     });
   });
 });

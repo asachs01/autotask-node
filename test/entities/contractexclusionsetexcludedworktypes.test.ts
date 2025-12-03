@@ -51,7 +51,8 @@ describe('ContractExclusionSetExcludedWorkTypes Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    contractExclusionSetExcludedWorkTypes = new ContractExclusionSetExcludedWorkTypes(mockAxios, mockLogger);
+    contractExclusionSetExcludedWorkTypes =
+      new ContractExclusionSetExcludedWorkTypes(mockAxios, mockLogger);
   });
 
   afterEach(() => {
@@ -65,16 +66,17 @@ describe('ContractExclusionSetExcludedWorkTypes Entity', () => {
         { id: 2, name: 'ContractExclusionSetExcludedWorkTypes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractExclusionSetExcludedWorkTypes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedWorkTypes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ContractExclusionSetExcludedWorkTypes/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,61 +87,75 @@ describe('ContractExclusionSetExcludedWorkTypes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractExclusionSetExcludedWorkTypes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedWorkTypes/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ContractExclusionSetExcludedWorkTypes/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('get', () => {
     it('should get contractexclusionsetexcludedworktypes by id', async () => {
-      const mockData = { id: 1, name: 'Test ContractExclusionSetExcludedWorkTypes' };
+      const mockData = {
+        id: 1,
+        name: 'Test ContractExclusionSetExcludedWorkTypes',
+      };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractExclusionSetExcludedWorkTypes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusionSetExcludedWorkTypes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ContractExclusionSetExcludedWorkTypes/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create contractexclusionsetexcludedworktypes successfully', async () => {
-      const contractExclusionSetExcludedWorkTypesData = { name: 'New ContractExclusionSetExcludedWorkTypes' };
-      const mockResponse = { id: 1, ...contractExclusionSetExcludedWorkTypesData };
+      const contractExclusionSetExcludedWorkTypesData = {
+        name: 'New ContractExclusionSetExcludedWorkTypes',
+      };
+      const mockResponse = {
+        id: 1,
+        ...contractExclusionSetExcludedWorkTypesData,
+      };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await contractExclusionSetExcludedWorkTypes.create(contractExclusionSetExcludedWorkTypesData);
+      const result = await contractExclusionSetExcludedWorkTypes.create(
+        contractExclusionSetExcludedWorkTypesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractExclusionSetExcludedWorkTypes', contractExclusionSetExcludedWorkTypesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractExclusionSetExcludedWorkTypes',
+        contractExclusionSetExcludedWorkTypesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete contractexclusionsetexcludedworktypes successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await contractExclusionSetExcludedWorkTypes.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractExclusionSetExcludedWorkTypes/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ContractExclusionSetExcludedWorkTypes/1'
+      );
     });
   });
 });

@@ -88,7 +88,10 @@ export function createMockRequestHandler(
 /**
  * Creates a standard mock response for successful API calls
  */
-export function createMockResponse<T>(data: T, status: number = 200): AxiosResponse<T> {
+export function createMockResponse<T>(
+  data: T,
+  status: number = 200
+): AxiosResponse<T> {
   return {
     data,
     status,
@@ -102,21 +105,29 @@ export function createMockResponse<T>(data: T, status: number = 200): AxiosRespo
 /**
  * Creates a mock response for Autotask API single item responses
  */
-export function createMockItemResponse<T>(item: T, status: number = 200): AxiosResponse<{ item: T }> {
+export function createMockItemResponse<T>(
+  item: T,
+  status: number = 200
+): AxiosResponse<{ item: T }> {
   return createMockResponse({ item }, status);
 }
 
 /**
  * Creates a mock response for Autotask API list responses
  */
-export function createMockItemsResponse<T>(items: T[], status: number = 200): AxiosResponse<{ items: T[] }> {
+export function createMockItemsResponse<T>(
+  items: T[],
+  status: number = 200
+): AxiosResponse<{ items: T[] }> {
   return createMockResponse({ items }, status);
 }
 
 /**
  * Creates a mock response for delete operations (typically empty response)
  */
-export function createMockDeleteResponse(status: number = 200): AxiosResponse<{}> {
+export function createMockDeleteResponse(
+  status: number = 200
+): AxiosResponse<Record<string, never>> {
   return createMockResponse({}, status);
 }
 
@@ -138,12 +149,16 @@ export function setupEntityMocks() {
 /**
  * Helper function to reset all mocks between tests
  */
-export function resetAllMocks(mocks: ReturnType<typeof setupEntityMocks>): void {
+export function resetAllMocks(
+  mocks: ReturnType<typeof setupEntityMocks>
+): void {
   jest.clearAllMocks();
-  
+
   // Reset specific mock implementations
   mocks.mockRequestHandler.executeRequest.mockImplementation(
-    async <T>(requestFn: () => Promise<AxiosResponse<T>>): Promise<AxiosResponse<T>> => {
+    async <T>(
+      requestFn: () => Promise<AxiosResponse<T>>
+    ): Promise<AxiosResponse<T>> => {
       return await requestFn();
     }
   );
@@ -170,7 +185,7 @@ export function createEntityTestSetup<T>(
   ) => T
 ): EntityTestSetup<T> {
   const { mockAxios, mockLogger, mockRequestHandler } = setupEntityMocks();
-  
+
   const entity = new EntityClass(mockAxios, mockLogger, mockRequestHandler);
 
   return {

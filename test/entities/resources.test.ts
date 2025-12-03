@@ -60,18 +60,15 @@ describe('Resources Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Resources/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        },
       });
     });
   });
@@ -103,7 +100,10 @@ describe('Resources Entity', () => {
       const result = await setup.entity.create(resourcesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Resources', resourcesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Resources',
+        resourcesData
+      );
     });
   });
 
@@ -119,7 +119,10 @@ describe('Resources Entity', () => {
       const result = await setup.entity.update(1, resourcesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Resources/1', resourcesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Resources/1',
+        resourcesData
+      );
     });
   });
 

@@ -65,16 +65,17 @@ describe('ArticleTagAssociations Entity', () => {
         { id: 2, name: 'ArticleTagAssociations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await articleTagAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleTagAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ArticleTagAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('ArticleTagAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await articleTagAssociations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleTagAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ArticleTagAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('ArticleTagAssociations Entity', () => {
     it('should get articletagassociations by id', async () => {
       const mockData = { id: 1, name: 'Test ArticleTagAssociations' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await articleTagAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleTagAssociations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ArticleTagAssociations/1');
     });
   });
 
@@ -120,26 +120,31 @@ describe('ArticleTagAssociations Entity', () => {
       const articleTagAssociationsData = { name: 'New ArticleTagAssociations' };
       const mockResponse = { id: 1, ...articleTagAssociationsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await articleTagAssociations.create(articleTagAssociationsData);
+      const result = await articleTagAssociations.create(
+        articleTagAssociationsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ArticleTagAssociations', articleTagAssociationsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ArticleTagAssociations',
+        articleTagAssociationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete articletagassociations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await articleTagAssociations.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ArticleTagAssociations/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ArticleTagAssociations/1'
+      );
     });
   });
 });

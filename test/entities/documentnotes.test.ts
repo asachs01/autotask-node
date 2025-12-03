@@ -65,16 +65,14 @@ describe('DocumentNotes Entity', () => {
         { id: 2, name: 'DocumentNotes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await documentNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('DocumentNotes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await documentNotes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('DocumentNotes Entity', () => {
     it('should get documentnotes by id', async () => {
       const mockData = { id: 1, name: 'Test DocumentNotes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await documentNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentNotes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('DocumentNotes Entity', () => {
       const documentNotesData = { name: 'New DocumentNotes' };
       const mockResponse = { id: 1, ...documentNotesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await documentNotes.create(documentNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentNotes', documentNotesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/DocumentNotes',
+        documentNotesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('DocumentNotes Entity', () => {
       const documentNotesData = { name: 'Updated DocumentNotes' };
       const mockResponse = { id: 1, ...documentNotesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await documentNotes.update(1, documentNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/DocumentNotes/1', documentNotesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/DocumentNotes/1',
+        documentNotesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('DocumentNotes Entity', () => {
       const documentNotesData = { name: 'Patched DocumentNotes' };
       const mockResponse = { id: 1, ...documentNotesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await documentNotes.patch(1, documentNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/DocumentNotes/1', documentNotesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/DocumentNotes/1',
+        documentNotesData
+      );
     });
   });
 });

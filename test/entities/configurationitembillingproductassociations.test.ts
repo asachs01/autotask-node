@@ -51,7 +51,8 @@ describe('ConfigurationItemBillingProductAssociations Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    configurationItemBillingProductAssociations = new ConfigurationItemBillingProductAssociations(mockAxios, mockLogger);
+    configurationItemBillingProductAssociations =
+      new ConfigurationItemBillingProductAssociations(mockAxios, mockLogger);
   });
 
   afterEach(() => {
@@ -65,16 +66,17 @@ describe('ConfigurationItemBillingProductAssociations Entity', () => {
         { id: 2, name: 'ConfigurationItemBillingProductAssociations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await configurationItemBillingProductAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemBillingProductAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemBillingProductAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,61 +87,75 @@ describe('ConfigurationItemBillingProductAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await configurationItemBillingProductAssociations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemBillingProductAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemBillingProductAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('get', () => {
     it('should get configurationitembillingproductassociations by id', async () => {
-      const mockData = { id: 1, name: 'Test ConfigurationItemBillingProductAssociations' };
+      const mockData = {
+        id: 1,
+        name: 'Test ConfigurationItemBillingProductAssociations',
+      };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await configurationItemBillingProductAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemBillingProductAssociations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemBillingProductAssociations/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create configurationitembillingproductassociations successfully', async () => {
-      const configurationItemBillingProductAssociationsData = { name: 'New ConfigurationItemBillingProductAssociations' };
-      const mockResponse = { id: 1, ...configurationItemBillingProductAssociationsData };
+      const configurationItemBillingProductAssociationsData = {
+        name: 'New ConfigurationItemBillingProductAssociations',
+      };
+      const mockResponse = {
+        id: 1,
+        ...configurationItemBillingProductAssociationsData,
+      };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await configurationItemBillingProductAssociations.create(configurationItemBillingProductAssociationsData);
+      const result = await configurationItemBillingProductAssociations.create(
+        configurationItemBillingProductAssociationsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ConfigurationItemBillingProductAssociations', configurationItemBillingProductAssociationsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ConfigurationItemBillingProductAssociations',
+        configurationItemBillingProductAssociationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete configurationitembillingproductassociations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await configurationItemBillingProductAssociations.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ConfigurationItemBillingProductAssociations/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ConfigurationItemBillingProductAssociations/1'
+      );
     });
   });
 });

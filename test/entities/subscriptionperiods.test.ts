@@ -65,16 +65,14 @@ describe('SubscriptionPeriods Entity', () => {
         { id: 2, name: 'SubscriptionPeriods 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await subscriptionPeriods.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('SubscriptionPeriods Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await subscriptionPeriods.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('SubscriptionPeriods Entity', () => {
     it('should get subscriptionperiods by id', async () => {
       const mockData = { id: 1, name: 'Test SubscriptionPeriods' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await subscriptionPeriods.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('SubscriptionPeriods Entity', () => {
       const subscriptionPeriodsData = { name: 'New SubscriptionPeriods' };
       const mockResponse = { id: 1, ...subscriptionPeriodsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await subscriptionPeriods.create(subscriptionPeriodsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/SubscriptionPeriods', subscriptionPeriodsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/SubscriptionPeriods',
+        subscriptionPeriodsData
+      );
     });
   });
 
@@ -136,14 +133,18 @@ describe('SubscriptionPeriods Entity', () => {
       const subscriptionPeriodsData = { name: 'Updated SubscriptionPeriods' };
       const mockResponse = { id: 1, ...subscriptionPeriodsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await subscriptionPeriods.update(
+        1,
+        subscriptionPeriodsData
       );
 
-      const result = await subscriptionPeriods.update(1, subscriptionPeriodsData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/SubscriptionPeriods/1', subscriptionPeriodsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/SubscriptionPeriods/1',
+        subscriptionPeriodsData
+      );
     });
   });
 
@@ -152,26 +153,30 @@ describe('SubscriptionPeriods Entity', () => {
       const subscriptionPeriodsData = { name: 'Patched SubscriptionPeriods' };
       const mockResponse = { id: 1, ...subscriptionPeriodsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await subscriptionPeriods.patch(1, subscriptionPeriodsData);
+      const result = await subscriptionPeriods.patch(
+        1,
+        subscriptionPeriodsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/SubscriptionPeriods/1', subscriptionPeriodsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/SubscriptionPeriods/1',
+        subscriptionPeriodsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete subscriptionperiods successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await subscriptionPeriods.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/SubscriptionPeriods/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/SubscriptionPeriods/1');
     });
   });
 });

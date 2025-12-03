@@ -65,16 +65,14 @@ describe('ResourceAttachments Entity', () => {
         { id: 2, name: 'ResourceAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await resourceAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ResourceAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await resourceAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ResourceAttachments Entity', () => {
     it('should get resourceattachments by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await resourceAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/1');
     });
   });
 
@@ -120,26 +114,27 @@ describe('ResourceAttachments Entity', () => {
       const resourceAttachmentsData = { name: 'New ResourceAttachments' };
       const mockResponse = { id: 1, ...resourceAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await resourceAttachments.create(resourceAttachmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ResourceAttachments', resourceAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ResourceAttachments',
+        resourceAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete resourceattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await resourceAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ResourceAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ResourceAttachments/1');
     });
   });
 });

@@ -51,7 +51,10 @@ describe('PriceListWorkTypeModifiers Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    priceListWorkTypeModifiers = new PriceListWorkTypeModifiers(mockAxios, mockLogger);
+    priceListWorkTypeModifiers = new PriceListWorkTypeModifiers(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('PriceListWorkTypeModifiers Entity', () => {
         { id: 2, name: 'PriceListWorkTypeModifiers 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await priceListWorkTypeModifiers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListWorkTypeModifiers/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListWorkTypeModifiers/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('PriceListWorkTypeModifiers Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await priceListWorkTypeModifiers.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListWorkTypeModifiers/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListWorkTypeModifiers/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,74 +109,95 @@ describe('PriceListWorkTypeModifiers Entity', () => {
     it('should get pricelistworktypemodifiers by id', async () => {
       const mockData = { id: 1, name: 'Test PriceListWorkTypeModifiers' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await priceListWorkTypeModifiers.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListWorkTypeModifiers/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListWorkTypeModifiers/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create pricelistworktypemodifiers successfully', async () => {
-      const priceListWorkTypeModifiersData = { name: 'New PriceListWorkTypeModifiers' };
+      const priceListWorkTypeModifiersData = {
+        name: 'New PriceListWorkTypeModifiers',
+      };
       const mockResponse = { id: 1, ...priceListWorkTypeModifiersData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await priceListWorkTypeModifiers.create(priceListWorkTypeModifiersData);
+      const result = await priceListWorkTypeModifiers.create(
+        priceListWorkTypeModifiersData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListWorkTypeModifiers', priceListWorkTypeModifiersData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/PriceListWorkTypeModifiers',
+        priceListWorkTypeModifiersData
+      );
     });
   });
 
   describe('update', () => {
     it('should update pricelistworktypemodifiers successfully', async () => {
-      const priceListWorkTypeModifiersData = { name: 'Updated PriceListWorkTypeModifiers' };
+      const priceListWorkTypeModifiersData = {
+        name: 'Updated PriceListWorkTypeModifiers',
+      };
       const mockResponse = { id: 1, ...priceListWorkTypeModifiersData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await priceListWorkTypeModifiers.update(
+        1,
+        priceListWorkTypeModifiersData
       );
 
-      const result = await priceListWorkTypeModifiers.update(1, priceListWorkTypeModifiersData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/PriceListWorkTypeModifiers/1', priceListWorkTypeModifiersData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/PriceListWorkTypeModifiers/1',
+        priceListWorkTypeModifiersData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update pricelistworktypemodifiers successfully', async () => {
-      const priceListWorkTypeModifiersData = { name: 'Patched PriceListWorkTypeModifiers' };
+      const priceListWorkTypeModifiersData = {
+        name: 'Patched PriceListWorkTypeModifiers',
+      };
       const mockResponse = { id: 1, ...priceListWorkTypeModifiersData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await priceListWorkTypeModifiers.patch(1, priceListWorkTypeModifiersData);
+      const result = await priceListWorkTypeModifiers.patch(
+        1,
+        priceListWorkTypeModifiersData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/PriceListWorkTypeModifiers/1', priceListWorkTypeModifiersData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/PriceListWorkTypeModifiers/1',
+        priceListWorkTypeModifiersData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete pricelistworktypemodifiers successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await priceListWorkTypeModifiers.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/PriceListWorkTypeModifiers/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/PriceListWorkTypeModifiers/1'
+      );
     });
   });
 });

@@ -51,7 +51,10 @@ describe('TicketChangeRequestApprovals Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    ticketChangeRequestApprovals = new TicketChangeRequestApprovals(mockAxios, mockLogger);
+    ticketChangeRequestApprovals = new TicketChangeRequestApprovals(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('TicketChangeRequestApprovals Entity', () => {
         { id: 2, name: 'TicketChangeRequestApprovals 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketChangeRequestApprovals.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketChangeRequestApprovals/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('TicketChangeRequestApprovals Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketChangeRequestApprovals.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketChangeRequestApprovals/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,62 +109,83 @@ describe('TicketChangeRequestApprovals Entity', () => {
     it('should get ticketchangerequestapprovals by id', async () => {
       const mockData = { id: 1, name: 'Test TicketChangeRequestApprovals' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketChangeRequestApprovals.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketChangeRequestApprovals/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create ticketchangerequestapprovals successfully', async () => {
-      const ticketChangeRequestApprovalsData = { name: 'New TicketChangeRequestApprovals' };
+      const ticketChangeRequestApprovalsData = {
+        name: 'New TicketChangeRequestApprovals',
+      };
       const mockResponse = { id: 1, ...ticketChangeRequestApprovalsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await ticketChangeRequestApprovals.create(ticketChangeRequestApprovalsData);
+      const result = await ticketChangeRequestApprovals.create(
+        ticketChangeRequestApprovalsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketChangeRequestApprovals', ticketChangeRequestApprovalsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TicketChangeRequestApprovals',
+        ticketChangeRequestApprovalsData
+      );
     });
   });
 
   describe('update', () => {
     it('should update ticketchangerequestapprovals successfully', async () => {
-      const ticketChangeRequestApprovalsData = { name: 'Updated TicketChangeRequestApprovals' };
+      const ticketChangeRequestApprovalsData = {
+        name: 'Updated TicketChangeRequestApprovals',
+      };
       const mockResponse = { id: 1, ...ticketChangeRequestApprovalsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await ticketChangeRequestApprovals.update(
+        1,
+        ticketChangeRequestApprovalsData
       );
 
-      const result = await ticketChangeRequestApprovals.update(1, ticketChangeRequestApprovalsData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1', ticketChangeRequestApprovalsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/TicketChangeRequestApprovals/1',
+        ticketChangeRequestApprovalsData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update ticketchangerequestapprovals successfully', async () => {
-      const ticketChangeRequestApprovalsData = { name: 'Patched TicketChangeRequestApprovals' };
+      const ticketChangeRequestApprovalsData = {
+        name: 'Patched TicketChangeRequestApprovals',
+      };
       const mockResponse = { id: 1, ...ticketChangeRequestApprovalsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await ticketChangeRequestApprovals.patch(1, ticketChangeRequestApprovalsData);
+      const result = await ticketChangeRequestApprovals.patch(
+        1,
+        ticketChangeRequestApprovalsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketChangeRequestApprovals/1', ticketChangeRequestApprovalsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/TicketChangeRequestApprovals/1',
+        ticketChangeRequestApprovalsData
+      );
     });
   });
 });

@@ -23,13 +23,10 @@ import {
 } from '../../src/entities/tickettagassociations';
 
 describe('TicketTagAssociations Entity', () => {
-  let setup: EntityTestSetup<describe>;
+  let setup: EntityTestSetup<TicketTagAssociations>;
 
   beforeEach(() => {
-    setup = createEntityTestSetup(describe);
-  });
-
-    ticketTagAssociations = new TicketTagAssociations(mockAxios, mockLogger);
+    setup = createEntityTestSetup(TicketTagAssociations);
   });
 
   afterEach(() => {
@@ -43,16 +40,19 @@ describe('TicketTagAssociations Entity', () => {
         { id: 2, name: 'TicketTagAssociations 2' },
       ];
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TicketTagAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TicketTagAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -63,18 +63,19 @@ describe('TicketTagAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TicketTagAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TicketTagAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -82,14 +83,16 @@ describe('TicketTagAssociations Entity', () => {
     it('should get tickettagassociations by id', async () => {
       const mockData = { id: 1, name: 'Test TicketTagAssociations' };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemResponse(mockData)
       );
 
       const result = await setup.entity.get(1);
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TicketTagAssociations/1');
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TicketTagAssociations/1'
+      );
     });
   });
 
@@ -98,26 +101,29 @@ describe('TicketTagAssociations Entity', () => {
       const ticketTagAssociationsData = { name: 'New TicketTagAssociations' };
       const mockResponse = { id: 1, ...ticketTagAssociationsData };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await setup.entity.create(ticketTagAssociationsData);
 
-      expect(setup.entity.data).toEqual(mockResponse);
-      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/TicketTagAssociations', ticketTagAssociationsData);
+      expect(result.data).toEqual(mockResponse);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/TicketTagAssociations',
+        ticketTagAssociationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete tickettagassociations successfully', async () => {
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.get.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 
-      expect(setup.setup.mockAxios.delete).toHaveBeenCalledWith('/TicketTagAssociations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith(
+        '/TicketTagAssociations/1'
+      );
     });
   });
 });

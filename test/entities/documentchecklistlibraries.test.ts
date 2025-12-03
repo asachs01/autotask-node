@@ -51,7 +51,10 @@ describe('DocumentChecklistLibraries Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    documentChecklistLibraries = new DocumentChecklistLibraries(mockAxios, mockLogger);
+    documentChecklistLibraries = new DocumentChecklistLibraries(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('DocumentChecklistLibraries Entity', () => {
         { id: 2, name: 'DocumentChecklistLibraries 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
-      const result = await setup.entity.list();
+      const result = await documentChecklistLibraries.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentChecklistLibraries/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/DocumentChecklistLibraries/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,16 +89,19 @@ describe('DocumentChecklistLibraries Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
+
+      await documentChecklistLibraries.list(query);
+
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/DocumentChecklistLibraries/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          MaxRecords: 10,
+        }
       );
-
-      await setup.entity.list(query);
-
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/DocumentChecklistLibraries/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
-      });
     });
   });
 
@@ -102,14 +109,14 @@ describe('DocumentChecklistLibraries Entity', () => {
     it('should get documentchecklistlibraries by id', async () => {
       const mockData = { id: 1, name: 'Test DocumentChecklistLibraries' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
-      const result = await setup.entity.get(1);
+      const result = await documentChecklistLibraries.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DocumentChecklistLibraries/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/DocumentChecklistLibraries/1'
+      );
     });
   });
 });

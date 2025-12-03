@@ -51,7 +51,10 @@ describe('TicketChecklistLibraries Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    ticketChecklistLibraries = new TicketChecklistLibraries(mockAxios, mockLogger);
+    ticketChecklistLibraries = new TicketChecklistLibraries(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('TicketChecklistLibraries Entity', () => {
         { id: 2, name: 'TicketChecklistLibraries 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketChecklistLibraries.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistLibraries/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketChecklistLibraries/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('TicketChecklistLibraries Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketChecklistLibraries.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistLibraries/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketChecklistLibraries/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +109,12 @@ describe('TicketChecklistLibraries Entity', () => {
     it('should get ticketchecklistlibraries by id', async () => {
       const mockData = { id: 1, name: 'Test TicketChecklistLibraries' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketChecklistLibraries.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistLibraries/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChecklistLibraries/1');
     });
   });
 });

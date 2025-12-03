@@ -65,16 +65,14 @@ describe('ClassificationIcons Entity', () => {
         { id: 2, name: 'ClassificationIcons 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await classificationIcons.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ClassificationIcons/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ClassificationIcons/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ClassificationIcons Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await classificationIcons.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ClassificationIcons/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ClassificationIcons/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ClassificationIcons Entity', () => {
     it('should get classificationicons by id', async () => {
       const mockData = { id: 1, name: 'Test ClassificationIcons' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await classificationIcons.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ClassificationIcons/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ClassificationIcons/1');
     });
   });
 });

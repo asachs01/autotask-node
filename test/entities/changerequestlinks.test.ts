@@ -65,16 +65,14 @@ describe('ChangeRequestLinks Entity', () => {
         { id: 2, name: 'ChangeRequestLinks 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await changeRequestLinks.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ChangeRequestLinks Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await changeRequestLinks.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ChangeRequestLinks Entity', () => {
     it('should get changerequestlinks by id', async () => {
       const mockData = { id: 1, name: 'Test ChangeRequestLinks' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await changeRequestLinks.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/1');
     });
   });
 
@@ -120,26 +114,27 @@ describe('ChangeRequestLinks Entity', () => {
       const changeRequestLinksData = { name: 'New ChangeRequestLinks' };
       const mockResponse = { id: 1, ...changeRequestLinksData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await changeRequestLinks.create(changeRequestLinksData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ChangeRequestLinks', changeRequestLinksData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ChangeRequestLinks',
+        changeRequestLinksData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete changerequestlinks successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await changeRequestLinks.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ChangeRequestLinks/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ChangeRequestLinks/1');
     });
   });
 });

@@ -147,8 +147,6 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/",
-    "provenance": true,
-    "repository": "https://github.com/asachs01/autotask-node"
+    "registry": "https://registry.npmjs.org/"
   }
 }

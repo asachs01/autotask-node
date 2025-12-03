@@ -65,16 +65,17 @@ describe('TicketChecklistItems Entity', () => {
         { id: 2, name: 'TicketChecklistItems 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketChecklistItems.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketChecklistItems/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('TicketChecklistItems Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketChecklistItems.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketChecklistItems/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('TicketChecklistItems Entity', () => {
     it('should get ticketchecklistitems by id', async () => {
       const mockData = { id: 1, name: 'Test TicketChecklistItems' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketChecklistItems.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketChecklistItems/1');
     });
   });
 
@@ -120,14 +120,19 @@ describe('TicketChecklistItems Entity', () => {
       const ticketChecklistItemsData = { name: 'New TicketChecklistItems' };
       const mockResponse = { id: 1, ...ticketChecklistItemsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await ticketChecklistItems.create(ticketChecklistItemsData);
+      const result = await ticketChecklistItems.create(
+        ticketChecklistItemsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketChecklistItems', ticketChecklistItemsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TicketChecklistItems',
+        ticketChecklistItemsData
+      );
     });
   });
 
@@ -136,14 +141,18 @@ describe('TicketChecklistItems Entity', () => {
       const ticketChecklistItemsData = { name: 'Updated TicketChecklistItems' };
       const mockResponse = { id: 1, ...ticketChecklistItemsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await ticketChecklistItems.update(
+        1,
+        ticketChecklistItemsData
       );
 
-      const result = await ticketChecklistItems.update(1, ticketChecklistItemsData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TicketChecklistItems/1', ticketChecklistItemsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/TicketChecklistItems/1',
+        ticketChecklistItemsData
+      );
     });
   });
 
@@ -152,14 +161,20 @@ describe('TicketChecklistItems Entity', () => {
       const ticketChecklistItemsData = { name: 'Patched TicketChecklistItems' };
       const mockResponse = { id: 1, ...ticketChecklistItemsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await ticketChecklistItems.patch(1, ticketChecklistItemsData);
+      const result = await ticketChecklistItems.patch(
+        1,
+        ticketChecklistItemsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketChecklistItems/1', ticketChecklistItemsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/TicketChecklistItems/1',
+        ticketChecklistItemsData
+      );
     });
   });
 });

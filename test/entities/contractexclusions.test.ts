@@ -65,16 +65,14 @@ describe('ContractExclusions Entity', () => {
         { id: 2, name: 'ContractExclusion 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractExclusions.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ContractExclusions Entity', () => {
         MaxRecords: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractExclusions.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ContractExclusions Entity', () => {
     it('should get contractexclusion by id', async () => {
       const mockData = { id: 1, name: 'Test ContractExclusion' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractExclusions.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ContractExclusions Entity', () => {
       const contractExclusionData = { name: 'New ContractExclusion' };
       const mockResponse = { id: 1, ...contractExclusionData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await contractExclusions.create(contractExclusionData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractExclusions', contractExclusionData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractExclusions',
+        contractExclusionData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ContractExclusions Entity', () => {
       const contractExclusionData = { name: 'Updated ContractExclusion' };
       const mockResponse = { id: 1, ...contractExclusionData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await contractExclusions.update(1, contractExclusionData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractExclusions/1', contractExclusionData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ContractExclusions/1',
+        contractExclusionData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('ContractExclusions Entity', () => {
       const contractExclusionData = { name: 'Patched ContractExclusion' };
       const mockResponse = { id: 1, ...contractExclusionData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await contractExclusions.patch(1, contractExclusionData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractExclusions/1', contractExclusionData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ContractExclusions/1',
+        contractExclusionData
+      );
     });
   });
 });

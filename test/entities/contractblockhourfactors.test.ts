@@ -51,7 +51,10 @@ describe('ContractBlockHourFactors Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    contractBlockHourFactors = new ContractBlockHourFactors(mockAxios, mockLogger);
+    contractBlockHourFactors = new ContractBlockHourFactors(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ContractBlockHourFactors Entity', () => {
         { id: 2, name: 'ContractBlockHourFactors 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractBlockHourFactors.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractBlockHourFactors/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ContractBlockHourFactors/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ContractBlockHourFactors Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractBlockHourFactors.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractBlockHourFactors/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ContractBlockHourFactors/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,74 +109,93 @@ describe('ContractBlockHourFactors Entity', () => {
     it('should get contractblockhourfactors by id', async () => {
       const mockData = { id: 1, name: 'Test ContractBlockHourFactors' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractBlockHourFactors.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractBlockHourFactors/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractBlockHourFactors/1');
     });
   });
 
   describe('create', () => {
     it('should create contractblockhourfactors successfully', async () => {
-      const contractBlockHourFactorsData = { name: 'New ContractBlockHourFactors' };
+      const contractBlockHourFactorsData = {
+        name: 'New ContractBlockHourFactors',
+      };
       const mockResponse = { id: 1, ...contractBlockHourFactorsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await contractBlockHourFactors.create(contractBlockHourFactorsData);
+      const result = await contractBlockHourFactors.create(
+        contractBlockHourFactorsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractBlockHourFactors', contractBlockHourFactorsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractBlockHourFactors',
+        contractBlockHourFactorsData
+      );
     });
   });
 
   describe('update', () => {
     it('should update contractblockhourfactors successfully', async () => {
-      const contractBlockHourFactorsData = { name: 'Updated ContractBlockHourFactors' };
+      const contractBlockHourFactorsData = {
+        name: 'Updated ContractBlockHourFactors',
+      };
       const mockResponse = { id: 1, ...contractBlockHourFactorsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await contractBlockHourFactors.update(
+        1,
+        contractBlockHourFactorsData
       );
 
-      const result = await contractBlockHourFactors.update(1, contractBlockHourFactorsData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractBlockHourFactors/1', contractBlockHourFactorsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ContractBlockHourFactors/1',
+        contractBlockHourFactorsData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update contractblockhourfactors successfully', async () => {
-      const contractBlockHourFactorsData = { name: 'Patched ContractBlockHourFactors' };
+      const contractBlockHourFactorsData = {
+        name: 'Patched ContractBlockHourFactors',
+      };
       const mockResponse = { id: 1, ...contractBlockHourFactorsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await contractBlockHourFactors.patch(1, contractBlockHourFactorsData);
+      const result = await contractBlockHourFactors.patch(
+        1,
+        contractBlockHourFactorsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractBlockHourFactors/1', contractBlockHourFactorsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ContractBlockHourFactors/1',
+        contractBlockHourFactorsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete contractblockhourfactors successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await contractBlockHourFactors.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractBlockHourFactors/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ContractBlockHourFactors/1'
+      );
     });
   });
 });

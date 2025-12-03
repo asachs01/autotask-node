@@ -65,16 +65,14 @@ describe('CompanyTeams Entity', () => {
         { id: 2, name: 'CompanyTeams 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await companyTeams.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('CompanyTeams Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await companyTeams.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('CompanyTeams Entity', () => {
     it('should get companyteams by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyTeams' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await companyTeams.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyTeams/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('CompanyTeams Entity', () => {
       const companyTeamsData = { name: 'New CompanyTeams' };
       const mockResponse = { id: 1, ...companyTeamsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await companyTeams.create(companyTeamsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanyTeams', companyTeamsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/CompanyTeams',
+        companyTeamsData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('CompanyTeams Entity', () => {
       const companyTeamsData = { name: 'Updated CompanyTeams' };
       const mockResponse = { id: 1, ...companyTeamsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await companyTeams.update(1, companyTeamsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/CompanyTeams/1', companyTeamsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/CompanyTeams/1',
+        companyTeamsData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('CompanyTeams Entity', () => {
       const companyTeamsData = { name: 'Patched CompanyTeams' };
       const mockResponse = { id: 1, ...companyTeamsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await companyTeams.patch(1, companyTeamsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/CompanyTeams/1', companyTeamsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/CompanyTeams/1',
+        companyTeamsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete companyteams successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await companyTeams.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/CompanyTeams/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/CompanyTeams/1');
     });
   });
 });

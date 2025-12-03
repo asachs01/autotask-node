@@ -65,16 +65,14 @@ describe('TagGroups Entity', () => {
         { id: 2, name: 'TagGroups 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await tagGroups.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TagGroups/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/TagGroups/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('TagGroups Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await tagGroups.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TagGroups/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/TagGroups/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('TagGroups Entity', () => {
     it('should get taggroups by id', async () => {
       const mockData = { id: 1, name: 'Test TagGroups' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await tagGroups.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TagGroups/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TagGroups/1');
     });
   });
 
@@ -120,14 +114,14 @@ describe('TagGroups Entity', () => {
       const tagGroupsData = { name: 'New TagGroups' };
       const mockResponse = { id: 1, ...tagGroupsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await tagGroups.create(tagGroupsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TagGroups', tagGroupsData);
+      expect(mockAxios.post).toHaveBeenCalledWith('/TagGroups', tagGroupsData);
     });
   });
 
@@ -136,14 +130,12 @@ describe('TagGroups Entity', () => {
       const tagGroupsData = { name: 'Updated TagGroups' };
       const mockResponse = { id: 1, ...tagGroupsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await tagGroups.update(1, tagGroupsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TagGroups/1', tagGroupsData);
+      expect(mockAxios.put).toHaveBeenCalledWith('/TagGroups/1', tagGroupsData);
     });
   });
 
@@ -152,26 +144,27 @@ describe('TagGroups Entity', () => {
       const tagGroupsData = { name: 'Patched TagGroups' };
       const mockResponse = { id: 1, ...tagGroupsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await tagGroups.patch(1, tagGroupsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TagGroups/1', tagGroupsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/TagGroups/1',
+        tagGroupsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete taggroups successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await tagGroups.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TagGroups/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/TagGroups/1');
     });
   });
 });

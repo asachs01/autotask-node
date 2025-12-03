@@ -51,7 +51,10 @@ describe('ConfigurationItemDnsRecords Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    configurationItemDnsRecords = new ConfigurationItemDnsRecords(mockAxios, mockLogger);
+    configurationItemDnsRecords = new ConfigurationItemDnsRecords(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ConfigurationItemDnsRecords Entity', () => {
         { id: 2, name: 'ConfigurationItemDnsRecords 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await configurationItemDnsRecords.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemDnsRecords/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemDnsRecords/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ConfigurationItemDnsRecords Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await configurationItemDnsRecords.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemDnsRecords/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemDnsRecords/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,74 +109,95 @@ describe('ConfigurationItemDnsRecords Entity', () => {
     it('should get configurationitemdnsrecords by id', async () => {
       const mockData = { id: 1, name: 'Test ConfigurationItemDnsRecords' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await configurationItemDnsRecords.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemDnsRecords/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemDnsRecords/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create configurationitemdnsrecords successfully', async () => {
-      const configurationItemDnsRecordsData = { name: 'New ConfigurationItemDnsRecords' };
+      const configurationItemDnsRecordsData = {
+        name: 'New ConfigurationItemDnsRecords',
+      };
       const mockResponse = { id: 1, ...configurationItemDnsRecordsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await configurationItemDnsRecords.create(configurationItemDnsRecordsData);
+      const result = await configurationItemDnsRecords.create(
+        configurationItemDnsRecordsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ConfigurationItemDnsRecords', configurationItemDnsRecordsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ConfigurationItemDnsRecords',
+        configurationItemDnsRecordsData
+      );
     });
   });
 
   describe('update', () => {
     it('should update configurationitemdnsrecords successfully', async () => {
-      const configurationItemDnsRecordsData = { name: 'Updated ConfigurationItemDnsRecords' };
+      const configurationItemDnsRecordsData = {
+        name: 'Updated ConfigurationItemDnsRecords',
+      };
       const mockResponse = { id: 1, ...configurationItemDnsRecordsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await configurationItemDnsRecords.update(
+        1,
+        configurationItemDnsRecordsData
       );
 
-      const result = await configurationItemDnsRecords.update(1, configurationItemDnsRecordsData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ConfigurationItemDnsRecords/1', configurationItemDnsRecordsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ConfigurationItemDnsRecords/1',
+        configurationItemDnsRecordsData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update configurationitemdnsrecords successfully', async () => {
-      const configurationItemDnsRecordsData = { name: 'Patched ConfigurationItemDnsRecords' };
+      const configurationItemDnsRecordsData = {
+        name: 'Patched ConfigurationItemDnsRecords',
+      };
       const mockResponse = { id: 1, ...configurationItemDnsRecordsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await configurationItemDnsRecords.patch(1, configurationItemDnsRecordsData);
+      const result = await configurationItemDnsRecords.patch(
+        1,
+        configurationItemDnsRecordsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ConfigurationItemDnsRecords/1', configurationItemDnsRecordsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ConfigurationItemDnsRecords/1',
+        configurationItemDnsRecordsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete configurationitemdnsrecords successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await configurationItemDnsRecords.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ConfigurationItemDnsRecords/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ConfigurationItemDnsRecords/1'
+      );
     });
   });
 });

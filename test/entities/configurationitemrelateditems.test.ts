@@ -51,7 +51,10 @@ describe('ConfigurationItemRelatedItems Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    configurationItemRelatedItems = new ConfigurationItemRelatedItems(mockAxios, mockLogger);
+    configurationItemRelatedItems = new ConfigurationItemRelatedItems(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ConfigurationItemRelatedItems Entity', () => {
         { id: 2, name: 'ConfigurationItemRelatedItems 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await configurationItemRelatedItems.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemRelatedItems/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemRelatedItems/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ConfigurationItemRelatedItems Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await configurationItemRelatedItems.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemRelatedItems/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemRelatedItems/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,49 @@ describe('ConfigurationItemRelatedItems Entity', () => {
     it('should get configurationitemrelateditems by id', async () => {
       const mockData = { id: 1, name: 'Test ConfigurationItemRelatedItems' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await configurationItemRelatedItems.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemRelatedItems/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemRelatedItems/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create configurationitemrelateditems successfully', async () => {
-      const configurationItemRelatedItemsData = { name: 'New ConfigurationItemRelatedItems' };
+      const configurationItemRelatedItemsData = {
+        name: 'New ConfigurationItemRelatedItems',
+      };
       const mockResponse = { id: 1, ...configurationItemRelatedItemsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await configurationItemRelatedItems.create(configurationItemRelatedItemsData);
+      const result = await configurationItemRelatedItems.create(
+        configurationItemRelatedItemsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ConfigurationItemRelatedItems', configurationItemRelatedItemsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ConfigurationItemRelatedItems',
+        configurationItemRelatedItemsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete configurationitemrelateditems successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await configurationItemRelatedItems.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ConfigurationItemRelatedItems/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ConfigurationItemRelatedItems/1'
+      );
     });
   });
 });

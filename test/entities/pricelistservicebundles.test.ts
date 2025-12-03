@@ -51,7 +51,10 @@ describe('PriceListServiceBundles Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    priceListServiceBundles = new PriceListServiceBundles(mockAxios, mockLogger);
+    priceListServiceBundles = new PriceListServiceBundles(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('PriceListServiceBundles Entity', () => {
         { id: 2, name: 'PriceListServiceBundles 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await priceListServiceBundles.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListServiceBundles/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListServiceBundles/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('PriceListServiceBundles Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await priceListServiceBundles.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListServiceBundles/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/PriceListServiceBundles/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,74 +109,93 @@ describe('PriceListServiceBundles Entity', () => {
     it('should get pricelistservicebundles by id', async () => {
       const mockData = { id: 1, name: 'Test PriceListServiceBundles' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await priceListServiceBundles.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PriceListServiceBundles/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListServiceBundles/1');
     });
   });
 
   describe('create', () => {
     it('should create pricelistservicebundles successfully', async () => {
-      const priceListServiceBundlesData = { name: 'New PriceListServiceBundles' };
+      const priceListServiceBundlesData = {
+        name: 'New PriceListServiceBundles',
+      };
       const mockResponse = { id: 1, ...priceListServiceBundlesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await priceListServiceBundles.create(priceListServiceBundlesData);
+      const result = await priceListServiceBundles.create(
+        priceListServiceBundlesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PriceListServiceBundles', priceListServiceBundlesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/PriceListServiceBundles',
+        priceListServiceBundlesData
+      );
     });
   });
 
   describe('update', () => {
     it('should update pricelistservicebundles successfully', async () => {
-      const priceListServiceBundlesData = { name: 'Updated PriceListServiceBundles' };
+      const priceListServiceBundlesData = {
+        name: 'Updated PriceListServiceBundles',
+      };
       const mockResponse = { id: 1, ...priceListServiceBundlesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await priceListServiceBundles.update(
+        1,
+        priceListServiceBundlesData
       );
 
-      const result = await priceListServiceBundles.update(1, priceListServiceBundlesData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/PriceListServiceBundles/1', priceListServiceBundlesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/PriceListServiceBundles/1',
+        priceListServiceBundlesData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update pricelistservicebundles successfully', async () => {
-      const priceListServiceBundlesData = { name: 'Patched PriceListServiceBundles' };
+      const priceListServiceBundlesData = {
+        name: 'Patched PriceListServiceBundles',
+      };
       const mockResponse = { id: 1, ...priceListServiceBundlesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await priceListServiceBundles.patch(1, priceListServiceBundlesData);
+      const result = await priceListServiceBundles.patch(
+        1,
+        priceListServiceBundlesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/PriceListServiceBundles/1', priceListServiceBundlesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/PriceListServiceBundles/1',
+        priceListServiceBundlesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete pricelistservicebundles successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await priceListServiceBundles.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/PriceListServiceBundles/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/PriceListServiceBundles/1'
+      );
     });
   });
 });

@@ -51,7 +51,10 @@ describe('ConfigurationItemNoteAttachments Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    configurationItemNoteAttachments = new ConfigurationItemNoteAttachments(mockAxios, mockLogger);
+    configurationItemNoteAttachments = new ConfigurationItemNoteAttachments(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ConfigurationItemNoteAttachments Entity', () => {
         { id: 2, name: 'ConfigurationItemNoteAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await configurationItemNoteAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemNoteAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemNoteAttachments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ConfigurationItemNoteAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await configurationItemNoteAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemNoteAttachments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemNoteAttachments/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,49 @@ describe('ConfigurationItemNoteAttachments Entity', () => {
     it('should get configurationitemnoteattachments by id', async () => {
       const mockData = { id: 1, name: 'Test ConfigurationItemNoteAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await configurationItemNoteAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemNoteAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemNoteAttachments/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create configurationitemnoteattachments successfully', async () => {
-      const configurationItemNoteAttachmentsData = { name: 'New ConfigurationItemNoteAttachments' };
+      const configurationItemNoteAttachmentsData = {
+        name: 'New ConfigurationItemNoteAttachments',
+      };
       const mockResponse = { id: 1, ...configurationItemNoteAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await configurationItemNoteAttachments.create(configurationItemNoteAttachmentsData);
+      const result = await configurationItemNoteAttachments.create(
+        configurationItemNoteAttachmentsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ConfigurationItemNoteAttachments', configurationItemNoteAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ConfigurationItemNoteAttachments',
+        configurationItemNoteAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete configurationitemnoteattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await configurationItemNoteAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ConfigurationItemNoteAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ConfigurationItemNoteAttachments/1'
+      );
     });
   });
 });

@@ -65,16 +65,14 @@ describe('InventoryProducts Entity', () => {
         { id: 2, name: 'InventoryProducts 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await inventoryProducts.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryProducts/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/InventoryProducts/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('InventoryProducts Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await inventoryProducts.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryProducts/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/InventoryProducts/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('InventoryProducts Entity', () => {
     it('should get inventoryproducts by id', async () => {
       const mockData = { id: 1, name: 'Test InventoryProducts' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await inventoryProducts.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryProducts/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/InventoryProducts/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('InventoryProducts Entity', () => {
       const inventoryProductsData = { name: 'New InventoryProducts' };
       const mockResponse = { id: 1, ...inventoryProductsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await inventoryProducts.create(inventoryProductsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/InventoryProducts', inventoryProductsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/InventoryProducts',
+        inventoryProductsData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('InventoryProducts Entity', () => {
       const inventoryProductsData = { name: 'Updated InventoryProducts' };
       const mockResponse = { id: 1, ...inventoryProductsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await inventoryProducts.update(1, inventoryProductsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/InventoryProducts/1', inventoryProductsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/InventoryProducts/1',
+        inventoryProductsData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('InventoryProducts Entity', () => {
       const inventoryProductsData = { name: 'Patched InventoryProducts' };
       const mockResponse = { id: 1, ...inventoryProductsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await inventoryProducts.patch(1, inventoryProductsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/InventoryProducts/1', inventoryProductsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/InventoryProducts/1',
+        inventoryProductsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete inventoryproducts successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await inventoryProducts.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/InventoryProducts/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/InventoryProducts/1');
     });
   });
 });

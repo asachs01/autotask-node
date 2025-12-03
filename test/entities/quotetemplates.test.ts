@@ -65,15 +65,13 @@ describe('QuoteTemplates Entity', () => {
         { id: 2, name: 'QuoteTemplates 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
-      const result = await setup.entity.list();
+      const result = await quoteTemplates.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/QuoteTemplates/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+      expect(mockAxios.post).toHaveBeenCalledWith('/QuoteTemplates/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -85,15 +83,15 @@ describe('QuoteTemplates Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
-      await setup.entity.list(query);
+      await quoteTemplates.list(query);
 
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/QuoteTemplates/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/QuoteTemplates/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        MaxRecords: 10,
       });
     });
   });
@@ -102,14 +100,12 @@ describe('QuoteTemplates Entity', () => {
     it('should get quotetemplates by id', async () => {
       const mockData = { id: 1, name: 'Test QuoteTemplates' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
-      const result = await setup.entity.get(1);
+      const result = await quoteTemplates.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/QuoteTemplates/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/QuoteTemplates/1');
     });
   });
 });

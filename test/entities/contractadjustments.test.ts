@@ -65,16 +65,14 @@ describe('ContractAdjustments Entity', () => {
         { id: 2, name: 'ContractAdjustment 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractAdjustments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ContractAdjustments Entity', () => {
         MaxRecords: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractAdjustments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ContractAdjustments Entity', () => {
     it('should get contractadjustment by id', async () => {
       const mockData = { id: 1, name: 'Test ContractAdjustment' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractAdjustments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ContractAdjustments Entity', () => {
       const contractAdjustmentData = { name: 'New ContractAdjustment' };
       const mockResponse = { id: 1, ...contractAdjustmentData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await contractAdjustments.create(contractAdjustmentData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractAdjustments', contractAdjustmentData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractAdjustments',
+        contractAdjustmentData
+      );
     });
   });
 
@@ -136,14 +133,18 @@ describe('ContractAdjustments Entity', () => {
       const contractAdjustmentData = { name: 'Updated ContractAdjustment' };
       const mockResponse = { id: 1, ...contractAdjustmentData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await contractAdjustments.update(
+        1,
+        contractAdjustmentData
       );
 
-      const result = await contractAdjustments.update(1, contractAdjustmentData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractAdjustments/1', contractAdjustmentData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ContractAdjustments/1',
+        contractAdjustmentData
+      );
     });
   });
 
@@ -152,14 +153,17 @@ describe('ContractAdjustments Entity', () => {
       const contractAdjustmentData = { name: 'Patched ContractAdjustment' };
       const mockResponse = { id: 1, ...contractAdjustmentData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await contractAdjustments.patch(1, contractAdjustmentData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractAdjustments/1', contractAdjustmentData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ContractAdjustments/1',
+        contractAdjustmentData
+      );
     });
   });
 });

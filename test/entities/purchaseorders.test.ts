@@ -65,16 +65,14 @@ describe('PurchaseOrders Entity', () => {
         { id: 2, name: 'PurchaseOrders 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await purchaseOrders.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PurchaseOrders/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/PurchaseOrders/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('PurchaseOrders Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await purchaseOrders.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PurchaseOrders/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/PurchaseOrders/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('PurchaseOrders Entity', () => {
     it('should get purchaseorders by id', async () => {
       const mockData = { id: 1, name: 'Test PurchaseOrders' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await purchaseOrders.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PurchaseOrders/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/PurchaseOrders/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('PurchaseOrders Entity', () => {
       const purchaseOrdersData = { name: 'New PurchaseOrders' };
       const mockResponse = { id: 1, ...purchaseOrdersData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await purchaseOrders.create(purchaseOrdersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/PurchaseOrders', purchaseOrdersData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/PurchaseOrders',
+        purchaseOrdersData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('PurchaseOrders Entity', () => {
       const purchaseOrdersData = { name: 'Updated PurchaseOrders' };
       const mockResponse = { id: 1, ...purchaseOrdersData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await purchaseOrders.update(1, purchaseOrdersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/PurchaseOrders/1', purchaseOrdersData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/PurchaseOrders/1',
+        purchaseOrdersData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('PurchaseOrders Entity', () => {
       const purchaseOrdersData = { name: 'Patched PurchaseOrders' };
       const mockResponse = { id: 1, ...purchaseOrdersData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await purchaseOrders.patch(1, purchaseOrdersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/PurchaseOrders/1', purchaseOrdersData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/PurchaseOrders/1',
+        purchaseOrdersData
+      );
     });
   });
 });

@@ -51,7 +51,10 @@ describe('InventoryItemSerialNumbers Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    inventoryItemSerialNumbers = new InventoryItemSerialNumbers(mockAxios, mockLogger);
+    inventoryItemSerialNumbers = new InventoryItemSerialNumbers(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('InventoryItemSerialNumbers Entity', () => {
         { id: 2, name: 'InventoryItemSerialNumbers 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await inventoryItemSerialNumbers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryItemSerialNumbers/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryItemSerialNumbers/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('InventoryItemSerialNumbers Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await inventoryItemSerialNumbers.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryItemSerialNumbers/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryItemSerialNumbers/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,74 +109,95 @@ describe('InventoryItemSerialNumbers Entity', () => {
     it('should get inventoryitemserialnumbers by id', async () => {
       const mockData = { id: 1, name: 'Test InventoryItemSerialNumbers' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await inventoryItemSerialNumbers.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryItemSerialNumbers/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryItemSerialNumbers/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create inventoryitemserialnumbers successfully', async () => {
-      const inventoryItemSerialNumbersData = { name: 'New InventoryItemSerialNumbers' };
+      const inventoryItemSerialNumbersData = {
+        name: 'New InventoryItemSerialNumbers',
+      };
       const mockResponse = { id: 1, ...inventoryItemSerialNumbersData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await inventoryItemSerialNumbers.create(inventoryItemSerialNumbersData);
+      const result = await inventoryItemSerialNumbers.create(
+        inventoryItemSerialNumbersData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/InventoryItemSerialNumbers', inventoryItemSerialNumbersData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/InventoryItemSerialNumbers',
+        inventoryItemSerialNumbersData
+      );
     });
   });
 
   describe('update', () => {
     it('should update inventoryitemserialnumbers successfully', async () => {
-      const inventoryItemSerialNumbersData = { name: 'Updated InventoryItemSerialNumbers' };
+      const inventoryItemSerialNumbersData = {
+        name: 'Updated InventoryItemSerialNumbers',
+      };
       const mockResponse = { id: 1, ...inventoryItemSerialNumbersData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await inventoryItemSerialNumbers.update(
+        1,
+        inventoryItemSerialNumbersData
       );
 
-      const result = await inventoryItemSerialNumbers.update(1, inventoryItemSerialNumbersData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/InventoryItemSerialNumbers/1', inventoryItemSerialNumbersData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/InventoryItemSerialNumbers/1',
+        inventoryItemSerialNumbersData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update inventoryitemserialnumbers successfully', async () => {
-      const inventoryItemSerialNumbersData = { name: 'Patched InventoryItemSerialNumbers' };
+      const inventoryItemSerialNumbersData = {
+        name: 'Patched InventoryItemSerialNumbers',
+      };
       const mockResponse = { id: 1, ...inventoryItemSerialNumbersData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await inventoryItemSerialNumbers.patch(1, inventoryItemSerialNumbersData);
+      const result = await inventoryItemSerialNumbers.patch(
+        1,
+        inventoryItemSerialNumbersData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/InventoryItemSerialNumbers/1', inventoryItemSerialNumbersData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/InventoryItemSerialNumbers/1',
+        inventoryItemSerialNumbersData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete inventoryitemserialnumbers successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await inventoryItemSerialNumbers.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/InventoryItemSerialNumbers/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/InventoryItemSerialNumbers/1'
+      );
     });
   });
 });

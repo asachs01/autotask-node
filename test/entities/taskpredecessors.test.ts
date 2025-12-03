@@ -65,16 +65,14 @@ describe('TaskPredecessors Entity', () => {
         { id: 2, name: 'TaskPredecessors 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await taskPredecessors.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskPredecessors/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/TaskPredecessors/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('TaskPredecessors Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await taskPredecessors.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskPredecessors/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/TaskPredecessors/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('TaskPredecessors Entity', () => {
     it('should get taskpredecessors by id', async () => {
       const mockData = { id: 1, name: 'Test TaskPredecessors' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await taskPredecessors.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TaskPredecessors/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TaskPredecessors/1');
     });
   });
 
@@ -120,26 +114,27 @@ describe('TaskPredecessors Entity', () => {
       const taskPredecessorsData = { name: 'New TaskPredecessors' };
       const mockResponse = { id: 1, ...taskPredecessorsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await taskPredecessors.create(taskPredecessorsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TaskPredecessors', taskPredecessorsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TaskPredecessors',
+        taskPredecessorsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete taskpredecessors successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await taskPredecessors.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TaskPredecessors/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/TaskPredecessors/1');
     });
   });
 });

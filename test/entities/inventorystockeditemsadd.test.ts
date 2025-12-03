@@ -51,7 +51,10 @@ describe('InventoryStockedItemsAdd Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    inventoryStockedItemsAdd = new InventoryStockedItemsAdd(mockAxios, mockLogger);
+    inventoryStockedItemsAdd = new InventoryStockedItemsAdd(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('InventoryStockedItemsAdd Entity', () => {
         { id: 2, name: 'InventoryStockedItemsAdd 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await inventoryStockedItemsAdd.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryStockedItemsAdd/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryStockedItemsAdd/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,34 +89,42 @@ describe('InventoryStockedItemsAdd Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await inventoryStockedItemsAdd.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryStockedItemsAdd/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryStockedItemsAdd/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('create', () => {
     it('should create inventorystockeditemsadd successfully', async () => {
-      const inventoryStockedItemsAddData = { name: 'New InventoryStockedItemsAdd' };
+      const inventoryStockedItemsAddData = {
+        name: 'New InventoryStockedItemsAdd',
+      };
       const mockResponse = { id: 1, ...inventoryStockedItemsAddData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await inventoryStockedItemsAdd.create(inventoryStockedItemsAddData);
+      const result = await inventoryStockedItemsAdd.create(
+        inventoryStockedItemsAddData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/InventoryStockedItemsAdd', inventoryStockedItemsAddData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/InventoryStockedItemsAdd',
+        inventoryStockedItemsAddData
+      );
     });
   });
 });

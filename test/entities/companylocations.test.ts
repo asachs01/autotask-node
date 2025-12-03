@@ -65,16 +65,14 @@ describe('CompanyLocations Entity', () => {
         { id: 2, name: 'CompanyLocations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await companyLocations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('CompanyLocations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await companyLocations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('CompanyLocations Entity', () => {
     it('should get companylocations by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyLocations' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await companyLocations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyLocations/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('CompanyLocations Entity', () => {
       const companyLocationsData = { name: 'New CompanyLocations' };
       const mockResponse = { id: 1, ...companyLocationsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await companyLocations.create(companyLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanyLocations', companyLocationsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/CompanyLocations',
+        companyLocationsData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('CompanyLocations Entity', () => {
       const companyLocationsData = { name: 'Updated CompanyLocations' };
       const mockResponse = { id: 1, ...companyLocationsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await companyLocations.update(1, companyLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/CompanyLocations/1', companyLocationsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/CompanyLocations/1',
+        companyLocationsData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('CompanyLocations Entity', () => {
       const companyLocationsData = { name: 'Patched CompanyLocations' };
       const mockResponse = { id: 1, ...companyLocationsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await companyLocations.patch(1, companyLocationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/CompanyLocations/1', companyLocationsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/CompanyLocations/1',
+        companyLocationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete companylocations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await companyLocations.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/CompanyLocations/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/CompanyLocations/1');
     });
   });
 });

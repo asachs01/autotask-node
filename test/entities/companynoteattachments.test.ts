@@ -65,16 +65,17 @@ describe('CompanyNoteAttachments Entity', () => {
         { id: 2, name: 'CompanyNoteAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await companyNoteAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyNoteAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/CompanyNoteAttachments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('CompanyNoteAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await companyNoteAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyNoteAttachments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/CompanyNoteAttachments/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('CompanyNoteAttachments Entity', () => {
     it('should get companynoteattachments by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyNoteAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await companyNoteAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyNoteAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyNoteAttachments/1');
     });
   });
 
@@ -120,26 +120,31 @@ describe('CompanyNoteAttachments Entity', () => {
       const companyNoteAttachmentsData = { name: 'New CompanyNoteAttachments' };
       const mockResponse = { id: 1, ...companyNoteAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await companyNoteAttachments.create(companyNoteAttachmentsData);
+      const result = await companyNoteAttachments.create(
+        companyNoteAttachmentsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanyNoteAttachments', companyNoteAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/CompanyNoteAttachments',
+        companyNoteAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete companynoteattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await companyNoteAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/CompanyNoteAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/CompanyNoteAttachments/1'
+      );
     });
   });
 });

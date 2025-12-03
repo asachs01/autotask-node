@@ -65,16 +65,14 @@ describe('ServiceBundles Entity', () => {
         { id: 2, name: 'ServiceBundles 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await serviceBundles.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ServiceBundles Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await serviceBundles.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ServiceBundles Entity', () => {
     it('should get servicebundles by id', async () => {
       const mockData = { id: 1, name: 'Test ServiceBundles' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await serviceBundles.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ServiceBundles Entity', () => {
       const serviceBundlesData = { name: 'New ServiceBundles' };
       const mockResponse = { id: 1, ...serviceBundlesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await serviceBundles.create(serviceBundlesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ServiceBundles', serviceBundlesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ServiceBundles',
+        serviceBundlesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ServiceBundles Entity', () => {
       const serviceBundlesData = { name: 'Updated ServiceBundles' };
       const mockResponse = { id: 1, ...serviceBundlesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await serviceBundles.update(1, serviceBundlesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ServiceBundles/1', serviceBundlesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ServiceBundles/1',
+        serviceBundlesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('ServiceBundles Entity', () => {
       const serviceBundlesData = { name: 'Patched ServiceBundles' };
       const mockResponse = { id: 1, ...serviceBundlesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await serviceBundles.patch(1, serviceBundlesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ServiceBundles/1', serviceBundlesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ServiceBundles/1',
+        serviceBundlesData
+      );
     });
   });
 });

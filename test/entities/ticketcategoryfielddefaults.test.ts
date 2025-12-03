@@ -51,7 +51,10 @@ describe('TicketCategoryFieldDefaults Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    ticketCategoryFieldDefaults = new TicketCategoryFieldDefaults(mockAxios, mockLogger);
+    ticketCategoryFieldDefaults = new TicketCategoryFieldDefaults(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('TicketCategoryFieldDefaults Entity', () => {
         { id: 2, name: 'TicketCategoryFieldDefaults 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketCategoryFieldDefaults.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketCategoryFieldDefaults/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketCategoryFieldDefaults/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('TicketCategoryFieldDefaults Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketCategoryFieldDefaults.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketCategoryFieldDefaults/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketCategoryFieldDefaults/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +109,14 @@ describe('TicketCategoryFieldDefaults Entity', () => {
     it('should get ticketcategoryfielddefaults by id', async () => {
       const mockData = { id: 1, name: 'Test TicketCategoryFieldDefaults' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketCategoryFieldDefaults.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketCategoryFieldDefaults/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketCategoryFieldDefaults/1'
+      );
     });
   });
 });

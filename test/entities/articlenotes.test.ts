@@ -65,16 +65,14 @@ describe('ArticleNotes Entity', () => {
         { id: 2, name: 'ArticleNotes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await articleNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleNotes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ArticleNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ArticleNotes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await articleNotes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleNotes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ArticleNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ArticleNotes Entity', () => {
     it('should get articlenotes by id', async () => {
       const mockData = { id: 1, name: 'Test ArticleNotes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await articleNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleNotes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ArticleNotes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ArticleNotes Entity', () => {
       const articleNotesData = { name: 'New ArticleNotes' };
       const mockResponse = { id: 1, ...articleNotesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await articleNotes.create(articleNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ArticleNotes', articleNotesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ArticleNotes',
+        articleNotesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ArticleNotes Entity', () => {
       const articleNotesData = { name: 'Updated ArticleNotes' };
       const mockResponse = { id: 1, ...articleNotesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await articleNotes.update(1, articleNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ArticleNotes/1', articleNotesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ArticleNotes/1',
+        articleNotesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('ArticleNotes Entity', () => {
       const articleNotesData = { name: 'Patched ArticleNotes' };
       const mockResponse = { id: 1, ...articleNotesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await articleNotes.patch(1, articleNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ArticleNotes/1', articleNotesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ArticleNotes/1',
+        articleNotesData
+      );
     });
   });
 });

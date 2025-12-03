@@ -51,7 +51,10 @@ describe('ExpenseReportAttachments Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    expenseReportAttachments = new ExpenseReportAttachments(mockAxios, mockLogger);
+    expenseReportAttachments = new ExpenseReportAttachments(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ExpenseReportAttachments Entity', () => {
         { id: 2, name: 'ExpenseReportAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await expenseReportAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ExpenseReportAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ExpenseReportAttachments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ExpenseReportAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await expenseReportAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ExpenseReportAttachments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ExpenseReportAttachments/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,47 @@ describe('ExpenseReportAttachments Entity', () => {
     it('should get expensereportattachments by id', async () => {
       const mockData = { id: 1, name: 'Test ExpenseReportAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await expenseReportAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ExpenseReportAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ExpenseReportAttachments/1');
     });
   });
 
   describe('create', () => {
     it('should create expensereportattachments successfully', async () => {
-      const expenseReportAttachmentsData = { name: 'New ExpenseReportAttachments' };
+      const expenseReportAttachmentsData = {
+        name: 'New ExpenseReportAttachments',
+      };
       const mockResponse = { id: 1, ...expenseReportAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await expenseReportAttachments.create(expenseReportAttachmentsData);
+      const result = await expenseReportAttachments.create(
+        expenseReportAttachmentsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ExpenseReportAttachments', expenseReportAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ExpenseReportAttachments',
+        expenseReportAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete expensereportattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await expenseReportAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ExpenseReportAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ExpenseReportAttachments/1'
+      );
     });
   });
 });

@@ -65,16 +65,17 @@ describe('ServiceBundleServices Entity', () => {
         { id: 2, name: 'ServiceBundleServices 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await serviceBundleServices.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceBundleServices/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ServiceBundleServices/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('ServiceBundleServices Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await serviceBundleServices.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceBundleServices/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ServiceBundleServices/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('ServiceBundleServices Entity', () => {
     it('should get servicebundleservices by id', async () => {
       const mockData = { id: 1, name: 'Test ServiceBundleServices' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await serviceBundleServices.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceBundleServices/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceBundleServices/1');
     });
   });
 
@@ -120,26 +120,29 @@ describe('ServiceBundleServices Entity', () => {
       const serviceBundleServicesData = { name: 'New ServiceBundleServices' };
       const mockResponse = { id: 1, ...serviceBundleServicesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await serviceBundleServices.create(serviceBundleServicesData);
+      const result = await serviceBundleServices.create(
+        serviceBundleServicesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ServiceBundleServices', serviceBundleServicesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ServiceBundleServices',
+        serviceBundleServicesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete servicebundleservices successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await serviceBundleServices.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ServiceBundleServices/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ServiceBundleServices/1');
     });
   });
 });

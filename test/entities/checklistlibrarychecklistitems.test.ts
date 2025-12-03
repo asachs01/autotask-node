@@ -51,7 +51,10 @@ describe('ChecklistLibraryChecklistItems Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    checklistLibraryChecklistItems = new ChecklistLibraryChecklistItems(mockAxios, mockLogger);
+    checklistLibraryChecklistItems = new ChecklistLibraryChecklistItems(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ChecklistLibraryChecklistItems Entity', () => {
         { id: 2, name: 'ChecklistLibraryChecklistItems 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await checklistLibraryChecklistItems.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraryChecklistItems/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ChecklistLibraryChecklistItems/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ChecklistLibraryChecklistItems Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await checklistLibraryChecklistItems.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraryChecklistItems/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ChecklistLibraryChecklistItems/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,74 +109,95 @@ describe('ChecklistLibraryChecklistItems Entity', () => {
     it('should get checklistlibrarychecklistitems by id', async () => {
       const mockData = { id: 1, name: 'Test ChecklistLibraryChecklistItems' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await checklistLibraryChecklistItems.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraryChecklistItems/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ChecklistLibraryChecklistItems/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create checklistlibrarychecklistitems successfully', async () => {
-      const checklistLibraryChecklistItemsData = { name: 'New ChecklistLibraryChecklistItems' };
+      const checklistLibraryChecklistItemsData = {
+        name: 'New ChecklistLibraryChecklistItems',
+      };
       const mockResponse = { id: 1, ...checklistLibraryChecklistItemsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await checklistLibraryChecklistItems.create(checklistLibraryChecklistItemsData);
+      const result = await checklistLibraryChecklistItems.create(
+        checklistLibraryChecklistItemsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ChecklistLibraryChecklistItems', checklistLibraryChecklistItemsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ChecklistLibraryChecklistItems',
+        checklistLibraryChecklistItemsData
+      );
     });
   });
 
   describe('update', () => {
     it('should update checklistlibrarychecklistitems successfully', async () => {
-      const checklistLibraryChecklistItemsData = { name: 'Updated ChecklistLibraryChecklistItems' };
+      const checklistLibraryChecklistItemsData = {
+        name: 'Updated ChecklistLibraryChecklistItems',
+      };
       const mockResponse = { id: 1, ...checklistLibraryChecklistItemsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await checklistLibraryChecklistItems.update(
+        1,
+        checklistLibraryChecklistItemsData
       );
 
-      const result = await checklistLibraryChecklistItems.update(1, checklistLibraryChecklistItemsData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ChecklistLibraryChecklistItems/1', checklistLibraryChecklistItemsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ChecklistLibraryChecklistItems/1',
+        checklistLibraryChecklistItemsData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update checklistlibrarychecklistitems successfully', async () => {
-      const checklistLibraryChecklistItemsData = { name: 'Patched ChecklistLibraryChecklistItems' };
+      const checklistLibraryChecklistItemsData = {
+        name: 'Patched ChecklistLibraryChecklistItems',
+      };
       const mockResponse = { id: 1, ...checklistLibraryChecklistItemsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await checklistLibraryChecklistItems.patch(1, checklistLibraryChecklistItemsData);
+      const result = await checklistLibraryChecklistItems.patch(
+        1,
+        checklistLibraryChecklistItemsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ChecklistLibraryChecklistItems/1', checklistLibraryChecklistItemsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ChecklistLibraryChecklistItems/1',
+        checklistLibraryChecklistItemsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete checklistlibrarychecklistitems successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await checklistLibraryChecklistItems.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ChecklistLibraryChecklistItems/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ChecklistLibraryChecklistItems/1'
+      );
     });
   });
 });

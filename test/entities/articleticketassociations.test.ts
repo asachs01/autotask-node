@@ -51,7 +51,10 @@ describe('ArticleTicketAssociations Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    articleTicketAssociations = new ArticleTicketAssociations(mockAxios, mockLogger);
+    articleTicketAssociations = new ArticleTicketAssociations(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ArticleTicketAssociations Entity', () => {
         { id: 2, name: 'ArticleTicketAssociations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await articleTicketAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleTicketAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ArticleTicketAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ArticleTicketAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await articleTicketAssociations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleTicketAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ArticleTicketAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,49 @@ describe('ArticleTicketAssociations Entity', () => {
     it('should get articleticketassociations by id', async () => {
       const mockData = { id: 1, name: 'Test ArticleTicketAssociations' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await articleTicketAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ArticleTicketAssociations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ArticleTicketAssociations/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create articleticketassociations successfully', async () => {
-      const articleTicketAssociationsData = { name: 'New ArticleTicketAssociations' };
+      const articleTicketAssociationsData = {
+        name: 'New ArticleTicketAssociations',
+      };
       const mockResponse = { id: 1, ...articleTicketAssociationsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await articleTicketAssociations.create(articleTicketAssociationsData);
+      const result = await articleTicketAssociations.create(
+        articleTicketAssociationsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ArticleTicketAssociations', articleTicketAssociationsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ArticleTicketAssociations',
+        articleTicketAssociationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete articleticketassociations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await articleTicketAssociations.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ArticleTicketAssociations/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ArticleTicketAssociations/1'
+      );
     });
   });
 });

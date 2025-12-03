@@ -65,16 +65,14 @@ describe('CompanyNotes Entity', () => {
         { id: 2, name: 'CompanyNotes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await companyNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyNotes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('CompanyNotes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await companyNotes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyNotes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('CompanyNotes Entity', () => {
     it('should get companynotes by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyNotes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await companyNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyNotes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyNotes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('CompanyNotes Entity', () => {
       const companyNotesData = { name: 'New CompanyNotes' };
       const mockResponse = { id: 1, ...companyNotesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await companyNotes.create(companyNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanyNotes', companyNotesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/CompanyNotes',
+        companyNotesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('CompanyNotes Entity', () => {
       const companyNotesData = { name: 'Updated CompanyNotes' };
       const mockResponse = { id: 1, ...companyNotesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await companyNotes.update(1, companyNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/CompanyNotes/1', companyNotesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/CompanyNotes/1',
+        companyNotesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('CompanyNotes Entity', () => {
       const companyNotesData = { name: 'Patched CompanyNotes' };
       const mockResponse = { id: 1, ...companyNotesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await companyNotes.patch(1, companyNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/CompanyNotes/1', companyNotesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/CompanyNotes/1',
+        companyNotesData
+      );
     });
   });
 });

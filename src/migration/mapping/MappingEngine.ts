@@ -20,7 +20,7 @@ import {
   TransformationType,
   ConditionOperator,
   MappingAction,
-  ErrorSeverity
+  ErrorSeverity,
 } from '../types/MigrationTypes';
 
 export interface MappingConfig {
@@ -60,7 +60,7 @@ export interface MappingSuggestion {
 export class MappingEngine extends EventEmitter {
   private config: MappingConfig;
   private logger: Logger;
-  private customFunctions: Map<string, Function> = new Map();
+  private customFunctions: Map<string, (...args: any[]) => any> = new Map();
   private cache: Map<string, any> = new Map();
   private stats: MappingStats;
 
@@ -74,7 +74,7 @@ export class MappingEngine extends EventEmitter {
       failedRecords: 0,
       transformedFields: 0,
       skippedFields: 0,
-      validationErrors: 0
+      validationErrors: 0,
     };
   }
 
@@ -84,7 +84,7 @@ export class MappingEngine extends EventEmitter {
   async transformBatch(entityType: string, records: any[]): Promise<any[]> {
     const startTime = Date.now();
     const mappingRule = this.getMappingRule(entityType);
-    
+
     if (!mappingRule) {
       throw new Error(`No mapping rule found for entity type: ${entityType}`);
     }
@@ -96,18 +96,26 @@ export class MappingEngine extends EventEmitter {
       entityType,
       batch: records,
       dependencies: new Map(),
-      cache: this.cache
+      cache: this.cache,
     };
 
     for (const record of records) {
       try {
-        const transformedRecord = await this.transformRecord(mappingRule, record, context);
+        const transformedRecord = await this.transformRecord(
+          mappingRule,
+          record,
+          context
+        );
         transformedRecords.push(transformedRecord);
         this.stats.mappedRecords++;
       } catch (error) {
-        this.logger.error('Record transformation failed', { entityType, record, error });
+        this.logger.error('Record transformation failed', {
+          entityType,
+          record,
+          error,
+        });
         this.stats.failedRecords++;
-        
+
         if (!this.config.allowPartialMapping) {
           throw error;
         }
@@ -119,14 +127,14 @@ export class MappingEngine extends EventEmitter {
       entityType,
       recordCount: records.length,
       successCount: transformedRecords.length,
-      processingTime
+      processingTime,
     });
 
     this.emit('batchTransformed', {
       entityType,
       originalCount: records.length,
       transformedCount: transformedRecords.length,
-      processingTime
+      processingTime,
     });
 
     return transformedRecords;
@@ -145,7 +153,12 @@ export class MappingEngine extends EventEmitter {
     // Process field mappings
     for (const fieldMapping of mappingRule.fieldMappings) {
       try {
-        const value = await this.transformField(fieldMapping, record, context, mappingRule);
+        const value = await this.transformField(
+          fieldMapping,
+          record,
+          context,
+          mappingRule
+        );
         if (value !== undefined) {
           transformedRecord[fieldMapping.targetField] = value;
           this.stats.transformedFields++;
@@ -156,9 +169,9 @@ export class MappingEngine extends EventEmitter {
         this.logger.error('Field transformation failed', {
           sourceField: fieldMapping.sourceField,
           targetField: fieldMapping.targetField,
-          error
+          error,
         });
-        
+
         if (fieldMapping.required) {
           throw error;
         }
@@ -168,13 +181,21 @@ export class MappingEngine extends EventEmitter {
     // Apply custom transformations
     if (this.config.customTransformations) {
       for (const customTransform of this.config.customTransformations) {
-        if (customTransform.sourceEntity === mappingRule.sourceEntity &&
-            customTransform.targetEntity === mappingRule.targetEntity) {
+        if (
+          customTransform.sourceEntity === mappingRule.sourceEntity &&
+          customTransform.targetEntity === mappingRule.targetEntity
+        ) {
           try {
-            const customResult = await customTransform.function(transformedRecord, context);
+            const customResult = await customTransform.function(
+              transformedRecord,
+              context
+            );
             Object.assign(transformedRecord, customResult);
           } catch (error) {
-            this.logger.error('Custom transformation failed', { customTransform: customTransform.name, error });
+            this.logger.error('Custom transformation failed', {
+              customTransform: customTransform.name,
+              error,
+            });
           }
         }
       }
@@ -202,7 +223,9 @@ export class MappingEngine extends EventEmitter {
       if (fieldMapping.defaultValue !== undefined) {
         value = fieldMapping.defaultValue;
       } else if (fieldMapping.required) {
-        throw new Error(`Required field ${fieldMapping.sourceField} is missing`);
+        throw new Error(
+          `Required field ${fieldMapping.sourceField} is missing`
+        );
       } else {
         return undefined;
       }
@@ -211,7 +234,9 @@ export class MappingEngine extends EventEmitter {
     // Apply transformations
     if (mappingRule.transformations) {
       const fieldTransformations = mappingRule.transformations.filter(
-        t => t.field === fieldMapping.sourceField || t.field === fieldMapping.targetField
+        t =>
+          t.field === fieldMapping.sourceField ||
+          t.field === fieldMapping.targetField
       );
 
       for (const transformation of fieldTransformations) {
@@ -224,11 +249,16 @@ export class MappingEngine extends EventEmitter {
 
     // Validate field
     if (fieldMapping.validation && fieldMapping.validation.length > 0) {
-      const validationResult = this.validateField(value, fieldMapping.validation);
+      const validationResult = this.validateField(
+        value,
+        fieldMapping.validation
+      );
       if (!validationResult.isValid) {
         this.stats.validationErrors++;
         if (this.config.strictValidation) {
-          throw new Error(`Validation failed for field ${fieldMapping.targetField}: ${validationResult.errors.join(', ')}`);
+          throw new Error(
+            `Validation failed for field ${fieldMapping.targetField}: ${validationResult.errors.join(', ')}`
+          );
         }
       }
     }
@@ -247,25 +277,33 @@ export class MappingEngine extends EventEmitter {
     switch (transformation.type) {
       case TransformationType.FORMAT:
         return this.formatValue(value, transformation.parameters);
-        
+
       case TransformationType.CONVERT:
         return this.convertValue(value, transformation.parameters);
-        
+
       case TransformationType.SPLIT:
         return this.splitValue(value, transformation.parameters);
-        
+
       case TransformationType.MERGE:
         return this.mergeValue(value, transformation.parameters, context);
-        
+
       case TransformationType.LOOKUP:
-        return await this.lookupValue(value, transformation.parameters, context);
-        
+        return await this.lookupValue(
+          value,
+          transformation.parameters,
+          context
+        );
+
       case TransformationType.CALCULATE:
         return this.calculateValue(value, transformation.parameters, context);
-        
+
       case TransformationType.CUSTOM:
-        return await this.applyCustomFunction(transformation.customFunction!, value, context);
-        
+        return await this.applyCustomFunction(
+          transformation.customFunction!,
+          value,
+          context
+        );
+
       default:
         return value;
     }
@@ -284,20 +322,24 @@ export class MappingEngine extends EventEmitter {
 
     for (const condition of mappingRule.conditions) {
       const fieldValue = sourceRecord[condition.field];
-      const conditionMet = this.evaluateCondition(fieldValue, condition.operator, condition.value);
+      const conditionMet = this.evaluateCondition(
+        fieldValue,
+        condition.operator,
+        condition.value
+      );
 
       if (conditionMet) {
         switch (condition.action) {
           case MappingAction.EXCLUDE:
             throw new Error('Record excluded by condition');
-            
+
           case MappingAction.SET_DEFAULT:
             // Set default values for specified fields
             if (condition.value && typeof condition.value === 'object') {
               Object.assign(targetRecord, condition.value);
             }
             break;
-            
+
           case MappingAction.TRANSFORM:
             // Apply additional transformations
             break;
@@ -309,41 +351,45 @@ export class MappingEngine extends EventEmitter {
   /**
    * Evaluate a mapping condition
    */
-  private evaluateCondition(value: any, operator: ConditionOperator, conditionValue: any): boolean {
+  private evaluateCondition(
+    value: any,
+    operator: ConditionOperator,
+    conditionValue: any
+  ): boolean {
     switch (operator) {
       case ConditionOperator.EQUALS:
         return value === conditionValue;
-        
+
       case ConditionOperator.NOT_EQUALS:
         return value !== conditionValue;
-        
+
       case ConditionOperator.CONTAINS:
         return typeof value === 'string' && value.includes(conditionValue);
-        
+
       case ConditionOperator.STARTS_WITH:
         return typeof value === 'string' && value.startsWith(conditionValue);
-        
+
       case ConditionOperator.ENDS_WITH:
         return typeof value === 'string' && value.endsWith(conditionValue);
-        
+
       case ConditionOperator.GREATER_THAN:
         return Number(value) > Number(conditionValue);
-        
+
       case ConditionOperator.LESS_THAN:
         return Number(value) < Number(conditionValue);
-        
+
       case ConditionOperator.IN:
         return Array.isArray(conditionValue) && conditionValue.includes(value);
-        
+
       case ConditionOperator.NOT_IN:
         return Array.isArray(conditionValue) && !conditionValue.includes(value);
-        
+
       case ConditionOperator.IS_NULL:
         return value === null || value === undefined || value === '';
-        
+
       case ConditionOperator.IS_NOT_NULL:
         return value !== null && value !== undefined && value !== '';
-        
+
       default:
         return false;
     }
@@ -363,33 +409,36 @@ export class MappingEngine extends EventEmitter {
               field: 'unknown',
               message: 'Field is required',
               code: 'REQUIRED',
-              severity: ErrorSeverity.HIGH
+              severity: ErrorSeverity.HIGH,
             });
           }
           break;
-          
+
         case 'email':
           if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
             errors.push({
               field: 'unknown',
               message: 'Invalid email format',
               code: 'INVALID_EMAIL',
-              severity: ErrorSeverity.MEDIUM
+              severity: ErrorSeverity.MEDIUM,
             });
           }
           break;
-          
+
         case 'phone':
-          if (value && !/^[\+]?[1-9][\d]{0,15}$/.test(value.toString().replace(/\D/g, ''))) {
+          if (
+            value &&
+            !/^[\+]?[1-9][\d]{0,15}$/.test(value.toString().replace(/\D/g, ''))
+          ) {
             errors.push({
               field: 'unknown',
               message: 'Invalid phone format',
               code: 'INVALID_PHONE',
-              severity: ErrorSeverity.MEDIUM
+              severity: ErrorSeverity.MEDIUM,
             });
           }
           break;
-          
+
         case 'url':
           if (value) {
             try {
@@ -399,19 +448,19 @@ export class MappingEngine extends EventEmitter {
                 field: 'unknown',
                 message: 'Invalid URL format',
                 code: 'INVALID_URL',
-                severity: ErrorSeverity.MEDIUM
+                severity: ErrorSeverity.MEDIUM,
               });
             }
           }
           break;
-          
+
         case 'date':
           if (value && isNaN(Date.parse(value))) {
             errors.push({
               field: 'unknown',
               message: 'Invalid date format',
               code: 'INVALID_DATE',
-              severity: ErrorSeverity.MEDIUM
+              severity: ErrorSeverity.MEDIUM,
             });
           }
           break;
@@ -421,25 +470,30 @@ export class MappingEngine extends EventEmitter {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings: []
+      warnings: [],
     };
   }
 
   /**
    * Validate a transformed record
    */
-  async validateRecord(entityType: string, record: any): Promise<ValidationResult> {
+  async validateRecord(
+    entityType: string,
+    record: any
+  ): Promise<ValidationResult> {
     const mappingRule = this.getMappingRule(entityType);
     if (!mappingRule) {
       return {
         isValid: false,
-        errors: [{
-          field: 'entity',
-          message: `No mapping rule found for entity type: ${entityType}`,
-          code: 'NO_MAPPING_RULE',
-          severity: ErrorSeverity.CRITICAL
-        }],
-        warnings: []
+        errors: [
+          {
+            field: 'entity',
+            message: `No mapping rule found for entity type: ${entityType}`,
+            code: 'NO_MAPPING_RULE',
+            severity: ErrorSeverity.CRITICAL,
+          },
+        ],
+        warnings: [],
       };
     }
 
@@ -454,14 +508,20 @@ export class MappingEngine extends EventEmitter {
             field: fieldMapping.targetField,
             message: `Required field is missing or empty`,
             code: 'REQUIRED_FIELD_MISSING',
-            severity: ErrorSeverity.HIGH
+            severity: ErrorSeverity.HIGH,
           });
         }
       }
 
       // Validate field format
-      if (record[fieldMapping.targetField] !== undefined && fieldMapping.validation) {
-        const fieldValidation = this.validateField(record[fieldMapping.targetField], fieldMapping.validation);
+      if (
+        record[fieldMapping.targetField] !== undefined &&
+        fieldMapping.validation
+      ) {
+        const fieldValidation = this.validateField(
+          record[fieldMapping.targetField],
+          fieldMapping.validation
+        );
         errors.push(...fieldValidation.errors);
       }
     }
@@ -469,7 +529,7 @@ export class MappingEngine extends EventEmitter {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings: []
+      warnings: [],
     };
   }
 
@@ -489,19 +549,28 @@ export class MappingEngine extends EventEmitter {
         sourceType: this.inferDataType(sampleRecords, sourceField),
         confidence: 0,
         suggestions: [],
-        issues: []
+        issues: [],
       };
 
       // Find existing mapping
-      const existingMapping = mappingRule?.fieldMappings.find(m => m.sourceField === sourceField);
+      const existingMapping = mappingRule?.fieldMappings.find(
+        m => m.sourceField === sourceField
+      );
       if (existingMapping) {
         analysis.targetField = existingMapping.targetField;
         analysis.targetType = existingMapping.dataType;
         analysis.confidence = 1.0;
       } else {
         // Generate suggestions
-        analysis.suggestions = this.generateMappingSuggestions(sourceField, analysis.sourceType, entityType);
-        analysis.confidence = analysis.suggestions.length > 0 ? analysis.suggestions[0].confidence : 0;
+        analysis.suggestions = this.generateMappingSuggestions(
+          sourceField,
+          analysis.sourceType,
+          entityType
+        );
+        analysis.confidence =
+          analysis.suggestions.length > 0
+            ? analysis.suggestions[0].confidence
+            : 0;
       }
 
       // Identify potential issues
@@ -526,32 +595,32 @@ export class MappingEngine extends EventEmitter {
     // Common field name mappings
     const commonMappings: Record<string, Record<string, string>> = {
       companies: {
-        'company_name': 'companyName',
-        'name': 'companyName',
-        'address1': 'addressLine1',
-        'address': 'addressLine1',
-        'phone': 'phone',
-        'email': 'email',
-        'website': 'webAddress'
+        company_name: 'companyName',
+        name: 'companyName',
+        address1: 'addressLine1',
+        address: 'addressLine1',
+        phone: 'phone',
+        email: 'email',
+        website: 'webAddress',
       },
       contacts: {
-        'first_name': 'firstName',
-        'firstname': 'firstName',
-        'last_name': 'lastName',
-        'lastname': 'lastName',
-        'email': 'emailAddress',
-        'phone': 'phone',
-        'title': 'title'
+        first_name: 'firstName',
+        firstname: 'firstName',
+        last_name: 'lastName',
+        lastname: 'lastName',
+        email: 'emailAddress',
+        phone: 'phone',
+        title: 'title',
       },
       tickets: {
-        'subject': 'title',
-        'title': 'title',
-        'description': 'description',
-        'priority': 'priority',
-        'status': 'status',
-        'created_date': 'createDate',
-        'created': 'createDate'
-      }
+        subject: 'title',
+        title: 'title',
+        description: 'description',
+        priority: 'priority',
+        status: 'status',
+        created_date: 'createDate',
+        created: 'createDate',
+      },
     };
 
     const entityMappings = commonMappings[entityType] || {};
@@ -559,12 +628,15 @@ export class MappingEngine extends EventEmitter {
 
     // Direct name matches
     for (const [pattern, targetField] of Object.entries(entityMappings)) {
-      if (lowerSourceField.includes(pattern) || pattern.includes(lowerSourceField)) {
+      if (
+        lowerSourceField.includes(pattern) ||
+        pattern.includes(lowerSourceField)
+      ) {
         suggestions.push({
           targetField,
           confidence: 0.9,
           reason: 'Direct field name match',
-          transformation: this.suggestTransformation(sourceType, targetField)
+          transformation: this.suggestTransformation(sourceType, targetField),
         });
       }
     }
@@ -574,15 +646,18 @@ export class MappingEngine extends EventEmitter {
       suggestions.push({
         targetField: 'emailAddress',
         confidence: 0.8,
-        reason: 'Email field pattern detected'
+        reason: 'Email field pattern detected',
       });
     }
 
-    if (lowerSourceField.includes('phone') || lowerSourceField.includes('tel')) {
+    if (
+      lowerSourceField.includes('phone') ||
+      lowerSourceField.includes('tel')
+    ) {
       suggestions.push({
         targetField: 'phone',
         confidence: 0.8,
-        reason: 'Phone field pattern detected'
+        reason: 'Phone field pattern detected',
       });
     }
 
@@ -590,7 +665,7 @@ export class MappingEngine extends EventEmitter {
       suggestions.push({
         targetField: 'addressLine1',
         confidence: 0.7,
-        reason: 'Address field pattern detected'
+        reason: 'Address field pattern detected',
       });
     }
 
@@ -601,10 +676,10 @@ export class MappingEngine extends EventEmitter {
 
   private formatValue(value: any, parameters: any): any {
     if (!parameters || !parameters.format) return value;
-    
+
     const format = parameters.format;
     const str = value?.toString() || '';
-    
+
     switch (format) {
       case 'uppercase':
         return str.toUpperCase();
@@ -621,9 +696,9 @@ export class MappingEngine extends EventEmitter {
 
   private convertValue(value: any, parameters: any): any {
     if (!parameters || !parameters.to) return value;
-    
+
     const targetType = parameters.to;
-    
+
     switch (targetType) {
       case 'string':
         return value?.toString() || '';
@@ -640,40 +715,54 @@ export class MappingEngine extends EventEmitter {
 
   private splitValue(value: any, parameters: any): any {
     if (!parameters || !parameters.delimiter) return value;
-    
+
     const str = value?.toString() || '';
     const parts = str.split(parameters.delimiter);
-    
+
     if (parameters.index !== undefined) {
       return parts[parameters.index] || '';
     }
-    
+
     return parts;
   }
 
-  private mergeValue(value: any, parameters: any, context: TransformationContext): any {
+  private mergeValue(
+    value: any,
+    parameters: any,
+    context: TransformationContext
+  ): any {
     if (!parameters || !parameters.fields) return value;
-    
+
     const fields = parameters.fields as string[];
     const delimiter = parameters.delimiter || ' ';
-    
-    const values = fields.map(field => context.batch[0]?.[field] || '').filter(v => v);
+
+    const values = fields
+      .map(field => context.batch[0]?.[field] || '')
+      .filter(v => v);
     return values.join(delimiter);
   }
 
-  private async lookupValue(value: any, parameters: any, context: TransformationContext): Promise<any> {
+  private async lookupValue(
+    value: any,
+    parameters: any,
+    context: TransformationContext
+  ): Promise<any> {
     if (!parameters || !parameters.table) return value;
-    
+
     const lookupTable = parameters.table as Record<string, any>;
     return lookupTable[value] || parameters.default || value;
   }
 
-  private calculateValue(value: any, parameters: any, context: TransformationContext): any {
+  private calculateValue(
+    value: any,
+    parameters: any,
+    context: TransformationContext
+  ): any {
     if (!parameters || !parameters.expression) return value;
-    
+
     // Simple expression evaluation (would be enhanced in production)
     const expression = parameters.expression as string;
-    
+
     try {
       // Basic math expressions only for security
       if (/^[\d\+\-\*\/\(\)\s\.]+$/.test(expression)) {
@@ -682,28 +771,35 @@ export class MappingEngine extends EventEmitter {
     } catch {
       // Fallback to original value
     }
-    
+
     return value;
   }
 
-  private async applyCustomFunction(functionName: string, value: any, context: TransformationContext): Promise<any> {
+  private async applyCustomFunction(
+    functionName: string,
+    value: any,
+    context: TransformationContext
+  ): Promise<any> {
     const customFunction = this.customFunctions.get(functionName);
     if (!customFunction) {
       this.logger.warn('Custom function not found', { functionName });
       return value;
     }
-    
+
     try {
       return await customFunction(value, context);
     } catch (error) {
-      this.logger.error('Custom function execution failed', { functionName, error });
+      this.logger.error('Custom function execution failed', {
+        functionName,
+        error,
+      });
       return value;
     }
   }
 
   private convertDataType(value: any, targetType: DataType): any {
     if (value === null || value === undefined) return null;
-    
+
     switch (targetType) {
       case DataType.STRING:
         return value.toString();
@@ -721,64 +817,75 @@ export class MappingEngine extends EventEmitter {
   }
 
   private inferDataType(records: any[], fieldName: string): DataType {
-    const sampleValues = records.slice(0, 10).map(r => r[fieldName]).filter(v => v != null);
-    
+    const sampleValues = records
+      .slice(0, 10)
+      .map(r => r[fieldName])
+      .filter(v => v != null);
+
     if (sampleValues.length === 0) return DataType.STRING;
-    
+
     const firstValue = sampleValues[0];
-    
+
     if (typeof firstValue === 'boolean') return DataType.BOOLEAN;
     if (typeof firstValue === 'number') return DataType.NUMBER;
-    
+
     if (typeof firstValue === 'string') {
-      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(firstValue)) return DataType.DATETIME;
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(firstValue))
+        return DataType.DATETIME;
       if (/^\d{4}-\d{2}-\d{2}$/.test(firstValue)) return DataType.DATE;
       if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(firstValue)) return DataType.EMAIL;
-      if (/^[\+]?[1-9][\d]{0,15}$/.test(firstValue.replace(/\D/g, ''))) return DataType.PHONE;
+      if (/^[\+]?[1-9][\d]{0,15}$/.test(firstValue.replace(/\D/g, '')))
+        return DataType.PHONE;
     }
-    
+
     return DataType.STRING;
   }
 
-  private identifyMappingIssues(fieldName: string, sampleRecords: any[]): string[] {
+  private identifyMappingIssues(
+    fieldName: string,
+    sampleRecords: any[]
+  ): string[] {
     const issues: string[] = [];
     const values = sampleRecords.map(r => r[fieldName]);
-    
+
     // Check for high null rate
     const nullCount = values.filter(v => v == null || v === '').length;
     const nullRate = nullCount / values.length;
-    
+
     if (nullRate > 0.5) {
       issues.push(`High null rate (${Math.round(nullRate * 100)}%)`);
     }
-    
+
     // Check for inconsistent data types
     const types = new Set(values.filter(v => v != null).map(v => typeof v));
     if (types.size > 1) {
       issues.push('Inconsistent data types');
     }
-    
+
     return issues;
   }
 
-  private suggestTransformation(sourceType: DataType, targetField: string): FieldTransformation | undefined {
+  private suggestTransformation(
+    sourceType: DataType,
+    targetField: string
+  ): FieldTransformation | undefined {
     // Suggest transformations based on field types and names
     if (targetField.includes('phone') || targetField.includes('Phone')) {
       return {
         field: targetField,
         type: TransformationType.FORMAT,
-        parameters: { format: 'phone' }
+        parameters: { format: 'phone' },
       };
     }
-    
+
     if (targetField.includes('email') || targetField.includes('Email')) {
       return {
         field: targetField,
         type: TransformationType.FORMAT,
-        parameters: { format: 'lowercase' }
+        parameters: { format: 'lowercase' },
       };
     }
-    
+
     return undefined;
   }
 
@@ -789,7 +896,7 @@ export class MappingEngine extends EventEmitter {
   /**
    * Register a custom transformation function
    */
-  registerCustomFunction(name: string, func: Function): void {
+  registerCustomFunction(name: string, func: (...args: any[]) => any): void {
     this.customFunctions.set(name, func);
   }
 
@@ -810,7 +917,7 @@ export class MappingEngine extends EventEmitter {
       failedRecords: 0,
       transformedFields: 0,
       skippedFields: 0,
-      validationErrors: 0
+      validationErrors: 0,
     };
   }
 }

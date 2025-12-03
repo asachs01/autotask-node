@@ -51,7 +51,8 @@ describe('ConfigurationItemCategoryUdfAssociations Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    configurationItemCategoryUdfAssociations = new ConfigurationItemCategoryUdfAssociations(mockAxios, mockLogger);
+    configurationItemCategoryUdfAssociations =
+      new ConfigurationItemCategoryUdfAssociations(mockAxios, mockLogger);
   });
 
   afterEach(() => {
@@ -65,16 +66,17 @@ describe('ConfigurationItemCategoryUdfAssociations Entity', () => {
         { id: 2, name: 'ConfigurationItemCategoryUdfAssociations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await configurationItemCategoryUdfAssociations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemCategoryUdfAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemCategoryUdfAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,33 +87,37 @@ describe('ConfigurationItemCategoryUdfAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await configurationItemCategoryUdfAssociations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemCategoryUdfAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemCategoryUdfAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('get', () => {
     it('should get configurationitemcategoryudfassociations by id', async () => {
-      const mockData = { id: 1, name: 'Test ConfigurationItemCategoryUdfAssociations' };
+      const mockData = {
+        id: 1,
+        name: 'Test ConfigurationItemCategoryUdfAssociations',
+      };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await configurationItemCategoryUdfAssociations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ConfigurationItemCategoryUdfAssociations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ConfigurationItemCategoryUdfAssociations/1'
+      );
     });
   });
 });

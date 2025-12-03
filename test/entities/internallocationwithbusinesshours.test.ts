@@ -51,7 +51,10 @@ describe('InternalLocationWithBusinessHours Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    internalLocationWithBusinessHours = new InternalLocationWithBusinessHours(mockAxios, mockLogger);
+    internalLocationWithBusinessHours = new InternalLocationWithBusinessHours(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('InternalLocationWithBusinessHours Entity', () => {
         { id: 2, name: 'InternalLocationWithBusinessHours 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await internalLocationWithBusinessHours.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InternalLocationWithBusinessHours/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InternalLocationWithBusinessHours/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,33 +89,37 @@ describe('InternalLocationWithBusinessHours Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await internalLocationWithBusinessHours.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InternalLocationWithBusinessHours/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InternalLocationWithBusinessHours/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('get', () => {
     it('should get internallocationwithbusinesshours by id', async () => {
-      const mockData = { id: 1, name: 'Test InternalLocationWithBusinessHours' };
+      const mockData = {
+        id: 1,
+        name: 'Test InternalLocationWithBusinessHours',
+      };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await internalLocationWithBusinessHours.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InternalLocationWithBusinessHours/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InternalLocationWithBusinessHours/1'
+      );
     });
   });
 });

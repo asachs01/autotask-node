@@ -65,16 +65,14 @@ describe('ProjectCharges Entity', () => {
         { id: 2, name: 'ProjectCharges 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await projectCharges.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectCharges/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectCharges/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ProjectCharges Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await projectCharges.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectCharges/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectCharges/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ProjectCharges Entity', () => {
     it('should get projectcharges by id', async () => {
       const mockData = { id: 1, name: 'Test ProjectCharges' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await projectCharges.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectCharges/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectCharges/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ProjectCharges Entity', () => {
       const projectChargesData = { name: 'New ProjectCharges' };
       const mockResponse = { id: 1, ...projectChargesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await projectCharges.create(projectChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ProjectCharges', projectChargesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ProjectCharges',
+        projectChargesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ProjectCharges Entity', () => {
       const projectChargesData = { name: 'Updated ProjectCharges' };
       const mockResponse = { id: 1, ...projectChargesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await projectCharges.update(1, projectChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ProjectCharges/1', projectChargesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ProjectCharges/1',
+        projectChargesData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('ProjectCharges Entity', () => {
       const projectChargesData = { name: 'Patched ProjectCharges' };
       const mockResponse = { id: 1, ...projectChargesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await projectCharges.patch(1, projectChargesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ProjectCharges/1', projectChargesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ProjectCharges/1',
+        projectChargesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete projectcharges successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await projectCharges.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ProjectCharges/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ProjectCharges/1');
     });
   });
 });

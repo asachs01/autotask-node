@@ -65,16 +65,14 @@ describe('DeletedTicketLogs Entity', () => {
         { id: 2, name: 'DeletedTicketLogs 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await deletedTicketLogs.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('DeletedTicketLogs Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await deletedTicketLogs.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('DeletedTicketLogs Entity', () => {
     it('should get deletedticketlogs by id', async () => {
       const mockData = { id: 1, name: 'Test DeletedTicketLogs' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await deletedTicketLogs.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/1');
     });
   });
 });

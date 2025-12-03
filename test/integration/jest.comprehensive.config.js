@@ -7,7 +7,7 @@ const config = {
   // Target comprehensive integration tests
   testMatch: [
     '<rootDir>/test/integration/sdk-integration.test.ts',
-    '<rootDir>/test/integration/mock-server.test.ts'
+    '<rootDir>/test/integration/mock-server.test.ts',
   ],
 
   // Optimized timeout for comprehensive tests
@@ -76,8 +76,7 @@ const config = {
   // Environment setup
   setupFilesAfterEnv: ['<rootDir>/test/integration/setup-comprehensive.ts'],
 
-  // Custom test environment variables
-  testEnvironment: 'node',
+  // Global teardown
   globalTeardown: '<rootDir>/test/integration/teardown-comprehensive.ts',
 };
 

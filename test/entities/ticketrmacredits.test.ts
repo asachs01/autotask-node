@@ -65,16 +65,14 @@ describe('TicketRmaCredits Entity', () => {
         { id: 2, name: 'TicketRmaCredits 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketRmaCredits.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('TicketRmaCredits Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketRmaCredits.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('TicketRmaCredits Entity', () => {
     it('should get ticketrmacredits by id', async () => {
       const mockData = { id: 1, name: 'Test TicketRmaCredits' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketRmaCredits.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('TicketRmaCredits Entity', () => {
       const ticketRmaCreditsData = { name: 'New TicketRmaCredits' };
       const mockResponse = { id: 1, ...ticketRmaCreditsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await ticketRmaCredits.create(ticketRmaCreditsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketRmaCredits', ticketRmaCreditsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TicketRmaCredits',
+        ticketRmaCreditsData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('TicketRmaCredits Entity', () => {
       const ticketRmaCreditsData = { name: 'Updated TicketRmaCredits' };
       const mockResponse = { id: 1, ...ticketRmaCreditsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await ticketRmaCredits.update(1, ticketRmaCreditsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TicketRmaCredits/1', ticketRmaCreditsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/TicketRmaCredits/1',
+        ticketRmaCreditsData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('TicketRmaCredits Entity', () => {
       const ticketRmaCreditsData = { name: 'Patched TicketRmaCredits' };
       const mockResponse = { id: 1, ...ticketRmaCreditsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await ticketRmaCredits.patch(1, ticketRmaCreditsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketRmaCredits/1', ticketRmaCreditsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/TicketRmaCredits/1',
+        ticketRmaCreditsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete ticketrmacredits successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await ticketRmaCredits.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TicketRmaCredits/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/TicketRmaCredits/1');
     });
   });
 });

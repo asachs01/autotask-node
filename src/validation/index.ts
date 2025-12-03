@@ -30,15 +30,15 @@ import { InputSanitizer } from './sanitization/InputSanitizer';
 import { SecurityValidator } from './security/SecurityValidator';
 import { ComplianceValidator } from './compliance/ComplianceValidator';
 import { QualityAssurance } from './quality/QualityAssurance';
-import { 
-  ValidationConfig, 
-  SanitizationConfig, 
+import {
+  ValidationConfig,
+  SanitizationConfig,
   ValidationContext,
   ValidationResult,
   EntitySchema,
   SecurityRule,
   ComplianceRule,
-  QualityRule
+  QualityRule,
 } from './types/ValidationTypes';
 
 /**
@@ -52,7 +52,7 @@ export class ValidationFactory {
    */
   public static create(logger?: winston.Logger): ValidationEngine {
     const effectiveLogger = logger || this.createDefaultLogger();
-    
+
     // Create default configuration
     const config: ValidationConfig = {
       strictMode: false,
@@ -65,7 +65,7 @@ export class ValidationFactory {
       maxValidationTime: 5000, // 5 seconds
       cacheValidationResults: true,
       auditAllValidations: true,
-      customValidators: []
+      customValidators: [],
     };
 
     const sanitizationConfig: SanitizationConfig = {
@@ -75,8 +75,18 @@ export class ValidationFactory {
       enableHTMLSanitization: true,
       enablePIIDetection: true,
       customSanitizers: [],
-      whitelistedTags: ['b', 'i', 'em', 'strong', 'u', 'p', 'br', 'span', 'div'],
-      whitelistedAttributes: ['class', 'id']
+      whitelistedTags: [
+        'b',
+        'i',
+        'em',
+        'strong',
+        'u',
+        'p',
+        'br',
+        'span',
+        'div',
+      ],
+      whitelistedAttributes: ['class', 'id'],
     };
 
     // Create components
@@ -109,7 +119,7 @@ export class ValidationFactory {
     logger?: winston.Logger
   ): ValidationEngine {
     const effectiveLogger = logger || this.createDefaultLogger();
-    
+
     // Merge with defaults
     const fullConfig: ValidationConfig = {
       strictMode: false,
@@ -123,7 +133,7 @@ export class ValidationFactory {
       cacheValidationResults: true,
       auditAllValidations: true,
       customValidators: [],
-      ...config
+      ...config,
     };
 
     const fullSanitizationConfig: SanitizationConfig = {
@@ -133,14 +143,27 @@ export class ValidationFactory {
       enableHTMLSanitization: true,
       enablePIIDetection: true,
       customSanitizers: [],
-      whitelistedTags: ['b', 'i', 'em', 'strong', 'u', 'p', 'br', 'span', 'div'],
+      whitelistedTags: [
+        'b',
+        'i',
+        'em',
+        'strong',
+        'u',
+        'p',
+        'br',
+        'span',
+        'div',
+      ],
       whitelistedAttributes: ['class', 'id'],
-      ...sanitizationConfig
+      ...sanitizationConfig,
     };
 
     // Create components
     const schemaRegistry = new SchemaRegistry(effectiveLogger);
-    const sanitizer = new InputSanitizer(fullSanitizationConfig, effectiveLogger);
+    const sanitizer = new InputSanitizer(
+      fullSanitizationConfig,
+      effectiveLogger
+    );
     const securityValidator = new SecurityValidator(effectiveLogger);
     const complianceValidator = new ComplianceValidator(effectiveLogger);
     const qualityAssurance = new QualityAssurance(effectiveLogger);
@@ -193,9 +216,9 @@ export class ValidationFactory {
           format: winston.format.combine(
             winston.format.colorize(),
             winston.format.simple()
-          )
-        })
-      ]
+          ),
+        }),
+      ],
     });
   }
 }
@@ -208,18 +231,18 @@ export class ValidationUtils {
    * Quick validation for a single entity with default settings
    */
   public static async validateEntity(
-    entity: any, 
-    entityType: string, 
+    entity: any,
+    entityType: string,
     operation: 'create' | 'update' | 'delete' | 'read' = 'create',
     userId?: string
   ): Promise<ValidationResult> {
     const engine = ValidationFactory.getInstance();
-    
+
     const context: ValidationContext = {
       operation,
       entityType,
       userId,
-      requestId: this.generateRequestId()
+      requestId: this.generateRequestId(),
     };
 
     return engine.validateEntity(entity, context);
@@ -229,19 +252,23 @@ export class ValidationUtils {
    * Validate multiple entities in batch
    */
   public static async validateBatch(
-    entities: Array<{ entity: any; entityType: string; operation?: 'create' | 'update' | 'delete' | 'read' }>,
+    entities: Array<{
+      entity: any;
+      entityType: string;
+      operation?: 'create' | 'update' | 'delete' | 'read';
+    }>,
     userId?: string
   ): Promise<ValidationResult[]> {
     const engine = ValidationFactory.getInstance();
-    
+
     const contexts = entities.map(({ entity, entityType, operation }) => ({
       entity,
       context: {
         operation: operation || 'create',
         entityType,
         userId,
-        requestId: this.generateRequestId()
-      } as ValidationContext
+        requestId: this.generateRequestId(),
+      } as ValidationContext,
     }));
 
     return engine.validateBatch(contexts);
@@ -251,11 +278,11 @@ export class ValidationUtils {
    * Quick sanitization for untrusted input
    */
   public static async sanitizeInput(
-    data: any, 
+    data: any,
     entityType: string = 'unknown'
   ): Promise<any> {
     const engine = ValidationFactory.getInstance();
-    
+
     // Access the sanitizer directly (simplified approach)
     const logger = winston.createLogger({ silent: true });
     const sanitizationConfig: SanitizationConfig = {
@@ -266,9 +293,9 @@ export class ValidationUtils {
       enablePIIDetection: true,
       customSanitizers: [],
       whitelistedTags: ['b', 'i', 'em', 'strong', 'u', 'p', 'br'],
-      whitelistedAttributes: ['class']
+      whitelistedAttributes: ['class'],
     };
-    
+
     const sanitizer = new InputSanitizer(sanitizationConfig, logger);
     return sanitizer.sanitize(data, entityType);
   }
@@ -277,30 +304,37 @@ export class ValidationUtils {
    * Check if data meets quality thresholds
    */
   public static async checkQuality(
-    entity: any, 
+    entity: any,
     entityType: string,
     minOverallScore: number = 80
   ): Promise<{ passed: boolean; score: number; issues: string[] }> {
     const context: ValidationContext = {
       operation: 'read',
       entityType,
-      requestId: this.generateRequestId()
+      requestId: this.generateRequestId(),
     };
 
-    const result = await ValidationUtils.validateEntity(entity, entityType, 'read');
-    
+    const result = await ValidationUtils.validateEntity(
+      entity,
+      entityType,
+      'read'
+    );
+
     // Extract quality-related warnings
     const qualityIssues = result.warnings
       .filter(w => w.code.includes('QUALITY'))
       .map(w => w.message);
 
     // Simplified quality score calculation
-    const qualityScore = Math.max(0, 100 - (result.errors.length * 20) - (result.warnings.length * 5));
-    
+    const qualityScore = Math.max(
+      0,
+      100 - result.errors.length * 20 - result.warnings.length * 5
+    );
+
     return {
       passed: qualityScore >= minOverallScore && result.isValid,
       score: qualityScore,
-      issues: [...result.errors.map(e => e.message), ...qualityIssues]
+      issues: [...result.errors.map(e => e.message), ...qualityIssues],
     };
   }
 
@@ -309,10 +343,17 @@ export class ValidationUtils {
    */
   public static async detectThreats(
     data: any
-  ): Promise<Array<{ type: string; severity: string; description: string; field?: string }>> {
+  ): Promise<
+    Array<{
+      type: string;
+      severity: string;
+      description: string;
+      field?: string;
+    }>
+  > {
     const logger = winston.createLogger({ silent: true });
     const securityValidator = new SecurityValidator(logger);
-    
+
     const context: ValidationContext = {
       operation: 'create',
       entityType: 'unknown',
@@ -320,19 +361,19 @@ export class ValidationUtils {
       securityContext: {
         userId: 'system',
         roles: [],
-        permissions: []
-      }
+        permissions: [],
+      },
     };
 
     const result = await securityValidator.validate(data, context);
-    
+
     return result.errors
       .filter(e => e.category === 'security')
       .map(e => ({
         type: e.code,
         severity: e.severity,
         description: e.message,
-        field: e.field
+        field: e.field,
       }));
   }
 
@@ -340,11 +381,14 @@ export class ValidationUtils {
    * Check compliance for specific regulations
    */
   public static async checkCompliance(
-    entity: any, 
+    entity: any,
     entityType: string,
     jurisdiction: string = 'global',
     processingPurpose: string[] = ['business']
-  ): Promise<{ compliant: boolean; violations: Array<{ regulation: string; issue: string; severity: string }> }> {
+  ): Promise<{
+    compliant: boolean;
+    violations: Array<{ regulation: string; issue: string; severity: string }>;
+  }> {
     const context: ValidationContext = {
       operation: 'create',
       entityType,
@@ -352,24 +396,24 @@ export class ValidationUtils {
       complianceContext: {
         jurisdiction,
         processingPurpose,
-        consentStatus: 'granted'
-      }
+        consentStatus: 'granted',
+      },
     };
 
     const engine = ValidationFactory.getInstance();
     const result = await engine.validateEntity(entity, context);
-    
+
     const violations = result.errors
       .filter(e => e.category === 'compliance')
       .map(e => ({
         regulation: 'GDPR', // Simplified
         issue: e.message,
-        severity: e.severity
+        severity: e.severity,
       }));
 
     return {
       compliant: violations.length === 0,
-      violations
+      violations,
     };
   }
 
@@ -388,29 +432,42 @@ export class ValidationDecorators {
   /**
    * Method decorator for automatic validation
    */
-  public static validate(entityType: string, operation: 'create' | 'update' | 'delete' | 'read' = 'create') {
-    return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  public static validate(
+    entityType: string,
+    operation: 'create' | 'update' | 'delete' | 'read' = 'create'
+  ) {
+    return function (
+      target: any,
+      propertyName: string,
+      descriptor: PropertyDescriptor
+    ) {
       const method = descriptor.value;
 
       descriptor.value = async function (...args: any[]) {
         // Assume first argument is the entity data
         const entity = args[0];
-        
+
         if (entity && typeof entity === 'object') {
           try {
-            const result = await ValidationUtils.validateEntity(entity, entityType, operation);
-            
+            const result = await ValidationUtils.validateEntity(
+              entity,
+              entityType,
+              operation
+            );
+
             if (!result.isValid) {
               const errorMessage = result.errors.map(e => e.message).join('; ');
               throw new Error(`Validation failed: ${errorMessage}`);
             }
-            
+
             // Replace entity with sanitized version if available
             if (result.sanitizedData) {
               args[0] = result.sanitizedData;
             }
           } catch (error) {
-            throw new Error(`Validation error: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(
+              `Validation error: ${error instanceof Error ? error.message : String(error)}`
+            );
           }
         }
 
@@ -425,7 +482,9 @@ export class ValidationDecorators {
    * Class decorator for automatic validation of all methods
    */
   public static validateClass(entityType: string) {
-    return function <T extends { new (...args: any[]): {} }>(constructor: T) {
+    return function <T extends { new (...args: any[]): object }>(
+      constructor: T
+    ) {
       return class extends constructor {
         // Add validation to all methods automatically
         // Implementation would introspect methods and add validation
@@ -446,14 +505,14 @@ export function validationMiddleware(options: {
   return async (req: any, res: any, next: any) => {
     try {
       const entity = options.bodyField ? req.body[options.bodyField] : req.body;
-      
+
       if (!entity) {
         return next();
       }
 
       const result = await ValidationUtils.validateEntity(
-        entity, 
-        options.entityType, 
+        entity,
+        options.entityType,
         options.operation || 'create',
         req.user?.id
       );
@@ -464,14 +523,14 @@ export function validationMiddleware(options: {
           details: result.errors.map(e => ({
             field: e.field,
             message: e.message,
-            code: e.code
-          }))
+            code: e.code,
+          })),
         });
       }
 
       // Attach validation result to request
       req.validationResult = result;
-      
+
       // Replace body with sanitized data if available
       if (result.sanitizedData) {
         if (options.bodyField) {

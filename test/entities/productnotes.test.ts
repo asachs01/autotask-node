@@ -65,16 +65,14 @@ describe('ProductNotes Entity', () => {
         { id: 2, name: 'ProductNotes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await productNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProductNotes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProductNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ProductNotes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await productNotes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProductNotes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProductNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ProductNotes Entity', () => {
     it('should get productnotes by id', async () => {
       const mockData = { id: 1, name: 'Test ProductNotes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await productNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProductNotes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProductNotes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ProductNotes Entity', () => {
       const productNotesData = { name: 'New ProductNotes' };
       const mockResponse = { id: 1, ...productNotesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await productNotes.create(productNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ProductNotes', productNotesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ProductNotes',
+        productNotesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ProductNotes Entity', () => {
       const productNotesData = { name: 'Updated ProductNotes' };
       const mockResponse = { id: 1, ...productNotesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await productNotes.update(1, productNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ProductNotes/1', productNotesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ProductNotes/1',
+        productNotesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('ProductNotes Entity', () => {
       const productNotesData = { name: 'Patched ProductNotes' };
       const mockResponse = { id: 1, ...productNotesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await productNotes.patch(1, productNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ProductNotes/1', productNotesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ProductNotes/1',
+        productNotesData
+      );
     });
   });
 });

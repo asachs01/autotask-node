@@ -65,16 +65,14 @@ describe('TagAliases Entity', () => {
         { id: 2, name: 'TagAliases 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await tagAliases.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TagAliases/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/TagAliases/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('TagAliases Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await tagAliases.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TagAliases/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/TagAliases/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('TagAliases Entity', () => {
     it('should get tagaliases by id', async () => {
       const mockData = { id: 1, name: 'Test TagAliases' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await tagAliases.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TagAliases/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TagAliases/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('TagAliases Entity', () => {
       const tagAliasesData = { name: 'New TagAliases' };
       const mockResponse = { id: 1, ...tagAliasesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await tagAliases.create(tagAliasesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TagAliases', tagAliasesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TagAliases',
+        tagAliasesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('TagAliases Entity', () => {
       const tagAliasesData = { name: 'Updated TagAliases' };
       const mockResponse = { id: 1, ...tagAliasesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await tagAliases.update(1, tagAliasesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/TagAliases/1', tagAliasesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/TagAliases/1',
+        tagAliasesData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('TagAliases Entity', () => {
       const tagAliasesData = { name: 'Patched TagAliases' };
       const mockResponse = { id: 1, ...tagAliasesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await tagAliases.patch(1, tagAliasesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TagAliases/1', tagAliasesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/TagAliases/1',
+        tagAliasesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete tagaliases successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await tagAliases.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TagAliases/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/TagAliases/1');
     });
   });
 });

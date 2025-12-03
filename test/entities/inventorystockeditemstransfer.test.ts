@@ -51,7 +51,10 @@ describe('InventoryStockedItemsTransfer Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    inventoryStockedItemsTransfer = new InventoryStockedItemsTransfer(mockAxios, mockLogger);
+    inventoryStockedItemsTransfer = new InventoryStockedItemsTransfer(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('InventoryStockedItemsTransfer Entity', () => {
         { id: 2, name: 'InventoryStockedItemsTransfer 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await inventoryStockedItemsTransfer.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryStockedItemsTransfer/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryStockedItemsTransfer/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,34 +89,42 @@ describe('InventoryStockedItemsTransfer Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await inventoryStockedItemsTransfer.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/InventoryStockedItemsTransfer/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/InventoryStockedItemsTransfer/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
   describe('create', () => {
     it('should create inventorystockeditemstransfer successfully', async () => {
-      const inventoryStockedItemsTransferData = { name: 'New InventoryStockedItemsTransfer' };
+      const inventoryStockedItemsTransferData = {
+        name: 'New InventoryStockedItemsTransfer',
+      };
       const mockResponse = { id: 1, ...inventoryStockedItemsTransferData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await inventoryStockedItemsTransfer.create(inventoryStockedItemsTransferData);
+      const result = await inventoryStockedItemsTransfer.create(
+        inventoryStockedItemsTransferData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/InventoryStockedItemsTransfer', inventoryStockedItemsTransferData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/InventoryStockedItemsTransfer',
+        inventoryStockedItemsTransferData
+      );
     });
   });
 });

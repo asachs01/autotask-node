@@ -65,16 +65,14 @@ describe('ProjectNotes Entity', () => {
         { id: 2, name: 'ProjectNotes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await projectNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ProjectNotes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await projectNotes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ProjectNotes Entity', () => {
     it('should get projectnotes by id', async () => {
       const mockData = { id: 1, name: 'Test ProjectNotes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await projectNotes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ProjectNotes Entity', () => {
       const projectNotesData = { name: 'New ProjectNotes' };
       const mockResponse = { id: 1, ...projectNotesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await projectNotes.create(projectNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ProjectNotes', projectNotesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ProjectNotes',
+        projectNotesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ProjectNotes Entity', () => {
       const projectNotesData = { name: 'Updated ProjectNotes' };
       const mockResponse = { id: 1, ...projectNotesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await projectNotes.update(1, projectNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ProjectNotes/1', projectNotesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ProjectNotes/1',
+        projectNotesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('ProjectNotes Entity', () => {
       const projectNotesData = { name: 'Patched ProjectNotes' };
       const mockResponse = { id: 1, ...projectNotesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await projectNotes.patch(1, projectNotesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ProjectNotes/1', projectNotesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ProjectNotes/1',
+        projectNotesData
+      );
     });
   });
 });

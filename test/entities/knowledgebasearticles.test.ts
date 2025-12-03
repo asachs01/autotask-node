@@ -65,16 +65,17 @@ describe('KnowledgeBaseArticles Entity', () => {
         { id: 2, name: 'KnowledgeBaseArticles 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await knowledgeBaseArticles.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/KnowledgeBaseArticles/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/KnowledgeBaseArticles/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +86,19 @@ describe('KnowledgeBaseArticles Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await knowledgeBaseArticles.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/KnowledgeBaseArticles/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/KnowledgeBaseArticles/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,14 +106,12 @@ describe('KnowledgeBaseArticles Entity', () => {
     it('should get knowledgebasearticles by id', async () => {
       const mockData = { id: 1, name: 'Test KnowledgeBaseArticles' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await knowledgeBaseArticles.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/KnowledgeBaseArticles/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/KnowledgeBaseArticles/1');
     });
   });
 
@@ -120,58 +120,75 @@ describe('KnowledgeBaseArticles Entity', () => {
       const knowledgeBaseArticlesData = { name: 'New KnowledgeBaseArticles' };
       const mockResponse = { id: 1, ...knowledgeBaseArticlesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await knowledgeBaseArticles.create(knowledgeBaseArticlesData);
+      const result = await knowledgeBaseArticles.create(
+        knowledgeBaseArticlesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/KnowledgeBaseArticles', knowledgeBaseArticlesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/KnowledgeBaseArticles',
+        knowledgeBaseArticlesData
+      );
     });
   });
 
   describe('update', () => {
     it('should update knowledgebasearticles successfully', async () => {
-      const knowledgeBaseArticlesData = { name: 'Updated KnowledgeBaseArticles' };
+      const knowledgeBaseArticlesData = {
+        name: 'Updated KnowledgeBaseArticles',
+      };
       const mockResponse = { id: 1, ...knowledgeBaseArticlesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await knowledgeBaseArticles.update(
+        1,
+        knowledgeBaseArticlesData
       );
 
-      const result = await knowledgeBaseArticles.update(1, knowledgeBaseArticlesData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/KnowledgeBaseArticles/1', knowledgeBaseArticlesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/KnowledgeBaseArticles/1',
+        knowledgeBaseArticlesData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update knowledgebasearticles successfully', async () => {
-      const knowledgeBaseArticlesData = { name: 'Patched KnowledgeBaseArticles' };
+      const knowledgeBaseArticlesData = {
+        name: 'Patched KnowledgeBaseArticles',
+      };
       const mockResponse = { id: 1, ...knowledgeBaseArticlesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await knowledgeBaseArticles.patch(1, knowledgeBaseArticlesData);
+      const result = await knowledgeBaseArticles.patch(
+        1,
+        knowledgeBaseArticlesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/KnowledgeBaseArticles/1', knowledgeBaseArticlesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/KnowledgeBaseArticles/1',
+        knowledgeBaseArticlesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete knowledgebasearticles successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await knowledgeBaseArticles.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/KnowledgeBaseArticles/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/KnowledgeBaseArticles/1');
     });
   });
 });

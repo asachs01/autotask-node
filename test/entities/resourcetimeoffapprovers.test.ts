@@ -51,7 +51,10 @@ describe('ResourceTimeOffApprovers Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    resourceTimeOffApprovers = new ResourceTimeOffApprovers(mockAxios, mockLogger);
+    resourceTimeOffApprovers = new ResourceTimeOffApprovers(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ResourceTimeOffApprovers Entity', () => {
         { id: 2, name: 'ResourceTimeOffApprovers 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await resourceTimeOffApprovers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffApprovers/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ResourceTimeOffApprovers/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ResourceTimeOffApprovers Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await resourceTimeOffApprovers.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffApprovers/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ResourceTimeOffApprovers/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,47 @@ describe('ResourceTimeOffApprovers Entity', () => {
     it('should get resourcetimeoffapprovers by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceTimeOffApprovers' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await resourceTimeOffApprovers.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffApprovers/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceTimeOffApprovers/1');
     });
   });
 
   describe('create', () => {
     it('should create resourcetimeoffapprovers successfully', async () => {
-      const resourceTimeOffApproversData = { name: 'New ResourceTimeOffApprovers' };
+      const resourceTimeOffApproversData = {
+        name: 'New ResourceTimeOffApprovers',
+      };
       const mockResponse = { id: 1, ...resourceTimeOffApproversData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await resourceTimeOffApprovers.create(resourceTimeOffApproversData);
+      const result = await resourceTimeOffApprovers.create(
+        resourceTimeOffApproversData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ResourceTimeOffApprovers', resourceTimeOffApproversData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ResourceTimeOffApprovers',
+        resourceTimeOffApproversData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete resourcetimeoffapprovers successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await resourceTimeOffApprovers.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ResourceTimeOffApprovers/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ResourceTimeOffApprovers/1'
+      );
     });
   });
 });

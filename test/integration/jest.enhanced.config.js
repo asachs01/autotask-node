@@ -5,9 +5,7 @@ const config = {
   testEnvironment: 'node',
 
   // Only run enhanced integration tests
-  testMatch: [
-    '<rootDir>/test/integration/suites/**/*.test.ts'
-  ],
+  testMatch: ['<rootDir>/test/integration/suites/**/*.test.ts'],
 
   // Enhanced global setup and teardown
   globalSetup: '<rootDir>/test/integration/setup-enhanced.ts',
@@ -82,13 +80,13 @@ const config = {
         customInfos: [
           {
             title: 'Test Environment',
-            value: process.env.TEST_ENVIRONMENT || 'production-readonly'
+            value: process.env.TEST_ENVIRONMENT || 'production-readonly',
           },
           {
             title: 'API Endpoint',
-            value: process.env.AUTOTASK_API_URL || 'auto-detected'
-          }
-        ]
+            value: process.env.AUTOTASK_API_URL || 'auto-detected',
+          },
+        ],
       },
     ],
   ],
@@ -99,10 +97,10 @@ const config = {
   forceExit: true, // Force exit after tests complete
 
   // Test result processor for additional metrics
-  testResultsProcessor: '<rootDir>/test/integration/processors/resultProcessor.js',
+  testResultsProcessor:
+    '<rootDir>/test/integration/processors/resultProcessor.js',
 
   // Environment variables for enhanced integration tests
-  testEnvironment: 'node',
   setupFiles: ['<rootDir>/test/integration/env-setup.ts'],
 };
 

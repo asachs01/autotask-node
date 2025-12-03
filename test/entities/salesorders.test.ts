@@ -65,16 +65,14 @@ describe('SalesOrders Entity', () => {
         { id: 2, name: 'SalesOrders 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await salesOrders.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/SalesOrders/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/SalesOrders/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('SalesOrders Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await salesOrders.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/SalesOrders/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/SalesOrders/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('SalesOrders Entity', () => {
     it('should get salesorders by id', async () => {
       const mockData = { id: 1, name: 'Test SalesOrders' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await salesOrders.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/SalesOrders/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/SalesOrders/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('SalesOrders Entity', () => {
       const salesOrdersData = { name: 'New SalesOrders' };
       const mockResponse = { id: 1, ...salesOrdersData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await salesOrders.create(salesOrdersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/SalesOrders', salesOrdersData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/SalesOrders',
+        salesOrdersData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('SalesOrders Entity', () => {
       const salesOrdersData = { name: 'Updated SalesOrders' };
       const mockResponse = { id: 1, ...salesOrdersData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await salesOrders.update(1, salesOrdersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/SalesOrders/1', salesOrdersData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/SalesOrders/1',
+        salesOrdersData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('SalesOrders Entity', () => {
       const salesOrdersData = { name: 'Patched SalesOrders' };
       const mockResponse = { id: 1, ...salesOrdersData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await salesOrders.patch(1, salesOrdersData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/SalesOrders/1', salesOrdersData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/SalesOrders/1',
+        salesOrdersData
+      );
     });
   });
 });

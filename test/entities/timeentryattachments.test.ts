@@ -23,13 +23,10 @@ import {
 } from '../../src/entities/timeentryattachments';
 
 describe('TimeEntryAttachments Entity', () => {
-  let setup: EntityTestSetup<describe>;
+  let setup: EntityTestSetup<TimeEntryAttachments>;
 
   beforeEach(() => {
-    setup = createEntityTestSetup(describe);
-  });
-
-    timeEntryAttachments = new TimeEntryAttachments(mockAxios, mockLogger);
+    setup = createEntityTestSetup(TimeEntryAttachments);
   });
 
   afterEach(() => {
@@ -43,16 +40,19 @@ describe('TimeEntryAttachments Entity', () => {
         { id: 2, name: 'TimeEntryAttachments 2' },
       ];
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeEntryAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TimeEntryAttachments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -63,18 +63,19 @@ describe('TimeEntryAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeEntryAttachments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TimeEntryAttachments/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -82,14 +83,16 @@ describe('TimeEntryAttachments Entity', () => {
     it('should get timeentryattachments by id', async () => {
       const mockData = { id: 1, name: 'Test TimeEntryAttachments' };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemResponse(mockData)
       );
 
       const result = await setup.entity.get(1);
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeEntryAttachments/1');
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TimeEntryAttachments/1'
+      );
     });
   });
 
@@ -98,26 +101,29 @@ describe('TimeEntryAttachments Entity', () => {
       const timeEntryAttachmentsData = { name: 'New TimeEntryAttachments' };
       const mockResponse = { id: 1, ...timeEntryAttachmentsData };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await setup.entity.create(timeEntryAttachmentsData);
 
-      expect(setup.entity.data).toEqual(mockResponse);
-      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/TimeEntryAttachments', timeEntryAttachmentsData);
+      expect(result.data).toEqual(mockResponse);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/TimeEntryAttachments',
+        timeEntryAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete timeentryattachments successfully', async () => {
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.get.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 
-      expect(setup.setup.mockAxios.delete).toHaveBeenCalledWith('/TimeEntryAttachments/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith(
+        '/TimeEntryAttachments/1'
+      );
     });
   });
 });

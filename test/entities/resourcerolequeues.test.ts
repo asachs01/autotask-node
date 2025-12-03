@@ -65,16 +65,14 @@ describe('ResourceRoleQueues Entity', () => {
         { id: 2, name: 'ResourceRoleQueues 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await resourceRoleQueues.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ResourceRoleQueues Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await resourceRoleQueues.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ResourceRoleQueues Entity', () => {
     it('should get resourcerolequeues by id', async () => {
       const mockData = { id: 1, name: 'Test ResourceRoleQueues' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await resourceRoleQueues.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/1');
     });
   });
 
@@ -120,26 +114,27 @@ describe('ResourceRoleQueues Entity', () => {
       const resourceRoleQueuesData = { name: 'New ResourceRoleQueues' };
       const mockResponse = { id: 1, ...resourceRoleQueuesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await resourceRoleQueues.create(resourceRoleQueuesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ResourceRoleQueues', resourceRoleQueuesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ResourceRoleQueues',
+        resourceRoleQueuesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete resourcerolequeues successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await resourceRoleQueues.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ResourceRoleQueues/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ResourceRoleQueues/1');
     });
   });
 });

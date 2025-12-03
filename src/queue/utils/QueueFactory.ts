@@ -1,6 +1,6 @@
 /**
  * Queue Factory Utilities
- * 
+ *
  * Factory functions and utilities for creating and configuring
  * queue components with sensible defaults and validation.
  */
@@ -20,15 +20,15 @@ export async function createQueueManager(
 ): Promise<QueueManager> {
   const logger = options.logger || createDefaultLogger();
   const config = createDefaultConfiguration(options.config);
-  
+
   const queueManager = new QueueManager({
     config,
     logger,
-    ...options
+    ...options,
   });
-  
+
   await queueManager.initialize();
-  
+
   return queueManager;
 }
 
@@ -57,8 +57,8 @@ export function createDefaultConfiguration(
         checkpoints: true,
         checkpointInterval: 30000,
         compression: false,
-        retentionPeriod: 86400000 // 24 hours
-      }
+        retentionPeriod: 86400000, // 24 hours
+      },
     },
     strategies: {
       priorityStrategy: 'priority',
@@ -67,17 +67,17 @@ export function createDefaultConfiguration(
         maxDelay: 30000,
         multiplier: 2,
         jitter: true,
-        jitterRange: 0.1
+        jitterRange: 0.1,
       },
       circuitBreaker: {
         enabled: true,
         failureThreshold: 5,
         successThreshold: 3,
-        timeout: 60000
+        timeout: 60000,
       },
-      loadBalancing: 'zone-based'
+      loadBalancing: 'zone-based',
     },
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -96,15 +96,15 @@ export function createProductionConfiguration(
     persistence: {
       backend: 'sqlite',
       connection: {
-        dbPath: './data/autotask-queue.db'
+        dbPath: './data/autotask-queue.db',
       },
       options: {
         checkpoints: true,
         checkpointInterval: 15000,
         compression: true,
         retentionPeriod: 604800000, // 7 days
-        walMode: true
-      }
+        walMode: true,
+      },
     },
     strategies: {
       priorityStrategy: 'adaptive',
@@ -113,17 +113,17 @@ export function createProductionConfiguration(
         maxDelay: 60000,
         multiplier: 1.5,
         jitter: true,
-        jitterRange: 0.2
+        jitterRange: 0.2,
       },
       circuitBreaker: {
         enabled: true,
         failureThreshold: 3,
         successThreshold: 5,
-        timeout: 30000
+        timeout: 30000,
       },
-      loadBalancing: 'adaptive'
+      loadBalancing: 'adaptive',
     },
-    ...overrides
+    ...overrides,
   });
 }
 
@@ -149,14 +149,14 @@ export function createRedisConfiguration(
     persistence: {
       backend: 'redis',
       connection: {
-        redis: redisConfig
+        redis: redisConfig,
       },
       options: {
         checkpoints: true,
         checkpointInterval: 10000,
         compression: true,
-        retentionPeriod: 1209600000 // 14 days
-      }
+        retentionPeriod: 1209600000, // 14 days
+      },
     },
     strategies: {
       priorityStrategy: 'adaptive',
@@ -165,17 +165,17 @@ export function createRedisConfiguration(
         maxDelay: 30000,
         multiplier: 1.3,
         jitter: true,
-        jitterRange: 0.15
+        jitterRange: 0.15,
       },
       circuitBreaker: {
         enabled: true,
         failureThreshold: 2,
         successThreshold: 10,
-        timeout: 15000
+        timeout: 15000,
       },
-      loadBalancing: 'adaptive'
+      loadBalancing: 'adaptive',
     },
-    ...overrides
+    ...overrides,
   });
 }
 
@@ -195,8 +195,8 @@ export function createDevelopmentConfiguration(
       options: {
         checkpoints: false,
         compression: false,
-        retentionPeriod: 3600000 // 1 hour
-      }
+        retentionPeriod: 3600000, // 1 hour
+      },
     },
     strategies: {
       priorityStrategy: 'fifo',
@@ -204,17 +204,17 @@ export function createDevelopmentConfiguration(
         baseDelay: 2000,
         maxDelay: 10000,
         multiplier: 2,
-        jitter: false
+        jitter: false,
       },
       circuitBreaker: {
         enabled: true,
         failureThreshold: 10,
         successThreshold: 2,
-        timeout: 120000
+        timeout: 120000,
       },
-      loadBalancing: 'round-robin'
+      loadBalancing: 'round-robin',
     },
-    ...overrides
+    ...overrides,
   });
 }
 
@@ -237,8 +237,8 @@ export function createTestConfiguration(
       options: {
         checkpoints: false,
         compression: false,
-        retentionPeriod: 60000 // 1 minute
-      }
+        retentionPeriod: 60000, // 1 minute
+      },
     },
     strategies: {
       priorityStrategy: 'fifo',
@@ -246,17 +246,17 @@ export function createTestConfiguration(
         baseDelay: 100,
         maxDelay: 1000,
         multiplier: 1.5,
-        jitter: false
+        jitter: false,
       },
       circuitBreaker: {
         enabled: false,
         failureThreshold: 5,
         successThreshold: 1,
-        timeout: 5000
+        timeout: 5000,
       },
-      loadBalancing: 'round-robin'
+      loadBalancing: 'round-robin',
     },
-    ...overrides
+    ...overrides,
   });
 }
 
@@ -270,90 +270,103 @@ export function validateQueueConfiguration(config: QueueConfiguration): {
 } {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   // Basic validation
   if (config.maxSize <= 0) {
     errors.push('maxSize must be greater than 0');
   }
-  
+
   if (config.maxConcurrency <= 0) {
     errors.push('maxConcurrency must be greater than 0');
   }
-  
+
   if (config.defaultTimeout <= 0) {
     errors.push('defaultTimeout must be greater than 0');
   }
-  
+
   if (config.defaultRetries < 0) {
     errors.push('defaultRetries must be non-negative');
   }
-  
+
   // Batching validation
   if (config.batchingEnabled) {
     if (config.maxBatchSize <= 0) {
-      errors.push('maxBatchSize must be greater than 0 when batching is enabled');
+      errors.push(
+        'maxBatchSize must be greater than 0 when batching is enabled'
+      );
     }
-    
+
     if (config.batchTimeout <= 0) {
-      errors.push('batchTimeout must be greater than 0 when batching is enabled');
+      errors.push(
+        'batchTimeout must be greater than 0 when batching is enabled'
+      );
     }
-    
+
     if (config.maxBatchSize > config.maxSize / 2) {
-      warnings.push('maxBatchSize is large relative to maxSize - may cause delays');
+      warnings.push(
+        'maxBatchSize is large relative to maxSize - may cause delays'
+      );
     }
   }
-  
+
   // Deduplication validation
   if (config.deduplicationEnabled) {
     if (config.deduplicationWindow <= 0) {
-      errors.push('deduplicationWindow must be greater than 0 when deduplication is enabled');
+      errors.push(
+        'deduplicationWindow must be greater than 0 when deduplication is enabled'
+      );
     }
   }
-  
+
   // Strategy validation
   if (config.strategies.retryStrategy.baseDelay <= 0) {
     errors.push('retryStrategy.baseDelay must be greater than 0');
   }
-  
-  if (config.strategies.retryStrategy.maxDelay <= config.strategies.retryStrategy.baseDelay) {
+
+  if (
+    config.strategies.retryStrategy.maxDelay <=
+    config.strategies.retryStrategy.baseDelay
+  ) {
     errors.push('retryStrategy.maxDelay must be greater than baseDelay');
   }
-  
+
   if (config.strategies.retryStrategy.multiplier <= 1) {
     errors.push('retryStrategy.multiplier must be greater than 1');
   }
-  
+
   if (config.strategies.circuitBreaker.enabled) {
     if (config.strategies.circuitBreaker.failureThreshold <= 0) {
       errors.push('circuitBreaker.failureThreshold must be greater than 0');
     }
-    
+
     if (config.strategies.circuitBreaker.successThreshold <= 0) {
       errors.push('circuitBreaker.successThreshold must be greater than 0');
     }
-    
+
     if (config.strategies.circuitBreaker.timeout <= 0) {
       errors.push('circuitBreaker.timeout must be greater than 0');
     }
   }
-  
+
   // Performance warnings
   if (config.maxConcurrency > 50) {
     warnings.push('High concurrency may impact system performance');
   }
-  
+
   if (config.maxSize > 100000) {
     warnings.push('Large queue size may impact memory usage');
   }
-  
+
   if (config.persistence.backend === 'memory' && config.maxSize > 10000) {
-    warnings.push('Memory backend with large queue size may cause memory issues');
+    warnings.push(
+      'Memory backend with large queue size may cause memory issues'
+    );
   }
-  
+
   return {
     valid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -365,18 +378,19 @@ export async function createStorageBackend(
   logger: winston.Logger
 ): Promise<QueueStorageBackend> {
   const { backend } = config.persistence;
-  
+
   switch (backend) {
     case 'redis':
       if (!config.persistence.connection?.redis) {
         throw new Error('Redis configuration required for Redis backend');
       }
       return new RedisBackend(config.persistence.connection.redis, logger);
-    
-    case 'sqlite':
+
+    case 'sqlite': {
       const dbPath = config.persistence.connection?.dbPath || './queue.db';
       return new SQLiteBackend(dbPath, config.persistence.options, logger);
-    
+    }
+
     case 'memory':
     default:
       return new MemoryBackend(logger);
@@ -400,9 +414,9 @@ function createDefaultLogger(): winston.Logger {
         format: winston.format.combine(
           winston.format.colorize(),
           winston.format.simple()
-        )
-      })
-    ]
+        ),
+      }),
+    ],
   });
 }
 
@@ -414,7 +428,7 @@ export const QueuePresets = {
   testing: createTestConfiguration,
   production: createProductionConfiguration,
   redis: createRedisConfiguration,
-  default: createDefaultConfiguration
+  default: createDefaultConfiguration,
 } as const;
 
 /**
@@ -427,14 +441,17 @@ export const QuickSetup = {
   async memory(logger?: winston.Logger): Promise<QueueManager> {
     return createQueueManager({
       config: createTestConfiguration(),
-      logger
+      logger,
     });
   },
-  
+
   /**
    * Create a production SQLite queue
    */
-  async sqlite(dbPath: string = './data/queue.db', logger?: winston.Logger): Promise<QueueManager> {
+  async sqlite(
+    dbPath: string = './data/queue.db',
+    logger?: winston.Logger
+  ): Promise<QueueManager> {
     return createQueueManager({
       config: createProductionConfiguration({
         persistence: {
@@ -445,14 +462,14 @@ export const QuickSetup = {
             checkpointInterval: 15000,
             compression: true,
             retentionPeriod: 604800000,
-            walMode: true
-          }
-        }
+            walMode: true,
+          },
+        },
       }),
-      logger
+      logger,
     });
   },
-  
+
   /**
    * Create a Redis-based distributed queue
    */
@@ -462,9 +479,9 @@ export const QuickSetup = {
   ): Promise<QueueManager> {
     return createQueueManager({
       config: createRedisConfiguration(redisConfig),
-      logger
+      logger,
     });
-  }
+  },
 };
 
 export default {
@@ -477,5 +494,5 @@ export default {
   validateQueueConfiguration,
   createStorageBackend,
   QueuePresets,
-  QuickSetup
+  QuickSetup,
 };

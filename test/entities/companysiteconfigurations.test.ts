@@ -51,7 +51,10 @@ describe('CompanySiteConfigurations Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    companySiteConfigurations = new CompanySiteConfigurations(mockAxios, mockLogger);
+    companySiteConfigurations = new CompanySiteConfigurations(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('CompanySiteConfigurations Entity', () => {
         { id: 2, name: 'CompanySiteConfigurations 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await companySiteConfigurations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanySiteConfigurations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/CompanySiteConfigurations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('CompanySiteConfigurations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await companySiteConfigurations.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanySiteConfigurations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/CompanySiteConfigurations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,74 +109,95 @@ describe('CompanySiteConfigurations Entity', () => {
     it('should get companysiteconfigurations by id', async () => {
       const mockData = { id: 1, name: 'Test CompanySiteConfigurations' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await companySiteConfigurations.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanySiteConfigurations/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/CompanySiteConfigurations/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create companysiteconfigurations successfully', async () => {
-      const companySiteConfigurationsData = { name: 'New CompanySiteConfigurations' };
+      const companySiteConfigurationsData = {
+        name: 'New CompanySiteConfigurations',
+      };
       const mockResponse = { id: 1, ...companySiteConfigurationsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await companySiteConfigurations.create(companySiteConfigurationsData);
+      const result = await companySiteConfigurations.create(
+        companySiteConfigurationsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanySiteConfigurations', companySiteConfigurationsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/CompanySiteConfigurations',
+        companySiteConfigurationsData
+      );
     });
   });
 
   describe('update', () => {
     it('should update companysiteconfigurations successfully', async () => {
-      const companySiteConfigurationsData = { name: 'Updated CompanySiteConfigurations' };
+      const companySiteConfigurationsData = {
+        name: 'Updated CompanySiteConfigurations',
+      };
       const mockResponse = { id: 1, ...companySiteConfigurationsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await companySiteConfigurations.update(
+        1,
+        companySiteConfigurationsData
       );
 
-      const result = await companySiteConfigurations.update(1, companySiteConfigurationsData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/CompanySiteConfigurations/1', companySiteConfigurationsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/CompanySiteConfigurations/1',
+        companySiteConfigurationsData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update companysiteconfigurations successfully', async () => {
-      const companySiteConfigurationsData = { name: 'Patched CompanySiteConfigurations' };
+      const companySiteConfigurationsData = {
+        name: 'Patched CompanySiteConfigurations',
+      };
       const mockResponse = { id: 1, ...companySiteConfigurationsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await companySiteConfigurations.patch(1, companySiteConfigurationsData);
+      const result = await companySiteConfigurations.patch(
+        1,
+        companySiteConfigurationsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/CompanySiteConfigurations/1', companySiteConfigurationsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/CompanySiteConfigurations/1',
+        companySiteConfigurationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete companysiteconfigurations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await companySiteConfigurations.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/CompanySiteConfigurations/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/CompanySiteConfigurations/1'
+      );
     });
   });
 });

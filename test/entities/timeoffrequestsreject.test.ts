@@ -23,13 +23,10 @@ import {
 } from '../../src/entities/timeoffrequestsreject';
 
 describe('TimeOffRequestsReject Entity', () => {
-  let setup: EntityTestSetup<describe>;
+  let setup: EntityTestSetup<TimeOffRequestsReject>;
 
   beforeEach(() => {
-    setup = createEntityTestSetup(describe);
-  });
-
-    timeOffRequestsReject = new TimeOffRequestsReject(mockAxios, mockLogger);
+    setup = createEntityTestSetup(TimeOffRequestsReject);
   });
 
   afterEach(() => {
@@ -43,16 +40,19 @@ describe('TimeOffRequestsReject Entity', () => {
         { id: 2, name: 'TimeOffRequestsReject 2' },
       ];
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
-      expect(setup.entity.data).toEqual(mockData);
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeOffRequestsReject/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(result.data).toEqual(mockData);
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TimeOffRequestsReject/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -63,18 +63,19 @@ describe('TimeOffRequestsReject Entity', () => {
         pageSize: 10,
       };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.setup.mockAxios.get).toHaveBeenCalledWith('/TimeOffRequestsReject/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TimeOffRequestsReject/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -83,14 +84,17 @@ describe('TimeOffRequestsReject Entity', () => {
       const timeOffRequestsRejectData = { name: 'New TimeOffRequestsReject' };
       const mockResponse = { id: 1, ...timeOffRequestsRejectData };
 
-      setup.setup.mockAxios.setup.entity.mockResolvedValueOnce(
+      setup.mockAxios.get.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await setup.entity.create(timeOffRequestsRejectData);
 
-      expect(setup.entity.data).toEqual(mockResponse);
-      expect(setup.setup.mockAxios.post).toHaveBeenCalledWith('/TimeOffRequestsReject', timeOffRequestsRejectData);
+      expect(result.data).toEqual(mockResponse);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/TimeOffRequestsReject',
+        timeOffRequestsRejectData
+      );
     });
   });
 });

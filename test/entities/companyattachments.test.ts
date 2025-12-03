@@ -65,16 +65,14 @@ describe('CompanyAttachments Entity', () => {
         { id: 2, name: 'CompanyAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await companyAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('CompanyAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await companyAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('CompanyAttachments Entity', () => {
     it('should get companyattachments by id', async () => {
       const mockData = { id: 1, name: 'Test CompanyAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await companyAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/1');
     });
   });
 
@@ -120,26 +114,27 @@ describe('CompanyAttachments Entity', () => {
       const companyAttachmentsData = { name: 'New CompanyAttachments' };
       const mockResponse = { id: 1, ...companyAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await companyAttachments.create(companyAttachmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/CompanyAttachments', companyAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/CompanyAttachments',
+        companyAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete companyattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await companyAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/CompanyAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/CompanyAttachments/1');
     });
   });
 });

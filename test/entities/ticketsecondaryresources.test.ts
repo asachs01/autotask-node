@@ -51,7 +51,10 @@ describe('TicketSecondaryResources Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    ticketSecondaryResources = new TicketSecondaryResources(mockAxios, mockLogger);
+    ticketSecondaryResources = new TicketSecondaryResources(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('TicketSecondaryResources Entity', () => {
         { id: 2, name: 'TicketSecondaryResources 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await ticketSecondaryResources.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketSecondaryResources/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketSecondaryResources/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('TicketSecondaryResources Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await ticketSecondaryResources.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketSecondaryResources/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/TicketSecondaryResources/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,47 @@ describe('TicketSecondaryResources Entity', () => {
     it('should get ticketsecondaryresources by id', async () => {
       const mockData = { id: 1, name: 'Test TicketSecondaryResources' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await ticketSecondaryResources.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/TicketSecondaryResources/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/TicketSecondaryResources/1');
     });
   });
 
   describe('create', () => {
     it('should create ticketsecondaryresources successfully', async () => {
-      const ticketSecondaryResourcesData = { name: 'New TicketSecondaryResources' };
+      const ticketSecondaryResourcesData = {
+        name: 'New TicketSecondaryResources',
+      };
       const mockResponse = { id: 1, ...ticketSecondaryResourcesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await ticketSecondaryResources.create(ticketSecondaryResourcesData);
+      const result = await ticketSecondaryResources.create(
+        ticketSecondaryResourcesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketSecondaryResources', ticketSecondaryResourcesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/TicketSecondaryResources',
+        ticketSecondaryResourcesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete ticketsecondaryresources successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await ticketSecondaryResources.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/TicketSecondaryResources/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/TicketSecondaryResources/1'
+      );
     });
   });
 });

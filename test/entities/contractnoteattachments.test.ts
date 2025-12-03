@@ -51,7 +51,10 @@ describe('ContractNoteAttachments Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    contractNoteAttachments = new ContractNoteAttachments(mockAxios, mockLogger);
+    contractNoteAttachments = new ContractNoteAttachments(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('ContractNoteAttachments Entity', () => {
         { id: 2, name: 'ContractNoteAttachments 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractNoteAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractNoteAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ContractNoteAttachments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('ContractNoteAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractNoteAttachments.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractNoteAttachments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/ContractNoteAttachments/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,42 +109,47 @@ describe('ContractNoteAttachments Entity', () => {
     it('should get contractnoteattachments by id', async () => {
       const mockData = { id: 1, name: 'Test ContractNoteAttachments' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractNoteAttachments.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractNoteAttachments/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractNoteAttachments/1');
     });
   });
 
   describe('create', () => {
     it('should create contractnoteattachments successfully', async () => {
-      const contractNoteAttachmentsData = { name: 'New ContractNoteAttachments' };
+      const contractNoteAttachmentsData = {
+        name: 'New ContractNoteAttachments',
+      };
       const mockResponse = { id: 1, ...contractNoteAttachmentsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await contractNoteAttachments.create(contractNoteAttachmentsData);
+      const result = await contractNoteAttachments.create(
+        contractNoteAttachmentsData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractNoteAttachments', contractNoteAttachmentsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractNoteAttachments',
+        contractNoteAttachmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete contractnoteattachments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await contractNoteAttachments.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractNoteAttachments/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/ContractNoteAttachments/1'
+      );
     });
   });
 });

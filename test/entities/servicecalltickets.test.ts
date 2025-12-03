@@ -65,16 +65,14 @@ describe('ServiceCallTickets Entity', () => {
         { id: 2, name: 'ServiceCallTickets 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await serviceCallTickets.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceCallTickets/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceCallTickets/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ServiceCallTickets Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await serviceCallTickets.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceCallTickets/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceCallTickets/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ServiceCallTickets Entity', () => {
     it('should get servicecalltickets by id', async () => {
       const mockData = { id: 1, name: 'Test ServiceCallTickets' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await serviceCallTickets.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ServiceCallTickets/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceCallTickets/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ServiceCallTickets Entity', () => {
       const serviceCallTicketsData = { name: 'New ServiceCallTickets' };
       const mockResponse = { id: 1, ...serviceCallTicketsData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await serviceCallTickets.create(serviceCallTicketsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ServiceCallTickets', serviceCallTicketsData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ServiceCallTickets',
+        serviceCallTicketsData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ServiceCallTickets Entity', () => {
       const serviceCallTicketsData = { name: 'Updated ServiceCallTickets' };
       const mockResponse = { id: 1, ...serviceCallTicketsData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await serviceCallTickets.update(1, serviceCallTicketsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ServiceCallTickets/1', serviceCallTicketsData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ServiceCallTickets/1',
+        serviceCallTicketsData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('ServiceCallTickets Entity', () => {
       const serviceCallTicketsData = { name: 'Patched ServiceCallTickets' };
       const mockResponse = { id: 1, ...serviceCallTicketsData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await serviceCallTickets.patch(1, serviceCallTicketsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ServiceCallTickets/1', serviceCallTicketsData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ServiceCallTickets/1',
+        serviceCallTicketsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete servicecalltickets successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await serviceCallTickets.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ServiceCallTickets/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ServiceCallTickets/1');
     });
   });
 });

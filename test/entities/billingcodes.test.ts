@@ -65,16 +65,14 @@ describe('BillingCodes Entity', () => {
         { id: 2, name: 'BillingCodes 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await billingCodes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('BillingCodes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await billingCodes.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('BillingCodes Entity', () => {
     it('should get billingcodes by id', async () => {
       const mockData = { id: 1, name: 'Test BillingCodes' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await billingCodes.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/BillingCodes/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('BillingCodes Entity', () => {
       const billingCodesData = { name: 'New BillingCodes' };
       const mockResponse = { id: 1, ...billingCodesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await billingCodes.create(billingCodesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/BillingCodes', billingCodesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/BillingCodes',
+        billingCodesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('BillingCodes Entity', () => {
       const billingCodesData = { name: 'Updated BillingCodes' };
       const mockResponse = { id: 1, ...billingCodesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await billingCodes.update(1, billingCodesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/BillingCodes/1', billingCodesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/BillingCodes/1',
+        billingCodesData
+      );
     });
   });
 
@@ -152,14 +150,17 @@ describe('BillingCodes Entity', () => {
       const billingCodesData = { name: 'Patched BillingCodes' };
       const mockResponse = { id: 1, ...billingCodesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await billingCodes.patch(1, billingCodesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/BillingCodes/1', billingCodesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/BillingCodes/1',
+        billingCodesData
+      );
     });
   });
 });

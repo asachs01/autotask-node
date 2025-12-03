@@ -65,16 +65,14 @@ describe('ContractRates Entity', () => {
         { id: 2, name: 'ContractRates 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await contractRates.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractRates/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractRates/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('ContractRates Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractRates.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractRates/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractRates/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('ContractRates Entity', () => {
     it('should get contractrates by id', async () => {
       const mockData = { id: 1, name: 'Test ContractRates' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await contractRates.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ContractRates/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/ContractRates/1');
     });
   });
 
@@ -120,14 +114,17 @@ describe('ContractRates Entity', () => {
       const contractRatesData = { name: 'New ContractRates' };
       const mockResponse = { id: 1, ...contractRatesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
       const result = await contractRates.create(contractRatesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ContractRates', contractRatesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractRates',
+        contractRatesData
+      );
     });
   });
 
@@ -136,14 +133,15 @@ describe('ContractRates Entity', () => {
       const contractRatesData = { name: 'Updated ContractRates' };
       const mockResponse = { id: 1, ...contractRatesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
-      );
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
 
       const result = await contractRates.update(1, contractRatesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/ContractRates/1', contractRatesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/ContractRates/1',
+        contractRatesData
+      );
     });
   });
 
@@ -152,26 +150,27 @@ describe('ContractRates Entity', () => {
       const contractRatesData = { name: 'Patched ContractRates' };
       const mockResponse = { id: 1, ...contractRatesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
       const result = await contractRates.patch(1, contractRatesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/ContractRates/1', contractRatesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/ContractRates/1',
+        contractRatesData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete contractrates successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await contractRates.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ContractRates/1');
+      expect(mockAxios.delete).toHaveBeenCalledWith('/ContractRates/1');
     });
   });
 });

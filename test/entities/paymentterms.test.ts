@@ -65,16 +65,14 @@ describe('PaymentTerms Entity', () => {
         { id: 2, name: 'PaymentTerms 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await paymentTerms.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/query', {
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
+      });
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +83,16 @@ describe('PaymentTerms Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await paymentTerms.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/query', {
+      expect(mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-          sort: 'id',
+        sort: 'id',
         page: 1,
         MaxRecords: 10,
-        });
+      });
     });
   });
 
@@ -104,14 +100,12 @@ describe('PaymentTerms Entity', () => {
     it('should get paymentterms by id', async () => {
       const mockData = { id: 1, name: 'Test PaymentTerms' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await paymentTerms.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/1');
+      expect(mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/1');
     });
   });
 });

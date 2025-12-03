@@ -51,7 +51,10 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
       transports: [new winston.transports.Console({ silent: true })],
     });
 
-    additionalInvoiceFieldValues = new AdditionalInvoiceFieldValues(mockAxios, mockLogger);
+    additionalInvoiceFieldValues = new AdditionalInvoiceFieldValues(
+      mockAxios,
+      mockLogger
+    );
   });
 
   afterEach(() => {
@@ -65,16 +68,17 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
         { id: 2, name: 'AdditionalInvoiceFieldValues 2' },
       ];
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse(mockData)
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse(mockData));
 
       const result = await additionalInvoiceFieldValues.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-        });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/AdditionalInvoiceFieldValues/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -85,18 +89,19 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await additionalInvoiceFieldValues.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/AdditionalInvoiceFieldValues/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
           sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-        });
+          page: 1,
+          MaxRecords: 10,
+        }
+      );
     });
   });
 
@@ -104,62 +109,83 @@ describe('AdditionalInvoiceFieldValues Entity', () => {
     it('should get additionalinvoicefieldvalues by id', async () => {
       const mockData = { id: 1, name: 'Test AdditionalInvoiceFieldValues' };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
-        createMockItemResponse(mockData)
-      );
+      mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
 
       const result = await additionalInvoiceFieldValues.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        '/AdditionalInvoiceFieldValues/1'
+      );
     });
   });
 
   describe('create', () => {
     it('should create additionalinvoicefieldvalues successfully', async () => {
-      const additionalInvoiceFieldValuesData = { name: 'New AdditionalInvoiceFieldValues' };
+      const additionalInvoiceFieldValuesData = {
+        name: 'New AdditionalInvoiceFieldValues',
+      };
       const mockResponse = { id: 1, ...additionalInvoiceFieldValuesData };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
+      mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await additionalInvoiceFieldValues.create(additionalInvoiceFieldValuesData);
+      const result = await additionalInvoiceFieldValues.create(
+        additionalInvoiceFieldValuesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues', additionalInvoiceFieldValuesData);
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/AdditionalInvoiceFieldValues',
+        additionalInvoiceFieldValuesData
+      );
     });
   });
 
   describe('update', () => {
     it('should update additionalinvoicefieldvalues successfully', async () => {
-      const additionalInvoiceFieldValuesData = { name: 'Updated AdditionalInvoiceFieldValues' };
+      const additionalInvoiceFieldValuesData = {
+        name: 'Updated AdditionalInvoiceFieldValues',
+      };
       const mockResponse = { id: 1, ...additionalInvoiceFieldValuesData };
 
-      setup.mockAxios.put.mockResolvedValueOnce(
-        createMockItemResponse(mockResponse)
+      mockAxios.put.mockResolvedValueOnce(createMockItemResponse(mockResponse));
+
+      const result = await additionalInvoiceFieldValues.update(
+        1,
+        additionalInvoiceFieldValuesData
       );
 
-      const result = await additionalInvoiceFieldValues.update(1, additionalInvoiceFieldValuesData);
-
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1', additionalInvoiceFieldValuesData);
+      expect(mockAxios.put).toHaveBeenCalledWith(
+        '/AdditionalInvoiceFieldValues/1',
+        additionalInvoiceFieldValuesData
+      );
     });
   });
 
   describe('patch', () => {
     it('should partially update additionalinvoicefieldvalues successfully', async () => {
-      const additionalInvoiceFieldValuesData = { name: 'Patched AdditionalInvoiceFieldValues' };
+      const additionalInvoiceFieldValuesData = {
+        name: 'Patched AdditionalInvoiceFieldValues',
+      };
       const mockResponse = { id: 1, ...additionalInvoiceFieldValuesData };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
+      mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
-      const result = await additionalInvoiceFieldValues.patch(1, additionalInvoiceFieldValuesData);
+      const result = await additionalInvoiceFieldValues.patch(
+        1,
+        additionalInvoiceFieldValuesData
+      );
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/AdditionalInvoiceFieldValues/1', additionalInvoiceFieldValuesData);
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        '/AdditionalInvoiceFieldValues/1',
+        additionalInvoiceFieldValuesData
+      );
     });
   });
 });
