@@ -91,7 +91,7 @@
     "commander": "^14.0.2",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
-    "csv-parse": "^5.6.0",
+    "csv-parse": "^6.1.0",
     "dompurify": "^3.3.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
