@@ -120,7 +120,7 @@
     "@types/express": "^5.0.5",
     "@types/ioredis": "^4.28.10",
     "@types/jest": "^29.5.2",
-    "@types/joi": "^17.2.2",
+    "@types/joi": "^17.2.3",
     "@types/jsdom": "^21.1.7",
     "@types/lru-cache": "^7.10.9",
     "@types/nock": "^11.1.0",
