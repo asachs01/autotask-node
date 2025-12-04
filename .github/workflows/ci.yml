@@ -54,6 +54,8 @@ jobs:
 
       - name: Run unit tests
         run: npm run test:unit
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Debug environment variables
         shell: bash
@@ -70,6 +72,7 @@ jobs:
 
       - name: Run integration tests
         env:
+          NODE_OPTIONS: --max-old-space-size=4096
           AUTOTASK_USERNAME: ${{ secrets.AUTOTASK_USERNAME }}
           AUTOTASK_INTEGRATION_CODE: ${{ secrets.AUTOTASK_INTEGRATION_CODE }}
           AUTOTASK_SECRET: ${{ secrets.AUTOTASK_SECRET }}
@@ -101,6 +104,8 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:coverage --if-present || npm run test:unit
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
