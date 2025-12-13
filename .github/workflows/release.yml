@@ -27,16 +27,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          # Node 24 required for OIDC trusted publishing (see npm/cli#8730)
-          node-version: "24"
-          # Note: Do NOT use registry-url here - it sets a default NODE_AUTH_TOKEN
-          # that interferes with npm OIDC trusted publishing
-
-      - name: Upgrade npm for trusted publishing
-        run: npm install -g npm@latest
-
-      - name: Verify npm version
-        run: npm --version
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
         run: npm clean-install
@@ -104,9 +96,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to NPM
-        # Clear NODE_AUTH_TOKEN to avoid interference with OIDC trusted publishing
-        # See: https://github.com/actions/setup-node/issues/1440
-        run: |
-          NODE_AUTH_TOKEN="" npm publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         
 
