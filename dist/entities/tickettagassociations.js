@@ -1,0 +1,135 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TicketTagAssociations = void 0;
+const base_1 = require("./base");
+/**
+ * TicketTagAssociations entity class for Autotask API
+ *
+ * Tag associations for tickets
+ * Supported Operations: GET, POST, DELETE
+ * Category: ticketing
+ *
+ * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/TicketTagAssociationsEntity.htm}
+ */
+class TicketTagAssociations extends base_1.BaseEntity {
+    constructor(axios, logger, requestHandler) {
+        super(axios, logger, requestHandler);
+        this.endpoint = '/TicketTagAssociations';
+    }
+    static getMetadata() {
+        return [
+            {
+                operation: 'createTicketTagAssociations',
+                requiredParams: ['ticketTagAssociations'],
+                optionalParams: [],
+                returnType: 'ITicketTagAssociations',
+                endpoint: '/TicketTagAssociations',
+            },
+            {
+                operation: 'getTicketTagAssociations',
+                requiredParams: ['id'],
+                optionalParams: [],
+                returnType: 'ITicketTagAssociations',
+                endpoint: '/TicketTagAssociations/{id}',
+            },
+            {
+                operation: 'deleteTicketTagAssociations',
+                requiredParams: ['id'],
+                optionalParams: [],
+                returnType: 'void',
+                endpoint: '/TicketTagAssociations/{id}',
+            },
+            {
+                operation: 'listTicketTagAssociations',
+                requiredParams: [],
+                optionalParams: ['filter', 'sort', 'page', 'pageSize'],
+                returnType: 'ITicketTagAssociations[]',
+                endpoint: '/TicketTagAssociations',
+            }
+        ];
+    }
+    /**
+     * Create a new tickettagassociations
+     * @param ticketTagAssociations - The tickettagassociations data to create
+     * @returns Promise with the created tickettagassociations
+     */
+    async create(ticketTagAssociations) {
+        this.logger.info('Creating tickettagassociations', { ticketTagAssociations });
+        return this.executeRequest(async () => this.axios.post(this.endpoint, ticketTagAssociations), this.endpoint, 'POST');
+    }
+    /**
+     * Get a tickettagassociations by ID
+     * @param id - The tickettagassociations ID
+     * @returns Promise with the tickettagassociations data
+     */
+    async get(id) {
+        this.logger.info('Getting tickettagassociations', { id });
+        return this.executeRequest(async () => this.axios.get(`${this.endpoint}/${id}`), `${this.endpoint}/${id}`, 'GET');
+    }
+    /**
+     * Delete a tickettagassociations
+     * @param id - The tickettagassociations ID
+     * @returns Promise that resolves when deletion is complete
+     */
+    async delete(id) {
+        this.logger.info('Deleting tickettagassociations', { id });
+        await this.executeRequest(async () => this.axios.delete(`${this.endpoint}/${id}`), `${this.endpoint}/${id}`, 'DELETE');
+    }
+    /**
+     * List tickettagassociations with optional filtering
+     * @param query - Query parameters for filtering, sorting, and pagination
+     * @returns Promise with array of tickettagassociations
+     */
+    async list(query = {}) {
+        this.logger.info('Listing tickettagassociations', { query });
+        const searchBody = {};
+        // Set up basic filter if none provided
+        if (!query.filter || Object.keys(query.filter).length === 0) {
+            searchBody.filter = [
+                {
+                    op: 'gte',
+                    field: 'id',
+                    value: 0,
+                },
+            ];
+        }
+        else {
+            // Convert object filter to array format
+            if (!Array.isArray(query.filter)) {
+                const filterArray = [];
+                for (const [field, value] of Object.entries(query.filter)) {
+                    // Handle nested objects like { id: { gte: 0 } }
+                    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                        // Extract operator and value from nested object
+                        const [op, val] = Object.entries(value)[0];
+                        filterArray.push({
+                            op: op,
+                            field: field,
+                            value: val,
+                        });
+                    }
+                    else {
+                        filterArray.push({
+                            op: 'eq',
+                            field: field,
+                            value: value,
+                        });
+                    }
+                }
+                searchBody.filter = filterArray;
+            }
+            else {
+                searchBody.filter = query.filter;
+            }
+        }
+        if (query.sort)
+            searchBody.sort = query.sort;
+        if (query.page)
+            searchBody.page = query.page;
+        if (query.pageSize)
+            searchBody.MaxRecords = query.pageSize;
+        return this.executeQueryRequest(async () => this.axios.post(`${this.endpoint}/query`, searchBody), `${this.endpoint}/query`, 'POST');
+    }
+}
+exports.TicketTagAssociations = TicketTagAssociations;
+//# sourceMappingURL=tickettagassociations.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"ConfigBuilder.d.ts","sourceRoot":"","sources":["../../../src/migration/cli/ConfigBuilder.ts"],"names":[],"mappings":"AAAA;;GAEG;AAEH,OAAO,EAAE,eAAe,EAAE,SAAS,EAAE,MAAM,yBAAyB,CAAC;AAErE,qBAAa,aAAa;IAClB,iBAAiB,CAAC,MAAM,EAAE,SAAS,GAAG,OAAO,CAAC,eAAe,CAAC;CAgCrE"}

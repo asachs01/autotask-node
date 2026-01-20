@@ -1,0 +1,1 @@
+{"version":3,"file":"ProgressReporter.d.ts","sourceRoot":"","sources":["../../../src/migration/cli/ProgressReporter.ts"],"names":[],"mappings":"AAAA;;GAEG;AAEH,OAAO,EAAE,cAAc,EAAE,iBAAiB,EAAE,MAAM,yBAAyB,CAAC;AAE5E,qBAAa,gBAAgB;IAC3B,KAAK,CAAC,KAAK,EAAE,cAAc,GAAG,IAAI;IAIlC,MAAM,CAAC,QAAQ,EAAE,iBAAiB,GAAG,IAAI;IAIzC,QAAQ,IAAI,IAAI;CAGjB"}
