@@ -3,99 +3,84 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags like v1.0.0, v1.2.3, etc.
+      - 'v*'
 
 permissions:
-  contents: write # to be able to publish a GitHub release
-  issues: write # to be able to comment on released issues
-  pull-requests: write # to be able to comment on released pull requests
-  id-token: write # to enable use of OIDC for npm provenance
+  contents: write
+  packages: write
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    environment: npm
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20.x"
-          registry-url: "https://registry.npmjs.org"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@asachs01"
 
       - name: Install dependencies
         run: npm clean-install
 
-      - name: Verify the integrity of provenance attestations and registry signatures
-        run: npm audit signatures
-
       - name: Build project
-        run: npm run build --if-present
+        run: npm run build
 
       - name: Extract version from tag
         id: extract_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Check and update package.json version
+        env:
+          TARGET_VERSION: ${{ steps.extract_version.outputs.VERSION }}
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          TARGET_VERSION="${{ steps.extract_version.outputs.VERSION }}"
           echo "Current version: $CURRENT_VERSION"
           echo "Target version: $TARGET_VERSION"
           if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
             echo "Updating version from $CURRENT_VERSION to $TARGET_VERSION"
-            npm version $TARGET_VERSION --no-git-tag-version
-          else
-            echo "Version is already correct ($TARGET_VERSION), skipping update"
+            npm version "$TARGET_VERSION" --no-git-tag-version
           fi
 
       - name: Extract release notes from CHANGELOG.md
-        id: extract_release_notes
+        env:
+          VERSION: ${{ steps.extract_version.outputs.VERSION }}
         run: |
-          # Extract the release notes for this version from CHANGELOG.md
-          version="${{ steps.extract_version.outputs.VERSION }}"
-          echo "Extracting release notes for version $version"
-          
-          # Find the section for this version and extract until the next version or end
-          awk -v version="$version" '
+          echo "Extracting release notes for version $VERSION"
+          awk -v version="$VERSION" '
           BEGIN { found=0; content="" }
           /^## [0-9]+\.[0-9]+\.[0-9]+ release notes/ {
             if (found) exit
             if ($2 == version) found=1
             next
           }
-          /^## [0-9]+\.[0-9]+\.[0-9]+ release notes/ && found { exit }
-          found && !/^#/ { 
-            if (content == "" && $0 == "") next  # Skip leading empty lines
-            content = content $0 "\n" 
+          found && !/^#/ {
+            if (content == "" && $0 == "") next
+            content = content $0 "\n"
           }
-          END { 
-            # Remove trailing newlines
+          END {
             gsub(/\n+$/, "", content)
-            print content 
+            print content
           }' CHANGELOG.md > release-notes.md
-          
-          echo "Release notes extracted to release-notes.md"
+          echo "Release notes extracted"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
+          name: Release ${{ github.ref_name }}
           body_path: release-notes.md
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish to NPM
-        run: npm publish --provenance --access public
-        
-
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
