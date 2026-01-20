@@ -1,5 +1,25 @@
 # Autotask Node SDK Release Notes
 
+## [Unreleased]
+
+### Security
+
+- **BREAKING**: Replaced `xlsx` (SheetJS) with `exceljs` for Excel file parsing
+  - xlsx had unfixed HIGH severity vulnerabilities (prototype pollution, ReDoS)
+  - exceljs provides equivalent functionality with better security
+- Fixed `qs` DoS vulnerability via arrayLimit bypass
+- Updated dev dependencies: semantic-release, jest, typescript-eslint, prettier, ts-jest, winston, express
+
+### Changed
+
+- Package renamed to `@asachs01/autotask-node` (scoped)
+- Package now published to GitHub Packages instead of npm
+- Install with: `npm install @asachs01/autotask-node --registry=https://npm.pkg.github.com`
+
+### Known Issues
+
+- Remaining vulnerabilities are in dev/build tooling only (tar, diff) and do not affect the published package
+
 ## 2.0.0 - Production Ready Release
 
 **August 26, 2025** — Major release marking production readiness with complete API coverage, enterprise features, and comprehensive testing.
