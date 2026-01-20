@@ -2,7 +2,7 @@
 
 A TypeScript/Node.js SDK for the Kaseya Autotask PSA REST API with business logic validation, performance optimization, and production monitoring.
 
-[![npm version](https://badge.fury.io/js/autotask-node.svg)](https://www.npmjs.com/package/autotask-node)
+[![GitHub package version](https://img.shields.io/github/package-json/v/asachs01/autotask-node?label=version)](https://github.com/asachs01/autotask-node/packages)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![API Coverage](https://img.shields.io/badge/API%20Coverage-100%25-brightgreen)](./docs/ENTITIES.md)
@@ -19,14 +19,22 @@ A TypeScript/Node.js SDK for the Kaseya Autotask PSA REST API with business logi
 
 ### Installation
 
+This package is published to GitHub Packages. Configure npm to use GitHub's registry for this package:
+
 ```bash
-npm install autotask-node
+# Configure npm to use GitHub Packages for @asachs01 scope
+echo "@asachs01:registry=https://npm.pkg.github.com" >> .npmrc
+
+# Install the package
+npm install @asachs01/autotask-node
 ```
+
+**Note**: You may need to authenticate with GitHub Packages. See [GitHub's documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) for details.
 
 ### Basic Usage
 
 ```typescript
-import { AutotaskClient } from 'autotask-node';
+import { AutotaskClient } from '@asachs01/autotask-node';
 
 // Automatic zone detection - no configuration needed
 const client = await AutotaskClient.create({
