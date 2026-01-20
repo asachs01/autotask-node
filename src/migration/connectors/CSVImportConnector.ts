@@ -248,30 +248,51 @@ export class CSVImportConnector extends BaseConnector {
   }
 
   private async loadExcelData(): Promise<void> {
-    // For Excel files, we would use a library like xlsx or exceljs
-    // This is a placeholder implementation
     try {
-      const xlsx = await import('xlsx');
-      
-      const workbook = xlsx.readFile(this.config.filePath);
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      
-      // Convert to JSON with header row
-      const data = xlsx.utils.sheet_to_json(worksheet, { 
-        header: this.config.hasHeaders !== false ? 1 : undefined,
-        range: this.config.skipRows || 0
+      const ExcelJS = await import('exceljs');
+      const workbook = new ExcelJS.default.Workbook();
+      await workbook.xlsx.readFile(this.config.filePath);
+
+      const worksheet = workbook.worksheets[0];
+      if (!worksheet) {
+        throw new Error('No worksheets found in Excel file');
+      }
+
+      const skipRows = this.config.skipRows || 0;
+      const hasHeaders = this.config.hasHeaders !== false;
+      const data: Record<string, unknown>[] = [];
+      let headers: string[] = [];
+
+      worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+        if (rowNumber <= skipRows) return;
+
+        const rowValues = row.values as (string | number | boolean | Date | null)[];
+        // ExcelJS row.values is 1-indexed, so slice from index 1
+        const values = rowValues.slice(1);
+
+        if (hasHeaders && rowNumber === skipRows + 1) {
+          headers = values.map((v, i) => String(v ?? `column_${i}`));
+          return;
+        }
+
+        const record: Record<string, unknown> = {};
+        const effectiveHeaders = headers.length > 0 ? headers :
+          values.map((_, i) => `column_${i}`);
+
+        values.forEach((value, index) => {
+          const key = effectiveHeaders[index] || `column_${index}`;
+          record[key] = value;
+        });
+
+        data.push(record);
       });
 
       this.records = data.map(record => this.processExcelRecord(record));
-      
-      if (this.records.length > 0) {
-        this.headers = Object.keys(this.records[0]);
-      }
-      
+      this.headers = headers.length > 0 ? headers :
+        (this.records.length > 0 ? Object.keys(this.records[0]) : []);
+
     } catch (error) {
       this.logger.warn('Excel library not available, falling back to CSV parsing');
-      // Fallback to CSV parsing
       await this.loadCSVData();
     }
   }
