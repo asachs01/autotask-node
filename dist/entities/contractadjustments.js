@@ -143,7 +143,7 @@ class ContractAdjustments extends base_1.BaseEntity {
         if (query.page)
             searchBody.page = query.page;
         if (query.pageSize)
-            searchBody.MaxRecords = query.pageSize;
+            searchBody.maxRecords = query.pageSize;
         return this.executeQueryRequest(async () => this.axios.post(`${this.endpoint}/query`, searchBody), `${this.endpoint}/query`, 'POST');
     }
 }

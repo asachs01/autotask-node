@@ -180,7 +180,7 @@ export class Invoices extends BaseEntity {
 
     if (query.sort) searchBody.sort = query.sort;
     if (query.page) searchBody.page = query.page;
-    if (query.pageSize) searchBody.MaxRecords = query.pageSize;
+    if (query.pageSize) searchBody.maxRecords = query.pageSize;
 
     return this.executeQueryRequest(
       async () =>

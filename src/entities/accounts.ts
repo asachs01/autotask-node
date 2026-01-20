@@ -184,7 +184,7 @@ export class Accounts extends BaseEntity {
     
     if (query.sort) searchBody.sort = query.sort;
     if (query.page) searchBody.page = query.page;
-    if (query.pageSize) searchBody.MaxRecords = query.pageSize;
+    if (query.pageSize) searchBody.maxRecords = query.pageSize;
     
     this.logger.info('Listing accounts with search body', { searchBody });
     

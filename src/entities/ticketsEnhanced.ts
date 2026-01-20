@@ -154,7 +154,7 @@ export class TicketsEnhanced extends QueryableEntity<Ticket> {
 
     if (query.sort) searchBody.sort = query.sort;
     if (query.page) searchBody.page = query.page;
-    if (query.pageSize) searchBody.MaxRecords = query.pageSize;
+    if (query.pageSize) searchBody.maxRecords = query.pageSize;
 
     this.logger.info('Listing tickets with search body', { searchBody });
 

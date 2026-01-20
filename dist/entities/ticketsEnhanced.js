@@ -129,7 +129,7 @@ class TicketsEnhanced extends queryableEntity_1.QueryableEntity {
         if (query.page)
             searchBody.page = query.page;
         if (query.pageSize)
-            searchBody.MaxRecords = query.pageSize;
+            searchBody.maxRecords = query.pageSize;
         this.logger.info('Listing tickets with search body', { searchBody });
         const response = await this.axios.post(`${this.endpoint}/query`, searchBody);
         return { data: response.data };
