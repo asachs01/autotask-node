@@ -46,13 +46,6 @@ const https = __importStar(require("https"));
 const ErrorLogger_1 = require("../errors/ErrorLogger");
 // Import all sub-clients
 const sub_clients_1 = require("./sub-clients");
-// Load environment variables if available
-try {
-    require('dotenv').config();
-}
-catch {
-    // dotenv is optional, do nothing if not available
-}
 /**
  * Rate limiter to prevent overwhelming the API
  */

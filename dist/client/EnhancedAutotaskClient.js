@@ -59,13 +59,6 @@ const https = __importStar(require("https"));
 const sub_clients_1 = require("./sub-clients");
 // Import the comprehensive reliability system
 const rate_limiting_1 = require("../rate-limiting");
-// Load environment variables if available
-try {
-    require('dotenv').config();
-}
-catch {
-    // dotenv is optional, do nothing if not available
-}
 /**
  * Enhanced AutotaskClient with comprehensive reliability features
  *

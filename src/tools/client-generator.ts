@@ -25,10 +25,13 @@ interface EntitiesData {
     documentation_url: string;
     notes: string;
   };
-  categories: Record<string, {
-    description: string;
-    entities: string[];
-  }>;
+  categories: Record<
+    string,
+    {
+      description: string;
+      entities: string[];
+    }
+  >;
   entities: EntityMetadata[];
 }
 
@@ -36,11 +39,21 @@ class ClientGenerator {
   private readonly projectRoot: string;
   private readonly clientFile: string;
   private readonly dataFile: string;
-  
+
   constructor() {
     this.projectRoot = path.resolve(__dirname, '../..');
-    this.clientFile = path.join(this.projectRoot, 'src', 'client', 'AutotaskClient.ts');
-    this.dataFile = path.join(this.projectRoot, 'src', 'data', 'autotask-complete-entities.json');
+    this.clientFile = path.join(
+      this.projectRoot,
+      'src',
+      'client',
+      'AutotaskClient.ts'
+    );
+    this.dataFile = path.join(
+      this.projectRoot,
+      'src',
+      'data',
+      'autotask-complete-entities.json'
+    );
   }
 
   /**
@@ -89,18 +102,22 @@ ${imports}
    */
   private generatePropertyDeclarations(entitiesData: EntitiesData): string {
     const declarations: string[] = [];
-    
-    for (const [categoryKey, category] of Object.entries(entitiesData.categories)) {
+
+    for (const [categoryKey, category] of Object.entries(
+      entitiesData.categories
+    )) {
       declarations.push(`  // ${category.description}`);
-      
+
       for (const entityName of category.entities) {
         const entity = entitiesData.entities.find(e => e.name === entityName);
         if (entity) {
           const propertyName = this.toCamelCase(entity.pluralName);
           const className = this.toPascalCase(entity.pluralName);
           const description = entity.description;
-          
-          declarations.push(`  /** ${entity.pluralName} entity - ${description} */`);
+
+          declarations.push(
+            `  /** ${entity.pluralName} entity - ${description} */`
+          );
           declarations.push(`  public ${propertyName}: ${className};`);
         }
       }
@@ -115,17 +132,21 @@ ${imports}
    */
   private generateEntityInitializations(entitiesData: EntitiesData): string {
     const initializations: string[] = [];
-    
-    for (const [categoryKey, category] of Object.entries(entitiesData.categories)) {
+
+    for (const [categoryKey, category] of Object.entries(
+      entitiesData.categories
+    )) {
       initializations.push(`    // ${category.description}`);
-      
+
       for (const entityName of category.entities) {
         const entity = entitiesData.entities.find(e => e.name === entityName);
         if (entity) {
           const propertyName = this.toCamelCase(entity.pluralName);
           const className = this.toPascalCase(entity.pluralName);
-          
-          initializations.push(`    this.${propertyName} = new ${className}(this.axios, this.logger);`);
+
+          initializations.push(
+            `    this.${propertyName} = new ${className}(this.axios, this.logger);`
+          );
         }
       }
       initializations.push(''); // Add empty line between categories
@@ -140,8 +161,10 @@ ${imports}
   generateClient(): void {
     const entitiesData = this.loadEntityData();
     const imports = this.generateImports(entitiesData.entities);
-    const propertyDeclarations = this.generatePropertyDeclarations(entitiesData);
-    const entityInitializations = this.generateEntityInitializations(entitiesData);
+    const propertyDeclarations =
+      this.generatePropertyDeclarations(entitiesData);
+    const entityInitializations =
+      this.generateEntityInitializations(entitiesData);
 
     const clientCode = `import { AxiosInstance } from 'axios';
 import axios from 'axios';
@@ -151,13 +174,6 @@ import { AutotaskAuth, PerformanceConfig, ConfigurationError } from '../types';
 ${imports}
 import * as http from 'http';
 import * as https from 'https';
-
-// Load environment variables if available
-try {
-  require('dotenv').config();
-} catch {
-  // dotenv is optional, do nothing if not available
-}
 
 /**
  * Rate limiter to prevent overwhelming the API
@@ -477,7 +493,9 @@ ${entityInitializations}  }
 
     // Write the generated client to file
     fs.writeFileSync(this.clientFile, clientCode, 'utf8');
-    console.log(`✅ Generated comprehensive AutotaskClient with ${entitiesData.entities.length} entities at ${this.clientFile}`);
+    console.log(
+      `✅ Generated comprehensive AutotaskClient with ${entitiesData.entities.length} entities at ${this.clientFile}`
+    );
   }
 }
 

@@ -1,5 +1,11 @@
 # Autotask Node SDK Release Notes
 
+## [2.0.3] - 2026-01-23
+
+### Fixed
+
+- Removed `dotenv.config()` calls from library client classes (`AutotaskClient`, `EnhancedAutotaskClient`, and generated clients). Libraries should not load `.env` files — that is the consuming application's responsibility. This caused stdout pollution with dotenv v17+, breaking MCP servers and other stdio-based protocols.
+
 ## [Unreleased]
 
 ### Security

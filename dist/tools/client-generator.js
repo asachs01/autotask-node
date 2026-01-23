@@ -137,13 +137,6 @@ ${imports}
 import * as http from 'http';
 import * as https from 'https';
 
-// Load environment variables if available
-try {
-  require('dotenv').config();
-} catch {
-  // dotenv is optional, do nothing if not available
-}
-
 /**
  * Rate limiter to prevent overwhelming the API
  */

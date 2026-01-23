@@ -5,7 +5,11 @@ import { RequestHandler } from '../utils/requestHandler';
 import { AutotaskAuth, PerformanceConfig, ConfigurationError } from '../types';
 import * as http from 'http';
 import * as https from 'https';
-import { ErrorLogger, LogContext, defaultErrorLogger } from '../errors/ErrorLogger';
+import {
+  ErrorLogger,
+  LogContext,
+  defaultErrorLogger,
+} from '../errors/ErrorLogger';
 
 // Import all sub-clients
 import {
@@ -19,13 +23,6 @@ import {
   ReportsClient,
   ISubClient,
 } from './sub-clients';
-
-// Load environment variables if available
-try {
-  require('dotenv').config();
-} catch {
-  // dotenv is optional, do nothing if not available
-}
 
 /**
  * Rate limiter to prevent overwhelming the API
@@ -152,11 +149,16 @@ export class AutotaskClient {
     this.errorLogger = errorLogger || defaultErrorLogger;
 
     this.axios = axiosInstance;
-    this.requestHandler = new RequestHandler(this.axios, this.logger, {
-      timeout: this.performanceConfig.timeout,
-      retries: 3,
-      baseDelay: 1000,
-    }, this.errorLogger);
+    this.requestHandler = new RequestHandler(
+      this.axios,
+      this.logger,
+      {
+        timeout: this.performanceConfig.timeout,
+        retries: 3,
+        baseDelay: 1000,
+      },
+      this.errorLogger
+    );
 
     // Setup rate limiting interceptor
     this.setupRateLimitingInterceptor();
@@ -248,8 +250,11 @@ export class AutotaskClient {
     if (!config) {
       // Support both naming conventions for environment variables
       config = {
-        username: process.env.AUTOTASK_USERNAME || process.env.AUTOTASK_API_USERNAME!,
-        integrationCode: process.env.AUTOTASK_INTEGRATION_CODE || process.env.AUTOTASK_API_INTEGRATION_CODE!,
+        username:
+          process.env.AUTOTASK_USERNAME || process.env.AUTOTASK_API_USERNAME!,
+        integrationCode:
+          process.env.AUTOTASK_INTEGRATION_CODE ||
+          process.env.AUTOTASK_API_INTEGRATION_CODE!,
         secret: process.env.AUTOTASK_SECRET || process.env.AUTOTASK_API_SECRET!,
         apiUrl: process.env.AUTOTASK_API_URL,
       };
@@ -257,9 +262,9 @@ export class AutotaskClient {
       if (!config.username || !config.integrationCode || !config.secret) {
         throw new ConfigurationError(
           'Missing required environment variables. Please set either:\n' +
-          '  AUTOTASK_USERNAME, AUTOTASK_INTEGRATION_CODE, AUTOTASK_SECRET\n' +
-          'or:\n' +
-          '  AUTOTASK_API_USERNAME, AUTOTASK_API_INTEGRATION_CODE, AUTOTASK_API_SECRET'
+            '  AUTOTASK_USERNAME, AUTOTASK_INTEGRATION_CODE, AUTOTASK_SECRET\n' +
+            'or:\n' +
+            '  AUTOTASK_API_USERNAME, AUTOTASK_API_INTEGRATION_CODE, AUTOTASK_API_SECRET'
         );
       }
     } else {
@@ -305,24 +310,32 @@ export class AutotaskClient {
         // Log successful zone detection
         const tempErrorLogger = errorLogger || defaultErrorLogger;
         const correlationId = tempErrorLogger.generateCorrelationId();
-        tempErrorLogger.info('Autotask zone detected successfully', {
-          correlationId,
-          operation: 'zone-detection',
-          request: {
-            url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`
-          }
-        }, { detectedUrl: zoneUrl });
+        tempErrorLogger.info(
+          'Autotask zone detected successfully',
+          {
+            correlationId,
+            operation: 'zone-detection',
+            request: {
+              url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`,
+            },
+          },
+          { detectedUrl: zoneUrl }
+        );
       } catch (error) {
         // Log zone detection failure
         const tempErrorLogger = errorLogger || defaultErrorLogger;
         const correlationId = tempErrorLogger.generateCorrelationId();
-        tempErrorLogger.error('Failed to detect Autotask zone', error as Error, {
-          correlationId,
-          operation: 'zone-detection',
-          request: {
-            url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`
+        tempErrorLogger.error(
+          'Failed to detect Autotask zone',
+          error as Error,
+          {
+            correlationId,
+            operation: 'zone-detection',
+            request: {
+              url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`,
+            },
           }
-        });
+        );
 
         throw new ConfigurationError(
           'Failed to auto-detect API URL. Please provide apiUrl in config.',
@@ -370,9 +383,9 @@ export class AutotaskClient {
       httpsAgent,
       headers: {
         'Content-Type': 'application/json',
-        'ApiIntegrationCode': config.integrationCode,
-        'UserName': config.username,
-        'Secret': config.secret,
+        ApiIntegrationCode: config.integrationCode,
+        UserName: config.username,
+        Secret: config.secret,
       },
       transformRequest: [
         (data, headers) => {
@@ -393,29 +406,37 @@ export class AutotaskClient {
       // Log successful connection test
       const tempErrorLogger = errorLogger || defaultErrorLogger;
       const correlationId = tempErrorLogger.generateCorrelationId();
-      tempErrorLogger.info('Autotask API connection test successful', {
-        correlationId,
-        operation: 'connection-test',
-        request: {
-          method: 'GET',
-          url: config.apiUrl + '/Version'
+      tempErrorLogger.info(
+        'Autotask API connection test successful',
+        {
+          correlationId,
+          operation: 'connection-test',
+          request: {
+            method: 'GET',
+            url: config.apiUrl + '/Version',
+          },
+        },
+        {
+          statusCode: versionResponse.status,
+          apiVersion: versionResponse.data,
         }
-      }, { 
-        statusCode: versionResponse.status,
-        apiVersion: versionResponse.data 
-      });
+      );
     } catch (error) {
       // Log connection test failure
       const tempErrorLogger = errorLogger || defaultErrorLogger;
       const correlationId = tempErrorLogger.generateCorrelationId();
-      tempErrorLogger.error('Failed to connect to Autotask API', error as Error, {
-        correlationId,
-        operation: 'connection-test',
-        request: {
-          method: 'GET',
-          url: config.apiUrl + '/Version'
+      tempErrorLogger.error(
+        'Failed to connect to Autotask API',
+        error as Error,
+        {
+          correlationId,
+          operation: 'connection-test',
+          request: {
+            method: 'GET',
+            url: config.apiUrl + '/Version',
+          },
         }
-      });
+      );
 
       throw new ConfigurationError(
         'Failed to connect to Autotask API. Please check your credentials and API URL.',
@@ -424,7 +445,12 @@ export class AutotaskClient {
       );
     }
 
-    return new AutotaskClient(config, axiosInstance, performanceConfig, errorLogger);
+    return new AutotaskClient(
+      config,
+      axiosInstance,
+      performanceConfig,
+      errorLogger
+    );
   }
 
   /**
@@ -1506,15 +1532,18 @@ export class AutotaskClient {
    */
   async createEntity(entityType: string, data: any): Promise<any> {
     // Map entity types to their appropriate sub-clients and collections
-    const entityMapping: Record<string, { client: string, collection: string }> = {
-      'Company': { client: 'core', collection: 'companies' },
-      'Contact': { client: 'core', collection: 'contacts' },
-      'Ticket': { client: 'core', collection: 'tickets' },
-      'Project': { client: 'core', collection: 'projects' },
-      'Task': { client: 'core', collection: 'tasks' },
-      'Opportunity': { client: 'core', collection: 'opportunities' },
-      'Resource': { client: 'core', collection: 'resources' },
-      'Contract': { client: 'contracts', collection: 'contracts' }
+    const entityMapping: Record<
+      string,
+      { client: string; collection: string }
+    > = {
+      Company: { client: 'core', collection: 'companies' },
+      Contact: { client: 'core', collection: 'contacts' },
+      Ticket: { client: 'core', collection: 'tickets' },
+      Project: { client: 'core', collection: 'projects' },
+      Task: { client: 'core', collection: 'tasks' },
+      Opportunity: { client: 'core', collection: 'opportunities' },
+      Resource: { client: 'core', collection: 'resources' },
+      Contract: { client: 'contracts', collection: 'contracts' },
     };
 
     const mapping = entityMapping[entityType];
@@ -1525,7 +1554,9 @@ export class AutotaskClient {
     // Get the appropriate collection
     const collection = (this as any)[mapping.collection];
     if (!collection || !collection.create) {
-      throw new Error(`Entity collection ${mapping.collection} not available or does not support creation`);
+      throw new Error(
+        `Entity collection ${mapping.collection} not available or does not support creation`
+      );
     }
 
     return await collection.create(data);
