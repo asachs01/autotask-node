@@ -58,39 +58,46 @@ const logFormat = winston.format.combine(winston.format.timestamp(), winston.for
 const consoleFormat = winston.format.combine(winston.format.colorize(), winston.format.timestamp({ format: 'HH:mm:ss' }), winston.format.printf(({ timestamp, level, message, service, ...meta }) => {
     let log = `${timestamp} [${service || 'app'}] ${level}: ${message}`;
     // Add metadata if present
-    const metaKeys = Object.keys(meta).filter(key => key !== 'timestamp' && key !== 'level' && key !== 'message' && key !== 'service');
+    const metaKeys = Object.keys(meta).filter(key => key !== 'timestamp' &&
+        key !== 'level' &&
+        key !== 'message' &&
+        key !== 'service');
     if (metaKeys.length > 0) {
-        const metaString = metaKeys.map(key => `${key}=${JSON.stringify(meta[key])}`).join(' ');
+        const metaString = metaKeys
+            .map(key => `${key}=${JSON.stringify(meta[key])}`)
+            .join(' ');
         log += ` ${metaString}`;
     }
     return log;
 }));
 function createLogger(service) {
     const transports = [
-        // Console transport with colored output
+        // Console transport — all output goes to stderr to avoid corrupting
+        // stdout-based protocols (e.g., MCP JSON-RPC over stdio)
         new winston.transports.Console({
             format: consoleFormat,
-            level: process.env.CONSOLE_LOG_LEVEL || 'info'
-        })
+            level: process.env.CONSOLE_LOG_LEVEL || 'info',
+            stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+        }),
     ];
     // Only add file transports if the logs directory is available
     if (logsDir) {
         transports.push(new winston.transports.File({
             filename: path.join(logsDir, 'migration.log'),
             maxsize: 10 * 1024 * 1024, // 10MB
-            maxFiles: 5
+            maxFiles: 5,
         }), new winston.transports.File({
             filename: path.join(logsDir, 'error.log'),
             level: 'error',
             maxsize: 5 * 1024 * 1024, // 5MB
-            maxFiles: 3
+            maxFiles: 3,
         }));
     }
     return winston.createLogger({
         level: process.env.LOG_LEVEL || 'info',
         format: logFormat,
         defaultMeta: { service },
-        transports
+        transports,
     });
 }
 exports.logger = createLogger('migration-framework');

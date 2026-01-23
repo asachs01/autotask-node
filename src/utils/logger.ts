@@ -52,10 +52,20 @@ const consoleFormat = winston.format.combine(
 
 export function createLogger(service: string): winston.Logger {
   const transports: winston.transport[] = [
-    // Console transport with colored output
+    // Console transport — all output goes to stderr to avoid corrupting
+    // stdout-based protocols (e.g., MCP JSON-RPC over stdio)
     new winston.transports.Console({
       format: consoleFormat,
       level: process.env.CONSOLE_LOG_LEVEL || 'info',
+      stderrLevels: [
+        'error',
+        'warn',
+        'info',
+        'http',
+        'verbose',
+        'debug',
+        'silly',
+      ],
     }),
   ];
 
