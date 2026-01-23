@@ -76,7 +76,7 @@ class ConsoleLogHandler {
             [LogLevel.INFO]: '\x1b[32m', // Green
             [LogLevel.WARN]: '\x1b[33m', // Yellow
             [LogLevel.ERROR]: '\x1b[31m', // Red
-            [LogLevel.FATAL]: '\x1b[35m' // Magenta
+            [LogLevel.FATAL]: '\x1b[35m', // Magenta
         };
         const reset = '\x1b[0m';
         if (this.jsonFormat) {
@@ -85,7 +85,9 @@ class ConsoleLogHandler {
         else {
             const color = levelColors[entry.level] || '';
             const timestamp = new Date(entry.timestamp).toISOString();
-            const correlationId = entry.context.correlationId ? ` [${entry.context.correlationId}]` : '';
+            const correlationId = entry.context.correlationId
+                ? ` [${entry.context.correlationId}]`
+                : '';
             let output = `${color}${timestamp} ${entry.levelName}${correlationId}:${reset} ${entry.message}`;
             if (entry.error) {
                 output += `\n${color}Error:${reset} ${entry.error.name}: ${entry.error.message}`;
@@ -99,7 +101,7 @@ class ConsoleLogHandler {
             if (Object.keys(entry.context).length > 1 || entry.extra) {
                 output += `\n${color}Context:${reset} ${JSON.stringify({
                     ...entry.context,
-                    ...entry.extra
+                    ...entry.extra,
                 }, null, 2)}`;
             }
             console.error(output);
@@ -147,10 +149,12 @@ class ExternalLogHandler {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.config.apiKey}`,
-                    ...(this.config.service === 'datadog' && { 'DD-API-KEY': this.config.apiKey })
+                    Authorization: `Bearer ${this.config.apiKey}`,
+                    ...(this.config.service === 'datadog' && {
+                        'DD-API-KEY': this.config.apiKey,
+                    }),
                 },
-                body: JSON.stringify(entry)
+                body: JSON.stringify(entry),
             });
             if (!response.ok) {
                 console.warn(`Failed to send log to external service: ${response.status}`);
@@ -173,15 +177,24 @@ class ErrorLogger {
             level: config.level ?? LogLevel.INFO,
             includeStackTrace: config.includeStackTrace ?? true,
             sensitiveFields: config.sensitiveFields ?? [
-                'password', 'token', 'secret', 'key', 'apiKey', 'authorization',
-                'cookie', 'session', 'credentials', 'auth', 'bearer'
+                'password',
+                'token',
+                'secret',
+                'key',
+                'apiKey',
+                'authorization',
+                'cookie',
+                'session',
+                'credentials',
+                'auth',
+                'bearer',
             ],
             destinations: config.destinations ?? [LogDestination.CONSOLE],
             filePath: config.filePath ?? './logs/autotask.log',
             external: config.external ?? {},
             jsonFormat: config.jsonFormat ?? false,
             maxLogSize: config.maxLogSize ?? 10000,
-            correlationIdHeader: config.correlationIdHeader ?? 'x-correlation-id'
+            correlationIdHeader: config.correlationIdHeader ?? 'x-correlation-id',
         };
         this.initializeHandlers();
     }
@@ -233,8 +246,8 @@ class ErrorLogger {
             retry: {
                 attempt: retryInfo.attempt,
                 maxAttempts: retryInfo.maxAttempts,
-                totalTime: retryInfo.totalTime
-            }
+                totalTime: retryInfo.totalTime,
+            },
         }, { nextDelay: retryInfo.nextDelay });
     }
     /**
@@ -248,8 +261,8 @@ class ErrorLogger {
             circuitBreaker: {
                 name: circuitBreakerName,
                 state: toState,
-                metrics: metrics || {}
-            }
+                metrics: metrics || {},
+            },
         });
     }
     /**
@@ -271,7 +284,7 @@ class ErrorLogger {
             levelName: LogLevel[level],
             message: this.truncateMessage(message),
             context: this.redactSensitiveData(context),
-            ...(extra && { extra: this.redactSensitiveData(extra) })
+            ...(extra && { extra: this.redactSensitiveData(extra) }),
         };
         // Add error information
         if (error) {
@@ -280,10 +293,15 @@ class ErrorLogger {
                 message: error.message,
                 ...(error instanceof AutotaskErrors_1.AutotaskError && {
                     code: error.code,
-                    ...(error.context && { details: this.redactSensitiveData(error.context) })
+                    ...(error.context && {
+                        details: this.redactSensitiveData(error.context),
+                    }),
                 }),
-                ...(error.statusCode && { statusCode: error.statusCode }),
-                ...(this.config.includeStackTrace && error.stack && { stack: error.stack })
+                ...(error.statusCode && {
+                    statusCode: error.statusCode,
+                }),
+                ...(this.config.includeStackTrace &&
+                    error.stack && { stack: error.stack }),
             };
         }
         // Write to all configured destinations
@@ -395,7 +413,7 @@ function LogErrors(message, context) {
                     ...context,
                     correlationId,
                     operation: methodName,
-                    performance: { startTime }
+                    performance: { startTime },
                 });
                 const result = await originalMethod.apply(this, args);
                 exports.defaultErrorLogger.debug(`Successfully completed ${methodName}`, {
@@ -404,8 +422,8 @@ function LogErrors(message, context) {
                     operation: methodName,
                     performance: {
                         startTime,
-                        duration: Date.now() - startTime
-                    }
+                        duration: Date.now() - startTime,
+                    },
                 });
                 return result;
             }
@@ -416,8 +434,8 @@ function LogErrors(message, context) {
                     operation: methodName,
                     performance: {
                         startTime,
-                        duration: Date.now() - startTime
-                    }
+                        duration: Date.now() - startTime,
+                    },
                 });
                 throw error;
             }
@@ -435,7 +453,7 @@ function withLoggingContext(operation, fn, context) {
         ...context,
         correlationId,
         operation,
-        performance: { startTime }
+        performance: { startTime },
     });
     return fn(exports.defaultErrorLogger, correlationId).then(result => {
         exports.defaultErrorLogger.debug(`Completed ${operation}`, {
@@ -444,8 +462,8 @@ function withLoggingContext(operation, fn, context) {
             operation,
             performance: {
                 startTime,
-                duration: Date.now() - startTime
-            }
+                duration: Date.now() - startTime,
+            },
         });
         return result;
     }, error => {
@@ -455,8 +473,8 @@ function withLoggingContext(operation, fn, context) {
             operation,
             performance: {
                 startTime,
-                duration: Date.now() - startTime
-            }
+                duration: Date.now() - startTime,
+            },
         });
         throw error;
     });

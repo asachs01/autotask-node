@@ -21,7 +21,7 @@ class ValidatedAutotaskClient {
             enableComplianceChecks: true,
             enableQualityAssurance: true,
             strictMode: false,
-            ...config
+            ...config,
         };
         this.logger = logger || this.createDefaultLogger();
     }
@@ -40,9 +40,17 @@ class ValidatedAutotaskClient {
             format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.json()),
             transports: [
                 new winston_1.default.transports.Console({
-                    stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
-                })
-            ]
+                    stderrLevels: [
+                        'error',
+                        'warn',
+                        'info',
+                        'http',
+                        'verbose',
+                        'debug',
+                        'silly',
+                    ],
+                }),
+            ],
         });
     }
     /**
@@ -67,7 +75,7 @@ class ValidatedAutotaskClient {
             this.logger.info('Starting validated entity creation', {
                 entityType,
                 operationId,
-                strictMode: this.config.strictMode
+                strictMode: this.config.strictMode,
             });
             // Validate entity
             const validationResult = this.validateEntity(entity, entityType);
@@ -75,7 +83,10 @@ class ValidatedAutotaskClient {
             const securityResult = this.validateSecurity(entity, context?.securityContext);
             // Compliance validation
             const complianceResult = this.validateCompliance(entity, context?.complianceContext);
-            if (this.config.strictMode && (!validationResult.passed || !securityResult.passed || !complianceResult.passed)) {
+            if (this.config.strictMode &&
+                (!validationResult.passed ||
+                    !securityResult.passed ||
+                    !complianceResult.passed)) {
                 throw new Error('Validation failed in strict mode');
             }
             // Sanitize data
@@ -92,7 +103,7 @@ class ValidatedAutotaskClient {
                 securityResult: securityResult.passed,
                 complianceResult: complianceResult.passed,
                 qualityScore: this.calculateQualityScore(validationResult, securityResult, complianceResult),
-                duration: Date.now() - startTime
+                duration: Date.now() - startTime,
             };
             this.auditLog.push(auditEntry);
             return {
@@ -111,20 +122,20 @@ class ValidatedAutotaskClient {
                     validationPassed: auditEntry.validationResult,
                     securityPassed: auditEntry.securityResult,
                     compliancePassed: auditEntry.complianceResult,
-                    qualityScore: auditEntry.qualityScore
-                }
+                    qualityScore: auditEntry.qualityScore,
+                },
             };
         }
         catch (error) {
             this.logger.error('Entity creation failed', {
                 entityType,
                 operationId,
-                error: error instanceof Error ? error.message : 'Unknown error'
+                error: error instanceof Error ? error.message : 'Unknown error',
             });
             return {
                 success: false,
                 originalData: entity,
-                qualityScore: 0
+                qualityScore: 0,
             };
         }
     }
@@ -142,7 +153,7 @@ class ValidatedAutotaskClient {
         }
         return {
             passed: issues.length === 0,
-            issues
+            issues,
         };
     }
     /**
@@ -153,18 +164,19 @@ class ValidatedAutotaskClient {
         // Basic security checks - can be extended
         if (entity && typeof entity === 'object') {
             const entityString = JSON.stringify(entity);
-            if (entityString.includes('<script>') || entityString.includes('javascript:')) {
+            if (entityString.includes('<script>') ||
+                entityString.includes('javascript:')) {
                 threats.push({
                     type: 'XSS',
                     severity: 'HIGH',
                     description: 'Potential XSS content detected',
-                    field: 'unknown'
+                    field: 'unknown',
                 });
             }
         }
         return {
             passed: threats.length === 0,
-            threats
+            threats,
         };
     }
     /**
@@ -176,7 +188,7 @@ class ValidatedAutotaskClient {
         // This is a placeholder for actual compliance validation
         return {
             passed: issues.length === 0,
-            issues
+            issues,
         };
     }
     /**

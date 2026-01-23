@@ -116,9 +116,19 @@ class AutotaskClient {
         this.rateLimiter = new RateLimiter(this.performanceConfig.requestsPerSecond);
         this.logger = winston_1.default.createLogger({
             level: 'info',
-            transports: [new winston_1.default.transports.Console({
-                    stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
-                })],
+            transports: [
+                new winston_1.default.transports.Console({
+                    stderrLevels: [
+                        'error',
+                        'warn',
+                        'info',
+                        'http',
+                        'verbose',
+                        'debug',
+                        'silly',
+                    ],
+                }),
+            ],
         });
         this.errorLogger = errorLogger || ErrorLogger_1.defaultErrorLogger;
         this.axios = axiosInstance;
@@ -198,9 +208,19 @@ class AutotaskClient {
         const logger = winston_1.default.createLogger({
             level: process.env.NODE_ENV === 'test' ? 'error' : 'info',
             format: winston_1.default.format.simple(),
-            transports: [new winston_1.default.transports.Console({
-                    stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
-                })],
+            transports: [
+                new winston_1.default.transports.Console({
+                    stderrLevels: [
+                        'error',
+                        'warn',
+                        'info',
+                        'http',
+                        'verbose',
+                        'debug',
+                        'silly',
+                    ],
+                }),
+            ],
             silent: process.env.NODE_ENV === 'test' &&
                 !process.env.DEBUG_TESTS &&
                 !process.env.DEBUG_INTEGRATION_TESTS,

@@ -159,7 +159,15 @@ class EnhancedAutotaskClient {
                 transports: [
                     new winston_1.default.transports.Console({
                         format: winston_1.default.format.combine(winston_1.default.format.colorize(), winston_1.default.format.simple()),
-                        stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+                        stderrLevels: [
+                            'error',
+                            'warn',
+                            'info',
+                            'http',
+                            'verbose',
+                            'debug',
+                            'silly',
+                        ],
                     }),
                 ],
             });
