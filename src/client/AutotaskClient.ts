@@ -143,7 +143,19 @@ export class AutotaskClient {
 
     this.logger = winston.createLogger({
       level: 'info',
-      transports: [new winston.transports.Console()],
+      transports: [
+        new winston.transports.Console({
+          stderrLevels: [
+            'error',
+            'warn',
+            'info',
+            'http',
+            'verbose',
+            'debug',
+            'silly',
+          ],
+        }),
+      ],
     });
 
     this.errorLogger = errorLogger || defaultErrorLogger;
@@ -239,7 +251,19 @@ export class AutotaskClient {
     const logger = winston.createLogger({
       level: process.env.NODE_ENV === 'test' ? 'error' : 'info',
       format: winston.format.simple(),
-      transports: [new winston.transports.Console()],
+      transports: [
+        new winston.transports.Console({
+          stderrLevels: [
+            'error',
+            'warn',
+            'info',
+            'http',
+            'verbose',
+            'debug',
+            'silly',
+          ],
+        }),
+      ],
       silent:
         process.env.NODE_ENV === 'test' &&
         !process.env.DEBUG_TESTS &&

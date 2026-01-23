@@ -220,6 +220,15 @@ export class EnhancedAutotaskClient {
               winston.format.colorize(),
               winston.format.simple()
             ),
+            stderrLevels: [
+              'error',
+              'warn',
+              'info',
+              'http',
+              'verbose',
+              'debug',
+              'silly',
+            ],
           }),
         ],
       });

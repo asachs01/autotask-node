@@ -77,7 +77,15 @@ function createLogger(service) {
         new winston.transports.Console({
             format: consoleFormat,
             level: process.env.CONSOLE_LOG_LEVEL || 'info',
-            stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+            stderrLevels: [
+                'error',
+                'warn',
+                'info',
+                'http',
+                'verbose',
+                'debug',
+                'silly',
+            ],
         }),
     ];
     // Only add file transports if the logs directory is available

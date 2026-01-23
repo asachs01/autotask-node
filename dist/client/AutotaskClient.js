@@ -116,7 +116,9 @@ class AutotaskClient {
         this.rateLimiter = new RateLimiter(this.performanceConfig.requestsPerSecond);
         this.logger = winston_1.default.createLogger({
             level: 'info',
-            transports: [new winston_1.default.transports.Console()],
+            transports: [new winston_1.default.transports.Console({
+                    stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+                })],
         });
         this.errorLogger = errorLogger || ErrorLogger_1.defaultErrorLogger;
         this.axios = axiosInstance;
@@ -196,7 +198,9 @@ class AutotaskClient {
         const logger = winston_1.default.createLogger({
             level: process.env.NODE_ENV === 'test' ? 'error' : 'info',
             format: winston_1.default.format.simple(),
-            transports: [new winston_1.default.transports.Console()],
+            transports: [new winston_1.default.transports.Console({
+                    stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+                })],
             silent: process.env.NODE_ENV === 'test' &&
                 !process.env.DEBUG_TESTS &&
                 !process.env.DEBUG_INTEGRATION_TESTS,
@@ -206,7 +210,8 @@ class AutotaskClient {
             // Support both naming conventions for environment variables
             config = {
                 username: process.env.AUTOTASK_USERNAME || process.env.AUTOTASK_API_USERNAME,
-                integrationCode: process.env.AUTOTASK_INTEGRATION_CODE || process.env.AUTOTASK_API_INTEGRATION_CODE,
+                integrationCode: process.env.AUTOTASK_INTEGRATION_CODE ||
+                    process.env.AUTOTASK_API_INTEGRATION_CODE,
                 secret: process.env.AUTOTASK_SECRET || process.env.AUTOTASK_API_SECRET,
                 apiUrl: process.env.AUTOTASK_API_URL,
             };
@@ -249,8 +254,8 @@ class AutotaskClient {
                     correlationId,
                     operation: 'zone-detection',
                     request: {
-                        url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`
-                    }
+                        url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`,
+                    },
                 }, { detectedUrl: zoneUrl });
             }
             catch (error) {
@@ -261,8 +266,8 @@ class AutotaskClient {
                     correlationId,
                     operation: 'zone-detection',
                     request: {
-                        url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`
-                    }
+                        url: `https://webservices.autotask.net/ATServicesRest/V1.0/zoneInformation?user=${encodeURIComponent(config.username)}`,
+                    },
                 });
                 throw new types_1.ConfigurationError('Failed to auto-detect API URL. Please provide apiUrl in config.', 'apiUrl', error);
             }
@@ -302,9 +307,9 @@ class AutotaskClient {
             httpsAgent,
             headers: {
                 'Content-Type': 'application/json',
-                'ApiIntegrationCode': config.integrationCode,
-                'UserName': config.username,
-                'Secret': config.secret,
+                ApiIntegrationCode: config.integrationCode,
+                UserName: config.username,
+                Secret: config.secret,
             },
             transformRequest: [
                 (data, headers) => {
@@ -328,11 +333,11 @@ class AutotaskClient {
                 operation: 'connection-test',
                 request: {
                     method: 'GET',
-                    url: config.apiUrl + '/Version'
-                }
+                    url: config.apiUrl + '/Version',
+                },
             }, {
                 statusCode: versionResponse.status,
-                apiVersion: versionResponse.data
+                apiVersion: versionResponse.data,
             });
         }
         catch (error) {
@@ -344,8 +349,8 @@ class AutotaskClient {
                 operation: 'connection-test',
                 request: {
                     method: 'GET',
-                    url: config.apiUrl + '/Version'
-                }
+                    url: config.apiUrl + '/Version',
+                },
             });
             throw new types_1.ConfigurationError('Failed to connect to Autotask API. Please check your credentials and API URL.', 'connection', error);
         }
@@ -1192,14 +1197,14 @@ class AutotaskClient {
     async createEntity(entityType, data) {
         // Map entity types to their appropriate sub-clients and collections
         const entityMapping = {
-            'Company': { client: 'core', collection: 'companies' },
-            'Contact': { client: 'core', collection: 'contacts' },
-            'Ticket': { client: 'core', collection: 'tickets' },
-            'Project': { client: 'core', collection: 'projects' },
-            'Task': { client: 'core', collection: 'tasks' },
-            'Opportunity': { client: 'core', collection: 'opportunities' },
-            'Resource': { client: 'core', collection: 'resources' },
-            'Contract': { client: 'contracts', collection: 'contracts' }
+            Company: { client: 'core', collection: 'companies' },
+            Contact: { client: 'core', collection: 'contacts' },
+            Ticket: { client: 'core', collection: 'tickets' },
+            Project: { client: 'core', collection: 'projects' },
+            Task: { client: 'core', collection: 'tasks' },
+            Opportunity: { client: 'core', collection: 'opportunities' },
+            Resource: { client: 'core', collection: 'resources' },
+            Contract: { client: 'contracts', collection: 'contracts' },
         };
         const mapping = entityMapping[entityType];
         if (!mapping) {

@@ -39,7 +39,9 @@ class ValidatedAutotaskClient {
             level: 'info',
             format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.json()),
             transports: [
-                new winston_1.default.transports.Console()
+                new winston_1.default.transports.Console({
+                    stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+                })
             ]
         });
     }

@@ -142,7 +142,7 @@ class EnhancedAutotaskClient {
         this.logger.info('EnhancedAutotaskClient initialized successfully', {
             environment: config.environment,
             zonesConfigured: config.zones?.length || 0,
-            autoZoneDetection: config.enableAutoZoneDetection
+            autoZoneDetection: config.enableAutoZoneDetection,
         });
     }
     /**
@@ -152,15 +152,17 @@ class EnhancedAutotaskClient {
      * @returns Promise<EnhancedAutotaskClient> - Fully configured enhanced client
      */
     static async create(config) {
-        const logger = config.logger || winston_1.default.createLogger({
-            level: config.environment === 'production' ? 'info' : 'debug',
-            format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.errors({ stack: true }), winston_1.default.format.json()),
-            transports: [
-                new winston_1.default.transports.Console({
-                    format: winston_1.default.format.combine(winston_1.default.format.colorize(), winston_1.default.format.simple())
-                })
-            ]
-        });
+        const logger = config.logger ||
+            winston_1.default.createLogger({
+                level: config.environment === 'production' ? 'info' : 'debug',
+                format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.errors({ stack: true }), winston_1.default.format.json()),
+                transports: [
+                    new winston_1.default.transports.Console({
+                        format: winston_1.default.format.combine(winston_1.default.format.colorize(), winston_1.default.format.simple()),
+                        stderrLevels: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'],
+                    }),
+                ],
+            });
         // Validate required configuration
         if (!config.username || !config.integrationCode || !config.secret) {
             const envConfig = {
@@ -169,7 +171,9 @@ class EnhancedAutotaskClient {
                 secret: process.env.AUTOTASK_SECRET,
                 apiUrl: process.env.AUTOTASK_API_URL,
             };
-            if (!envConfig.username || !envConfig.integrationCode || !envConfig.secret) {
+            if (!envConfig.username ||
+                !envConfig.integrationCode ||
+                !envConfig.secret) {
                 throw new types_1.ConfigurationError('Missing required configuration: username, integrationCode, and secret are required');
             }
             Object.assign(config, envConfig);
@@ -182,7 +186,9 @@ class EnhancedAutotaskClient {
         let primaryZoneConfig = null;
         if (config.enableAutoZoneDetection !== false && config.username) {
             try {
-                logger.info('Auto-detecting Autotask zone', { username: config.username });
+                logger.info('Auto-detecting Autotask zone', {
+                    username: config.username,
+                });
                 primaryZoneConfig = await reliabilitySystem.zoneManager.autoDetectZone(config.username);
                 if (primaryZoneConfig) {
                     reliabilitySystem.zoneManager.addZone(primaryZoneConfig);
@@ -190,7 +196,7 @@ class EnhancedAutotaskClient {
                     config.apiUrl = primaryZoneConfig.apiUrl;
                     logger.info('Primary zone auto-detected and configured', {
                         zoneId: primaryZoneConfig.zoneId,
-                        apiUrl: primaryZoneConfig.apiUrl
+                        apiUrl: primaryZoneConfig.apiUrl,
                     });
                 }
             }
@@ -203,12 +209,15 @@ class EnhancedAutotaskClient {
             for (const zoneConfig of config.zones) {
                 reliabilitySystem.zoneManager.addZone(zoneConfig);
                 reliabilitySystem.rateLimiter.registerZone(zoneConfig.zoneId, zoneConfig.apiUrl);
-                if (zoneConfig.priority >= 9 || (!primaryZoneConfig && !zoneConfig.isBackup)) {
+                if (zoneConfig.priority >= 9 ||
+                    (!primaryZoneConfig && !zoneConfig.isBackup)) {
                     config.apiUrl = zoneConfig.apiUrl;
                     primaryZoneConfig = zoneConfig;
                 }
             }
-            logger.info('Additional zones configured', { count: config.zones.length });
+            logger.info('Additional zones configured', {
+                count: config.zones.length,
+            });
         }
         // Ensure we have an API URL
         if (!config.apiUrl) {
@@ -247,9 +256,9 @@ class EnhancedAutotaskClient {
             httpsAgent,
             headers: {
                 'Content-Type': 'application/json',
-                'ApiIntegrationCode': config.integrationCode,
-                'UserName': config.username,
-                'Secret': config.secret,
+                ApiIntegrationCode: config.integrationCode,
+                UserName: config.username,
+                Secret: config.secret,
             },
         });
         // Test connection with reliability features
@@ -311,7 +320,7 @@ class EnhancedAutotaskClient {
         this.logger.info('Zone added at runtime', {
             zoneId: zoneConfig.zoneId,
             name: zoneConfig.name,
-            priority: zoneConfig.priority
+            priority: zoneConfig.priority,
         });
     }
     /**
@@ -351,7 +360,7 @@ class EnhancedAutotaskClient {
             priority: options.priority || 5,
             timeout: options.timeout || 30000,
             retryable: options.retryable !== false,
-            metadata: options.metadata
+            metadata: options.metadata,
         });
     }
     /**
@@ -370,7 +379,7 @@ class EnhancedAutotaskClient {
                 success: true,
                 zones: zoneConnections,
                 systemHealth,
-                responseTime
+                responseTime,
             };
         }
         catch (error) {
@@ -379,7 +388,7 @@ class EnhancedAutotaskClient {
                 success: false,
                 zones: {},
                 systemHealth: this.getSystemHealth(),
-                responseTime: Date.now() - startTime
+                responseTime: Date.now() - startTime,
             };
         }
     }
@@ -405,12 +414,12 @@ class EnhancedAutotaskClient {
                 username: this.config.username,
                 integrationCode: this.config.integrationCode,
                 secret: '[REDACTED]',
-                apiUrl: this.config.apiUrl
+                apiUrl: this.config.apiUrl,
             },
             environment: this.config.environment || 'development',
             zones: this.zoneManager.getAllZones().map(zone => zone.config),
             systemHealth: this.getSystemHealth(),
-            reliabilityMetrics: this.getReliabilityMetrics()
+            reliabilityMetrics: this.getReliabilityMetrics(),
         };
     }
     /**
@@ -424,15 +433,15 @@ class EnhancedAutotaskClient {
             config.metadata = {
                 requestId,
                 startTime: Date.now(),
-                zone: this.primaryZone || 'primary'
+                zone: this.primaryZone || 'primary',
             };
             return config;
-        }, (error) => {
+        }, error => {
             this.logger.error('Request interceptor error:', error);
             return Promise.reject(error);
         });
         // Response interceptor with enhanced error handling
-        this.axios.interceptors.response.use((response) => {
+        this.axios.interceptors.response.use(response => {
             const duration = Date.now() - (response.config.metadata?.startTime || 0);
             const zone = response.config.metadata?.zone || 'primary';
             const requestId = response.config.metadata?.requestId;
@@ -461,7 +470,7 @@ class EnhancedAutotaskClient {
                     method: error.config.method || 'GET',
                     requestId: requestId || 'unknown',
                     zone,
-                    timestamp: new Date(error.config.metadata.startTime || Date.now())
+                    timestamp: new Date(error.config.metadata.startTime || Date.now()),
                 });
                 return Promise.reject(handledError);
             }
@@ -474,7 +483,8 @@ class EnhancedAutotaskClient {
     startHealthMonitoring() {
         this.healthCheckInterval = setInterval(() => {
             const systemHealth = this.getSystemHealth();
-            if (systemHealth.overall === 'CRITICAL' || systemHealth.overall === 'UNAVAILABLE') {
+            if (systemHealth.overall === 'CRITICAL' ||
+                systemHealth.overall === 'UNAVAILABLE') {
                 this.logger.error('System health is critical', systemHealth);
             }
             else if (systemHealth.overall === 'DEGRADED') {
@@ -487,7 +497,7 @@ class EnhancedAutotaskClient {
                     totalRequests: metrics.totalRequests,
                     availability: `${metrics.availability.toFixed(2)}%`,
                     averageQueueTime: `${metrics.averageQueueTime}ms`,
-                    systemHealth: systemHealth.overall
+                    systemHealth: systemHealth.overall,
                 });
             }
         }, 60000); // Check every minute
@@ -529,13 +539,27 @@ class EnhancedAutotaskClient {
         return undefined;
     }
     // Core entities - direct access with enhanced reliability
-    get companies() { return this.getEntityFromSubClient('core', 'companies'); }
-    get contacts() { return this.getEntityFromSubClient('core', 'contacts'); }
-    get tickets() { return this.getEntityFromSubClient('core', 'tickets'); }
-    get projects() { return this.getEntityFromSubClient('core', 'projects'); }
-    get tasks() { return this.getEntityFromSubClient('core', 'tasks'); }
-    get opportunities() { return this.getEntityFromSubClient('core', 'opportunities'); }
-    get resources() { return this.getEntityFromSubClient('core', 'resources'); }
+    get companies() {
+        return this.getEntityFromSubClient('core', 'companies');
+    }
+    get contacts() {
+        return this.getEntityFromSubClient('core', 'contacts');
+    }
+    get tickets() {
+        return this.getEntityFromSubClient('core', 'tickets');
+    }
+    get projects() {
+        return this.getEntityFromSubClient('core', 'projects');
+    }
+    get tasks() {
+        return this.getEntityFromSubClient('core', 'tasks');
+    }
+    get opportunities() {
+        return this.getEntityFromSubClient('core', 'opportunities');
+    }
+    get resources() {
+        return this.getEntityFromSubClient('core', 'resources');
+    }
 }
 exports.EnhancedAutotaskClient = EnhancedAutotaskClient;
 //# sourceMappingURL=EnhancedAutotaskClient.js.map

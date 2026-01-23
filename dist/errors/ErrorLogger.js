@@ -80,7 +80,7 @@ class ConsoleLogHandler {
         };
         const reset = '\x1b[0m';
         if (this.jsonFormat) {
-            console.log(JSON.stringify(entry, null, 2));
+            console.error(JSON.stringify(entry, null, 2));
         }
         else {
             const color = levelColors[entry.level] || '';
@@ -102,7 +102,7 @@ class ConsoleLogHandler {
                     ...entry.extra
                 }, null, 2)}`;
             }
-            console.log(output);
+            console.error(output);
         }
     }
 }

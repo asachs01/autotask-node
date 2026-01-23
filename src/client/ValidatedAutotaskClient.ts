@@ -75,7 +75,7 @@ export class ValidatedAutotaskClient {
       enableComplianceChecks: true,
       enableQualityAssurance: true,
       strictMode: false,
-      ...config
+      ...config,
     };
 
     this.logger = logger || this.createDefaultLogger();
@@ -86,8 +86,11 @@ export class ValidatedAutotaskClient {
    */
   async initialize(): Promise<void> {
     if (this.initialized) return;
-    
-    this.client = await AutotaskClient.create(this.config.auth, this.config.performanceConfig);
+
+    this.client = await AutotaskClient.create(
+      this.config.auth,
+      this.config.performanceConfig
+    );
     this.initialized = true;
   }
 
@@ -99,8 +102,18 @@ export class ValidatedAutotaskClient {
         winston.format.json()
       ),
       transports: [
-        new winston.transports.Console()
-      ]
+        new winston.transports.Console({
+          stderrLevels: [
+            'error',
+            'warn',
+            'info',
+            'http',
+            'verbose',
+            'debug',
+            'silly',
+          ],
+        }),
+      ],
     });
   }
 
@@ -117,15 +130,19 @@ export class ValidatedAutotaskClient {
   /**
    * Validated entity creation
    */
-  async createEntity<T>(entityType: string, entity: any, context?: {
-    userId?: string;
-    securityContext?: any;
-    complianceContext?: any;
-  }): Promise<ValidatedOperationResult<T>> {
+  async createEntity<T>(
+    entityType: string,
+    entity: any,
+    context?: {
+      userId?: string;
+      securityContext?: any;
+      complianceContext?: any;
+    }
+  ): Promise<ValidatedOperationResult<T>> {
     if (!this.initialized) {
       throw new Error('Client not initialized. Call initialize() first.');
     }
-    
+
     const startTime = Date.now();
     const operationId = `create_${entityType}_${Date.now()}`;
 
@@ -133,19 +150,30 @@ export class ValidatedAutotaskClient {
       this.logger.info('Starting validated entity creation', {
         entityType,
         operationId,
-        strictMode: this.config.strictMode
+        strictMode: this.config.strictMode,
       });
 
       // Validate entity
       const validationResult = this.validateEntity(entity, entityType);
-      
-      // Security validation
-      const securityResult = this.validateSecurity(entity, context?.securityContext);
-      
-      // Compliance validation
-      const complianceResult = this.validateCompliance(entity, context?.complianceContext);
 
-      if (this.config.strictMode && (!validationResult.passed || !securityResult.passed || !complianceResult.passed)) {
+      // Security validation
+      const securityResult = this.validateSecurity(
+        entity,
+        context?.securityContext
+      );
+
+      // Compliance validation
+      const complianceResult = this.validateCompliance(
+        entity,
+        context?.complianceContext
+      );
+
+      if (
+        this.config.strictMode &&
+        (!validationResult.passed ||
+          !securityResult.passed ||
+          !complianceResult.passed)
+      ) {
         throw new Error('Validation failed in strict mode');
       }
 
@@ -154,7 +182,11 @@ export class ValidatedAutotaskClient {
 
       // Create through underlying client
       // Note: This is a simplified approach - the actual client would need proper entity creation methods
-      const result = await this.performEntityOperation<T>('create', entityType, sanitizedEntity);
+      const result = await this.performEntityOperation<T>(
+        'create',
+        entityType,
+        sanitizedEntity
+      );
 
       const auditEntry = {
         timestamp: new Date(),
@@ -164,8 +196,12 @@ export class ValidatedAutotaskClient {
         validationResult: validationResult.passed,
         securityResult: securityResult.passed,
         complianceResult: complianceResult.passed,
-        qualityScore: this.calculateQualityScore(validationResult, securityResult, complianceResult),
-        duration: Date.now() - startTime
+        qualityScore: this.calculateQualityScore(
+          validationResult,
+          securityResult,
+          complianceResult
+        ),
+        duration: Date.now() - startTime,
       };
 
       this.auditLog.push(auditEntry);
@@ -186,21 +222,20 @@ export class ValidatedAutotaskClient {
           validationPassed: auditEntry.validationResult,
           securityPassed: auditEntry.securityResult,
           compliancePassed: auditEntry.complianceResult,
-          qualityScore: auditEntry.qualityScore
-        }
+          qualityScore: auditEntry.qualityScore,
+        },
       };
-
     } catch (error: unknown) {
       this.logger.error('Entity creation failed', {
         entityType,
         operationId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
 
       return {
         success: false,
         originalData: entity,
-        qualityScore: 0
+        qualityScore: 0,
       };
     }
   }
@@ -208,7 +243,10 @@ export class ValidatedAutotaskClient {
   /**
    * Simplified entity validation
    */
-  private validateEntity(entity: any, entityType: string): { passed: boolean; issues: string[] } {
+  private validateEntity(
+    entity: any,
+    entityType: string
+  ): { passed: boolean; issues: string[] } {
     const issues: string[] = [];
 
     // Basic validation - can be extended
@@ -222,39 +260,48 @@ export class ValidatedAutotaskClient {
 
     return {
       passed: issues.length === 0,
-      issues
+      issues,
     };
   }
 
   /**
    * Simplified security validation
    */
-  private validateSecurity(entity: any, context?: any): { passed: boolean; threats: any[] } {
+  private validateSecurity(
+    entity: any,
+    context?: any
+  ): { passed: boolean; threats: any[] } {
     const threats: any[] = [];
 
     // Basic security checks - can be extended
     if (entity && typeof entity === 'object') {
       const entityString = JSON.stringify(entity);
-      if (entityString.includes('<script>') || entityString.includes('javascript:')) {
+      if (
+        entityString.includes('<script>') ||
+        entityString.includes('javascript:')
+      ) {
         threats.push({
           type: 'XSS',
           severity: 'HIGH',
           description: 'Potential XSS content detected',
-          field: 'unknown'
+          field: 'unknown',
         });
       }
     }
 
     return {
       passed: threats.length === 0,
-      threats
+      threats,
     };
   }
 
   /**
    * Simplified compliance validation
    */
-  private validateCompliance(entity: any, context?: any): { passed: boolean; issues: any[] } {
+  private validateCompliance(
+    entity: any,
+    context?: any
+  ): { passed: boolean; issues: any[] } {
     const issues: any[] = [];
 
     // Basic compliance checks - can be extended
@@ -262,7 +309,7 @@ export class ValidatedAutotaskClient {
 
     return {
       passed: issues.length === 0,
-      issues
+      issues,
     };
   }
 
@@ -280,7 +327,10 @@ export class ValidatedAutotaskClient {
     Object.keys(sanitized).forEach(key => {
       if (typeof sanitized[key] === 'string') {
         // Remove potential XSS
-        sanitized[key] = sanitized[key].replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        sanitized[key] = sanitized[key].replace(
+          /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+          ''
+        );
         sanitized[key] = sanitized[key].replace(/javascript:/gi, '');
       }
     });
@@ -291,7 +341,11 @@ export class ValidatedAutotaskClient {
   /**
    * Calculate quality score
    */
-  private calculateQualityScore(validationResult: any, securityResult: any, complianceResult: any): number {
+  private calculateQualityScore(
+    validationResult: any,
+    securityResult: any,
+    complianceResult: any
+  ): number {
     let score = 0;
     if (validationResult.passed) score += 40;
     if (securityResult.passed) score += 30;
@@ -303,7 +357,11 @@ export class ValidatedAutotaskClient {
    * Perform entity operation through underlying client
    * This is a simplified version - would need proper implementation
    */
-  private async performEntityOperation<T>(operation: string, entityType: string, data: any): Promise<T> {
+  private async performEntityOperation<T>(
+    operation: string,
+    entityType: string,
+    data: any
+  ): Promise<T> {
     // This is a placeholder - in reality, you'd route to appropriate client methods
     // For now, just return the data as-is
     return data as T;
