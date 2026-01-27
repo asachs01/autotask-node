@@ -147,5 +147,9 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "overrides": {
+    "brace-expansion": "^2.0.1",
+    "diff": "^8.0.3"
   }
 }
