@@ -1,5 +1,18 @@
 # Autotask Node SDK Release Notes
 
+## [2.0.6] - 2026-02-02
+
+### Changed
+
+- **Dependencies**: Consolidated Dependabot updates
+  - `uuid`: 11.1.0 → 13.0.0
+  - `glob`: 11.0.3 → 13.0.0
+  - `ora`: 5.4.1 → 9.1.0
+  - `jsdom`: 27.2.0 → 27.4.0
+  - `lru-cache`: 11.1.0 → 11.2.5
+  - `@typescript-eslint/eslint-plugin`: 8.48.1 → 8.53.1
+  - `eslint`: 9.39.1 → 9.39.2
+
 ## [2.0.3] - 2026-01-23
 
 ### Fixed
