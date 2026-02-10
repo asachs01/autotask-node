@@ -70,7 +70,7 @@ describe('ServiceBundles Entity', () => {
       const result = await serviceBundles.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ServiceBundles/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ServiceBundles Entity', () => {
 
       await serviceBundles.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ServiceBundles/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ServiceBundles/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

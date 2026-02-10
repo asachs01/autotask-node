@@ -70,7 +70,7 @@ describe('ChangeRequestLinks Entity', () => {
       const result = await changeRequestLinks.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ChangeRequestLinks Entity', () => {
 
       await changeRequestLinks.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ChangeRequestLinks/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

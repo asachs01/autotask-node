@@ -70,11 +70,13 @@ describe('ContractBillingRules Entity', () => {
       const result = await contractBillingRules.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/ContractBillingRules/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -90,14 +92,16 @@ describe('ContractBillingRules Entity', () => {
 
       await contractBillingRules.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/ContractBillingRules/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });

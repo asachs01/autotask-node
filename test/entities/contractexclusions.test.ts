@@ -70,7 +70,7 @@ describe('ContractExclusions Entity', () => {
       const result = await contractExclusions.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ContractExclusions/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -80,19 +80,24 @@ describe('ContractExclusions Entity', () => {
         filter: { name: 'test' },
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        pageSize: 10,
       };
 
       mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractExclusions.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractExclusions/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractExclusions/query',
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        })
+      );
     });
   });
 

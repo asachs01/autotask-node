@@ -70,9 +70,12 @@ describe('ResourceAttachments Entity', () => {
       const result = await resourceAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }],
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ResourceAttachments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -87,12 +90,15 @@ describe('ResourceAttachments Entity', () => {
 
       await resourceAttachments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceAttachments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ResourceAttachments/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        }
+      );
     });
   });
 

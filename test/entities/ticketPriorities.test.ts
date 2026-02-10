@@ -1,13 +1,5 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-} from '@jest/globals';
-import {
-  TicketPriorities,
-} from '../../src/entities/ticketPriorities';
+import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { TicketPriorities } from '../../src/entities/ticketPriorities';
 import {
   createEntityTestSetup,
   createMockItemResponse,
@@ -42,10 +34,12 @@ describe('TicketPriorities Entity', () => {
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketPriorities/query', {
-        includeFields: [],
-        MaxRecords: 500,
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TicketPriorities',
+        expect.objectContaining({
+          params: expect.any(Object),
+        })
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -56,18 +50,21 @@ describe('TicketPriorities Entity', () => {
       );
 
       const options = {
-        search: { isActive: true },
-        maxRecords: 10,
+        filter: { isActive: true },
+        pageSize: 10,
       };
 
       const result = await setup.entity.list(options);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketPriorities/query', {
-        includeFields: [],
-        MaxRecords: 10,
-        search: { isActive: true },
-      });
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/TicketPriorities',
+        expect.objectContaining({
+          params: expect.objectContaining({
+            pageSize: 10,
+          }),
+        })
+      );
     });
   });
 
@@ -75,7 +72,9 @@ describe('TicketPriorities Entity', () => {
     it('should get ticket priorities by id', async () => {
       const mockData = { id: 123, name: 'High Priority', priorityLevel: 1 };
 
-      setup.mockAxios.get.mockResolvedValueOnce(createMockItemResponse(mockData));
+      setup.mockAxios.get.mockResolvedValueOnce(
+        createMockItemResponse(mockData)
+      );
 
       const result = await setup.entity.get(123);
 
@@ -96,37 +95,28 @@ describe('TicketPriorities Entity', () => {
       const result = await setup.entity.create(newData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/TicketPriorities', newData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/TicketPriorities',
+        newData
+      );
     });
   });
 
   describe('update', () => {
     it('should update ticket priorities successfully', async () => {
-      const updateData = { id: 123, name: 'Updated Priority' };
+      const updateData = { name: 'Updated Priority' };
 
-      setup.mockAxios.patch.mockResolvedValueOnce(
-        createMockItemResponse(updateData)
+      setup.mockAxios.put.mockResolvedValueOnce(
+        createMockItemResponse({ id: 123, ...updateData })
       );
 
-      const result = await setup.entity.update(updateData);
+      const result = await setup.entity.update(123, updateData);
 
-      expect(result.data).toEqual(updateData);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketPriorities', updateData);
-    });
-  });
-
-  describe('patch', () => {
-    it('should partially update ticket priorities successfully', async () => {
-      const patchData = { id: 123, isActive: false };
-
-      setup.mockAxios.patch.mockResolvedValueOnce(
-        createMockItemResponse(patchData)
+      expect(result.data).toEqual({ id: 123, ...updateData });
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/TicketPriorities/123',
+        updateData
       );
-
-      const result = await setup.entity.patch(patchData);
-
-      expect(result.data).toEqual(patchData);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/TicketPriorities', patchData);
     });
   });
 });

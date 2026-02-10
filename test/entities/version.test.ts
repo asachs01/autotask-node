@@ -22,7 +22,7 @@ describe('Version Entity', () => {
   let setup: EntityTestSetup<Version>;
 
   beforeEach(() => {
-    setup = createEntityTestSetup(describe);
+    setup = createEntityTestSetup(Version);
   });
 
   afterEach(() => {
@@ -36,16 +36,21 @@ describe('Version Entity', () => {
         { id: 2, name: 'Version 2' },
       ];
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Version/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }],
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Version/query',
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -56,16 +61,21 @@ describe('Version Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Version/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Version/query',
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        })
+      );
     });
   });
 

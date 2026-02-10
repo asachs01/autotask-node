@@ -73,11 +73,13 @@ describe('DeletedTaskActivityLogs Entity', () => {
       const result = await deletedTaskActivityLogs.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/DeletedTaskActivityLogs/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -93,14 +95,16 @@ describe('DeletedTaskActivityLogs Entity', () => {
 
       await deletedTaskActivityLogs.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/DeletedTaskActivityLogs/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });

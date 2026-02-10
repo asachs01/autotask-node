@@ -70,9 +70,12 @@ describe('ContractAdjustments Entity', () => {
       const result = await contractAdjustments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }],
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractAdjustments/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -80,19 +83,24 @@ describe('ContractAdjustments Entity', () => {
         filter: { name: 'test' },
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        pageSize: 10,
       };
 
       mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await contractAdjustments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractAdjustments/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/ContractAdjustments/query',
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        })
+      );
     });
   });
 

@@ -48,7 +48,7 @@ describe('Contracts Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Contracts/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,9 +60,7 @@ describe('Contracts Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
@@ -70,7 +68,7 @@ describe('Contracts Entity', () => {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });
@@ -102,7 +100,10 @@ describe('Contracts Entity', () => {
       const result = await setup.entity.create(contractsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Contracts', contractsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Contracts',
+        contractsData
+      );
     });
   });
 
@@ -118,7 +119,10 @@ describe('Contracts Entity', () => {
       const result = await setup.entity.update(1, contractsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Contracts/1', contractsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Contracts/1',
+        contractsData
+      );
     });
   });
 

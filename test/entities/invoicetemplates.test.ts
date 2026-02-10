@@ -70,7 +70,7 @@ describe('InvoiceTemplates Entity', () => {
       const result = await invoiceTemplates.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/InvoiceTemplates/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/InvoiceTemplates/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('InvoiceTemplates Entity', () => {
 
       await invoiceTemplates.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/InvoiceTemplates/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/InvoiceTemplates/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

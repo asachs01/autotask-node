@@ -70,7 +70,7 @@ describe('ResourceSkills Entity', () => {
       const result = await resourceSkills.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ResourceSkills/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ResourceSkills Entity', () => {
 
       await resourceSkills.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceSkills/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ResourceSkills/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

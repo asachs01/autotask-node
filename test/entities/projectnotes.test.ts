@@ -70,7 +70,7 @@ describe('ProjectNotes Entity', () => {
       const result = await projectNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ProjectNotes/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ProjectNotes Entity', () => {
 
       await projectNotes.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ProjectNotes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ProjectNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

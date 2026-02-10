@@ -70,7 +70,7 @@ describe('ShippingTypes Entity', () => {
       const result = await shippingTypes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ShippingTypes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ShippingTypes/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ShippingTypes Entity', () => {
 
       await shippingTypes.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ShippingTypes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ShippingTypes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

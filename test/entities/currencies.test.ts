@@ -48,7 +48,7 @@ describe('Currencies Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Currencies/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +60,15 @@ describe('Currencies Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Currencies/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });

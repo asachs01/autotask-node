@@ -70,7 +70,7 @@ describe('TicketNotes Entity', () => {
       const result = await ticketNotes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketNotes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TicketNotes/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('TicketNotes Entity', () => {
 
       await ticketNotes.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketNotes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TicketNotes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

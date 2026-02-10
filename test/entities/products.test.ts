@@ -48,7 +48,7 @@ describe('Products Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Products/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +60,15 @@ describe('Products Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Products/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });
@@ -100,7 +100,10 @@ describe('Products Entity', () => {
       const result = await setup.entity.create(productsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Products', productsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Products',
+        productsData
+      );
     });
   });
 
@@ -116,7 +119,10 @@ describe('Products Entity', () => {
       const result = await setup.entity.update(1, productsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Products/1', productsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Products/1',
+        productsData
+      );
     });
   });
 
@@ -132,7 +138,10 @@ describe('Products Entity', () => {
       const result = await setup.entity.patch(1, productsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Products/1', productsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Products/1',
+        productsData
+      );
     });
   });
 });

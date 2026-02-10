@@ -70,7 +70,7 @@ describe('DocumentCategories Entity', () => {
       const result = await documentCategories.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentCategories/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/DocumentCategories/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('DocumentCategories Entity', () => {
 
       await documentCategories.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/DocumentCategories/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/DocumentCategories/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

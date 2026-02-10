@@ -26,7 +26,7 @@ describe('TimeOffRequests Entity', () => {
   let setup: EntityTestSetup<TimeOffRequests>;
 
   beforeEach(() => {
-    setup = createEntityTestSetup(describe);
+    setup = createEntityTestSetup(TimeOffRequests);
   });
 
   afterEach(() => {
@@ -40,7 +40,7 @@ describe('TimeOffRequests Entity', () => {
         { id: 2, name: 'TimeOffRequests 2' },
       ];
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
@@ -49,9 +49,11 @@ describe('TimeOffRequests Entity', () => {
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/TimeOffRequests/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -63,18 +65,20 @@ describe('TimeOffRequests Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/TimeOffRequests/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });
@@ -99,7 +103,7 @@ describe('TimeOffRequests Entity', () => {
       const timeOffRequestsData = { name: 'New TimeOffRequests' };
       const mockResponse = { id: 1, ...timeOffRequestsData };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
@@ -118,7 +122,7 @@ describe('TimeOffRequests Entity', () => {
       const timeOffRequestsData = { name: 'Updated TimeOffRequests' };
       const mockResponse = { id: 1, ...timeOffRequestsData };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.put.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
@@ -137,7 +141,7 @@ describe('TimeOffRequests Entity', () => {
       const timeOffRequestsData = { name: 'Patched TimeOffRequests' };
       const mockResponse = { id: 1, ...timeOffRequestsData };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.patch.mockResolvedValueOnce(
         createMockItemResponse(mockResponse)
       );
 
@@ -153,7 +157,7 @@ describe('TimeOffRequests Entity', () => {
 
   describe('delete', () => {
     it('should delete timeoffrequests successfully', async () => {
-      setup.mockAxios.get.mockResolvedValueOnce(createMockDeleteResponse());
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

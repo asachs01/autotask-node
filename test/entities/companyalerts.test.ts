@@ -70,7 +70,7 @@ describe('CompanyAlerts Entity', () => {
       const result = await companyAlerts.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyAlerts/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/CompanyAlerts/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('CompanyAlerts Entity', () => {
 
       await companyAlerts.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyAlerts/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/CompanyAlerts/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

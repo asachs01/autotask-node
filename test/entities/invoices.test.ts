@@ -60,9 +60,7 @@ describe('Invoices Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
@@ -70,7 +68,7 @@ describe('Invoices Entity', () => {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });
@@ -102,7 +100,10 @@ describe('Invoices Entity', () => {
       const result = await setup.entity.create(invoicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Invoices', invoicesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Invoices',
+        invoicesData
+      );
     });
   });
 
@@ -118,7 +119,10 @@ describe('Invoices Entity', () => {
       const result = await setup.entity.update(1, invoicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Invoices/1', invoicesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Invoices/1',
+        invoicesData
+      );
     });
   });
 
@@ -134,7 +138,10 @@ describe('Invoices Entity', () => {
       const result = await setup.entity.patch(1, invoicesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Invoices/1', invoicesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Invoices/1',
+        invoicesData
+      );
     });
   });
 });

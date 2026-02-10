@@ -16,11 +16,7 @@ import {
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
-import {
-  Taxes,
-  ITaxes,
-  ITaxesQuery,
-} from '../../src/entities/taxes';
+import { Taxes, ITaxes, ITaxesQuery } from '../../src/entities/taxes';
 
 describe('Taxes Entity', () => {
   let setup: EntityTestSetup<Taxes>;
@@ -48,7 +44,7 @@ describe('Taxes Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Taxes/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +56,15 @@ describe('Taxes Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Taxes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });

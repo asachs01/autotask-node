@@ -70,7 +70,7 @@ describe('ChangeOrderCharges Entity', () => {
       const result = await changeOrderCharges.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ChangeOrderCharges Entity', () => {
 
       await changeOrderCharges.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ChangeOrderCharges/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

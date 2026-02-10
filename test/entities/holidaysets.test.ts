@@ -70,7 +70,7 @@ describe('HolidaySets Entity', () => {
       const result = await holidaySets.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/HolidaySets/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/HolidaySets/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('HolidaySets Entity', () => {
 
       await holidaySets.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/HolidaySets/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/HolidaySets/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

@@ -70,9 +70,12 @@ describe('SubscriptionPeriods Entity', () => {
       const result = await subscriptionPeriods.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }],
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/SubscriptionPeriods/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -87,12 +90,15 @@ describe('SubscriptionPeriods Entity', () => {
 
       await subscriptionPeriods.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/SubscriptionPeriods/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/SubscriptionPeriods/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        }
+      );
     });
   });
 

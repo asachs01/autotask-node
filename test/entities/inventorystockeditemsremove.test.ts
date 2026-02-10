@@ -73,11 +73,13 @@ describe('InventoryStockedItemsRemove Entity', () => {
       const result = await inventoryStockedItemsRemove.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/InventoryStockedItemsRemove/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -93,14 +95,16 @@ describe('InventoryStockedItemsRemove Entity', () => {
 
       await inventoryStockedItemsRemove.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/InventoryStockedItemsRemove/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });

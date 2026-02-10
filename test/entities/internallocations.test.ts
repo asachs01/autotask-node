@@ -70,7 +70,7 @@ describe('InternalLocations Entity', () => {
       const result = await internalLocations.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/InternalLocations/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/InternalLocations/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('InternalLocations Entity', () => {
 
       await internalLocations.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/InternalLocations/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/InternalLocations/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

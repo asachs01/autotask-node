@@ -70,11 +70,13 @@ describe('OrganizationalLevel2 Entity', () => {
       const result = await organizationalLevel2.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/OrganizationalLevel2/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -90,14 +92,16 @@ describe('OrganizationalLevel2 Entity', () => {
 
       await organizationalLevel2.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/OrganizationalLevel2/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });

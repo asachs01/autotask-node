@@ -47,9 +47,12 @@ describe('WorkTypeModifiers Entity', () => {
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/WorkTypeModifiers/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/WorkTypeModifiers/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -60,18 +63,19 @@ describe('WorkTypeModifiers Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/WorkTypeModifiers/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/WorkTypeModifiers/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        }
+      );
     });
   });
 

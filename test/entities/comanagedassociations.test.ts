@@ -47,9 +47,12 @@ describe('ComanagedAssociations Entity', () => {
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ComanagedAssociations/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/ComanagedAssociations/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -60,18 +63,19 @@ describe('ComanagedAssociations Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ComanagedAssociations/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/ComanagedAssociations/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        }
+      );
     });
   });
 
@@ -86,7 +90,9 @@ describe('ComanagedAssociations Entity', () => {
       const result = await setup.entity.get(1);
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith('/ComanagedAssociations/1');
+      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+        '/ComanagedAssociations/1'
+      );
     });
   });
 
@@ -102,19 +108,22 @@ describe('ComanagedAssociations Entity', () => {
       const result = await setup.entity.create(comanagedAssociationsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/ComanagedAssociations', comanagedAssociationsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/ComanagedAssociations',
+        comanagedAssociationsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete comanagedassociations successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 
-      expect(setup.mockAxios.delete).toHaveBeenCalledWith('/ComanagedAssociations/1');
+      expect(setup.mockAxios.delete).toHaveBeenCalledWith(
+        '/ComanagedAssociations/1'
+      );
     });
   });
 });

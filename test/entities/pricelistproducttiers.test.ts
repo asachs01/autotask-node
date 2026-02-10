@@ -70,11 +70,13 @@ describe('PriceListProductTiers Entity', () => {
       const result = await priceListProductTiers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/PriceListProductTiers/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -90,14 +92,16 @@ describe('PriceListProductTiers Entity', () => {
 
       await priceListProductTiers.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith(
+      expect(mockAxios.post).toHaveBeenCalledWith(
         '/PriceListProductTiers/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });

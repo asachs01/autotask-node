@@ -70,9 +70,12 @@ describe('NotificationHistory Entity', () => {
       const result = await notificationHistory.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/NotificationHistory/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }],
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/NotificationHistory/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -87,12 +90,15 @@ describe('NotificationHistory Entity', () => {
 
       await notificationHistory.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/NotificationHistory/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id',
-        page: 1,
-        MaxRecords: 10,
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        '/NotificationHistory/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        }
+      );
     });
   });
 

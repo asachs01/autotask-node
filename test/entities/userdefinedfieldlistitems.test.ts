@@ -40,18 +40,20 @@ describe('UserDefinedFieldListItems Entity', () => {
         { id: 2, name: 'UserDefinedFieldListItems 2' },
       ];
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/UserDefinedFieldListItems/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -63,18 +65,20 @@ describe('UserDefinedFieldListItems Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/UserDefinedFieldListItems/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });

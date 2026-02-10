@@ -70,7 +70,7 @@ describe('DomainRegistrars Entity', () => {
       const result = await domainRegistrars.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DomainRegistrars/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/DomainRegistrars/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('DomainRegistrars Entity', () => {
 
       await domainRegistrars.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/DomainRegistrars/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/DomainRegistrars/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

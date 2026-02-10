@@ -16,11 +16,7 @@ import {
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
-import {
-  Tags,
-  ITags,
-  ITagsQuery,
-} from '../../src/entities/tags';
+import { Tags, ITags, ITagsQuery } from '../../src/entities/tags';
 
 describe('Tags Entity', () => {
   let setup: EntityTestSetup<Tags>;
@@ -48,7 +44,7 @@ describe('Tags Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tags/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +56,15 @@ describe('Tags Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tags/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });
@@ -138,9 +134,7 @@ describe('Tags Entity', () => {
 
   describe('delete', () => {
     it('should delete tags successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

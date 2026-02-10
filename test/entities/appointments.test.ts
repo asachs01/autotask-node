@@ -48,7 +48,7 @@ describe('Appointments Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Appointments/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +60,15 @@ describe('Appointments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Appointments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });
@@ -100,7 +100,10 @@ describe('Appointments Entity', () => {
       const result = await setup.entity.create(appointmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Appointments', appointmentsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Appointments',
+        appointmentsData
+      );
     });
   });
 
@@ -116,7 +119,10 @@ describe('Appointments Entity', () => {
       const result = await setup.entity.update(1, appointmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Appointments/1', appointmentsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Appointments/1',
+        appointmentsData
+      );
     });
   });
 
@@ -132,15 +138,16 @@ describe('Appointments Entity', () => {
       const result = await setup.entity.patch(1, appointmentsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Appointments/1', appointmentsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Appointments/1',
+        appointmentsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete appointments successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

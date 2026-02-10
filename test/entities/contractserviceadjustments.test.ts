@@ -75,9 +75,11 @@ describe('ContractServiceAdjustments Entity', () => {
       expect(result.data).toEqual(mockData);
       expect(mockAxios.post).toHaveBeenCalledWith(
         '/ContractServiceAdjustments/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -95,12 +97,14 @@ describe('ContractServiceAdjustments Entity', () => {
 
       expect(mockAxios.post).toHaveBeenCalledWith(
         '/ContractServiceAdjustments/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });

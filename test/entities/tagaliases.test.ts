@@ -70,7 +70,7 @@ describe('TagAliases Entity', () => {
       const result = await tagAliases.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TagAliases/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TagAliases/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('TagAliases Entity', () => {
 
       await tagAliases.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TagAliases/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TagAliases/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

@@ -70,7 +70,7 @@ describe('TicketRmaCredits Entity', () => {
       const result = await ticketRmaCredits.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TicketRmaCredits/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('TicketRmaCredits Entity', () => {
 
       await ticketRmaCredits.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TicketRmaCredits/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TicketRmaCredits/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

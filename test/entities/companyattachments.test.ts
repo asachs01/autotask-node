@@ -70,7 +70,7 @@ describe('CompanyAttachments Entity', () => {
       const result = await companyAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/CompanyAttachments/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('CompanyAttachments Entity', () => {
 
       await companyAttachments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/CompanyAttachments/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/CompanyAttachments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

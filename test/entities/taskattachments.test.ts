@@ -70,7 +70,7 @@ describe('TaskAttachments Entity', () => {
       const result = await taskAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TaskAttachments/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TaskAttachments/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('TaskAttachments Entity', () => {
 
       await taskAttachments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TaskAttachments/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TaskAttachments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

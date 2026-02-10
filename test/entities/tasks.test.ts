@@ -16,11 +16,7 @@ import {
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
-import {
-  Tasks,
-  ITasks,
-  ITasksQuery,
-} from '../../src/entities/tasks';
+import { Tasks, ITasks, ITasksQuery } from '../../src/entities/tasks';
 
 describe('Tasks Entity', () => {
   let setup: EntityTestSetup<Tasks>;
@@ -48,7 +44,7 @@ describe('Tasks Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tasks/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +56,15 @@ describe('Tasks Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tasks/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });

@@ -70,7 +70,7 @@ describe('PurchaseOrderItems Entity', () => {
       const result = await purchaseOrderItems.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/PurchaseOrderItems/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/PurchaseOrderItems/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('PurchaseOrderItems Entity', () => {
 
       await purchaseOrderItems.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/PurchaseOrderItems/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/PurchaseOrderItems/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

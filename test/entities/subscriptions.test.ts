@@ -47,9 +47,12 @@ describe('Subscriptions Entity', () => {
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Subscriptions/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Subscriptions/query',
+        {
+          filter: [{ op: 'gte', field: 'id', value: 0 }],
+        }
+      );
     });
 
     it('should handle query parameters', async () => {
@@ -60,16 +63,19 @@ describe('Subscriptions Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Subscriptions/query', {
-        filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
-      });
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Subscriptions/query',
+        {
+          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+          sort: 'id',
+          page: 1,
+          maxRecords: 10,
+        }
+      );
     });
   });
 
@@ -100,7 +106,10 @@ describe('Subscriptions Entity', () => {
       const result = await setup.entity.create(subscriptionsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Subscriptions', subscriptionsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Subscriptions',
+        subscriptionsData
+      );
     });
   });
 
@@ -116,7 +125,10 @@ describe('Subscriptions Entity', () => {
       const result = await setup.entity.update(1, subscriptionsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Subscriptions/1', subscriptionsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Subscriptions/1',
+        subscriptionsData
+      );
     });
   });
 
@@ -132,15 +144,16 @@ describe('Subscriptions Entity', () => {
       const result = await setup.entity.patch(1, subscriptionsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Subscriptions/1', subscriptionsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Subscriptions/1',
+        subscriptionsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete subscriptions successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

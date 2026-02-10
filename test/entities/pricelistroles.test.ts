@@ -70,7 +70,7 @@ describe('PriceListRoles Entity', () => {
       const result = await priceListRoles.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListRoles/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/PriceListRoles/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('PriceListRoles Entity', () => {
 
       await priceListRoles.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/PriceListRoles/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/PriceListRoles/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

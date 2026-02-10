@@ -70,7 +70,7 @@ describe('ContactGroups Entity', () => {
       const result = await contactGroups.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContactGroups/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ContactGroups/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ContactGroups Entity', () => {
 
       await contactGroups.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContactGroups/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ContactGroups/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

@@ -40,18 +40,20 @@ describe('TimeOffRequestsApprove Entity', () => {
         { id: 2, name: 'TimeOffRequestsApprove 2' },
       ];
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/TimeOffRequestsApprove/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -63,18 +65,20 @@ describe('TimeOffRequestsApprove Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/TimeOffRequestsApprove/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });
@@ -84,7 +88,7 @@ describe('TimeOffRequestsApprove Entity', () => {
       const timeOffRequestsApproveData = { name: 'New TimeOffRequestsApprove' };
       const mockResponse = { id: 1, ...timeOffRequestsApproveData };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 

@@ -70,7 +70,7 @@ describe('ChecklistLibraries Entity', () => {
       const result = await checklistLibraries.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ChecklistLibraries/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ChecklistLibraries Entity', () => {
 
       await checklistLibraries.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ChecklistLibraries/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ChecklistLibraries/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

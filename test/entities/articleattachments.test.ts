@@ -70,7 +70,7 @@ describe('ArticleAttachments Entity', () => {
       const result = await articleAttachments.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ArticleAttachments/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ArticleAttachments/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ArticleAttachments Entity', () => {
 
       await articleAttachments.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ArticleAttachments/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ArticleAttachments/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

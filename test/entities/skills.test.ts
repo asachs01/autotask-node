@@ -16,11 +16,7 @@ import {
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
-import {
-  Skills,
-  ISkills,
-  ISkillsQuery,
-} from '../../src/entities/skills';
+import { Skills, ISkills, ISkillsQuery } from '../../src/entities/skills';
 
 describe('Skills Entity', () => {
   let setup: EntityTestSetup<Skills>;
@@ -48,7 +44,7 @@ describe('Skills Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Skills/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +56,15 @@ describe('Skills Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Skills/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });
@@ -132,15 +128,16 @@ describe('Skills Entity', () => {
       const result = await setup.entity.patch(1, skillsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Skills/1', skillsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Skills/1',
+        skillsData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete skills successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

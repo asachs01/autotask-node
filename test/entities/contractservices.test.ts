@@ -70,7 +70,7 @@ describe('ContractServices Entity', () => {
       const result = await contractServices.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractServices/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ContractServices/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ContractServices Entity', () => {
 
       await contractServices.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ContractServices/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ContractServices/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

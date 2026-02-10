@@ -48,7 +48,7 @@ describe('Companies Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Companies/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +60,15 @@ describe('Companies Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Companies/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });
@@ -100,7 +100,10 @@ describe('Companies Entity', () => {
       const result = await setup.entity.create(companiesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Companies', companiesData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Companies',
+        companiesData
+      );
     });
   });
 
@@ -116,7 +119,10 @@ describe('Companies Entity', () => {
       const result = await setup.entity.update(1, companiesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Companies/1', companiesData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Companies/1',
+        companiesData
+      );
     });
   });
 
@@ -132,8 +138,10 @@ describe('Companies Entity', () => {
       const result = await setup.entity.patch(1, companiesData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Companies/1', companiesData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Companies/1',
+        companiesData
+      );
     });
   });
-
 });

@@ -70,7 +70,7 @@ describe('PaymentTerms Entity', () => {
       const result = await paymentTerms.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/PaymentTerms/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('PaymentTerms Entity', () => {
 
       await paymentTerms.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/PaymentTerms/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/PaymentTerms/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

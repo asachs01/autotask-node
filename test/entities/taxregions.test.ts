@@ -70,7 +70,7 @@ describe('TaxRegions Entity', () => {
       const result = await taxRegions.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/TaxRegions/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TaxRegions/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('TaxRegions Entity', () => {
 
       await taxRegions.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/TaxRegions/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/TaxRegions/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

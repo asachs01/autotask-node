@@ -70,7 +70,7 @@ describe('ClientPortalUsers Entity', () => {
       const result = await clientPortalUsers.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ClientPortalUsers/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ClientPortalUsers Entity', () => {
 
       await clientPortalUsers.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ClientPortalUsers/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ClientPortalUsers/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

@@ -70,7 +70,7 @@ describe('ResourceRoleQueues Entity', () => {
       const result = await resourceRoleQueues.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('ResourceRoleQueues Entity', () => {
 
       await resourceRoleQueues.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/ResourceRoleQueues/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

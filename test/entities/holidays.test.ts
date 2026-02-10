@@ -48,7 +48,7 @@ describe('Holidays Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Holidays/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +60,15 @@ describe('Holidays Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Holidays/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });
@@ -100,7 +100,10 @@ describe('Holidays Entity', () => {
       const result = await setup.entity.create(holidaysData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Holidays', holidaysData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Holidays',
+        holidaysData
+      );
     });
   });
 
@@ -116,7 +119,10 @@ describe('Holidays Entity', () => {
       const result = await setup.entity.update(1, holidaysData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Holidays/1', holidaysData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Holidays/1',
+        holidaysData
+      );
     });
   });
 
@@ -132,15 +138,16 @@ describe('Holidays Entity', () => {
       const result = await setup.entity.patch(1, holidaysData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Holidays/1', holidaysData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Holidays/1',
+        holidaysData
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete holidays successfully', async () => {
-      setup.mockAxios.delete.mockResolvedValueOnce(
-        createMockDeleteResponse()
-      );
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

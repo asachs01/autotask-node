@@ -70,7 +70,7 @@ describe('DeletedTicketLogs Entity', () => {
       const result = await deletedTicketLogs.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('DeletedTicketLogs Entity', () => {
 
       await deletedTicketLogs.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/DeletedTicketLogs/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });

@@ -16,11 +16,7 @@ import {
   resetAllMocks,
   EntityTestSetup,
 } from '../helpers/mockHelper';
-import {
-  Tickets,
-  ITickets,
-  ITicketsQuery,
-} from '../../src/entities/tickets';
+import { Tickets, ITickets, ITicketsQuery } from '../../src/entities/tickets';
 
 describe('Tickets Entity', () => {
   let setup: EntityTestSetup<Tickets>;
@@ -48,7 +44,7 @@ describe('Tickets Entity', () => {
 
       expect(result.data).toEqual(mockData);
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tickets/query', {
-        filter: [{ op: 'gte', field: 'id', value: 0 }]
+        filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
 
@@ -60,15 +56,15 @@ describe('Tickets Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.post.mockResolvedValueOnce(
-        createMockItemsResponse([])
-      );
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
       expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tickets/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
-        sort: 'id', page: 1, MaxRecords: 10,
+        sort: 'id',
+        page: 1,
+        maxRecords: 10,
       });
     });
   });
@@ -100,7 +96,10 @@ describe('Tickets Entity', () => {
       const result = await setup.entity.create(ticketsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.post).toHaveBeenCalledWith('/Tickets', ticketsData);
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
+        '/Tickets',
+        ticketsData
+      );
     });
   });
 
@@ -116,7 +115,10 @@ describe('Tickets Entity', () => {
       const result = await setup.entity.update(1, ticketsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.put).toHaveBeenCalledWith('/Tickets/1', ticketsData);
+      expect(setup.mockAxios.put).toHaveBeenCalledWith(
+        '/Tickets/1',
+        ticketsData
+      );
     });
   });
 
@@ -132,7 +134,10 @@ describe('Tickets Entity', () => {
       const result = await setup.entity.patch(1, ticketsData);
 
       expect(result.data).toEqual(mockResponse);
-      expect(setup.mockAxios.patch).toHaveBeenCalledWith('/Tickets/1', ticketsData);
+      expect(setup.mockAxios.patch).toHaveBeenCalledWith(
+        '/Tickets/1',
+        ticketsData
+      );
     });
   });
 });

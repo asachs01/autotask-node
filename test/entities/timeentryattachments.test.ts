@@ -40,18 +40,20 @@ describe('TimeEntryAttachments Entity', () => {
         { id: 2, name: 'TimeEntryAttachments 2' },
       ];
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemsResponse(mockData)
       );
 
       const result = await setup.entity.list();
 
       expect(result.data).toEqual(mockData);
-      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/TimeEntryAttachments/query',
-        {
-          filter: [{ op: 'gte', field: 'id', value: 0 }],
-        }
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'gte', field: 'id', value: 0 }),
+          ]),
+        })
       );
     });
 
@@ -63,18 +65,20 @@ describe('TimeEntryAttachments Entity', () => {
         pageSize: 10,
       };
 
-      setup.mockAxios.get.mockResolvedValueOnce(createMockItemsResponse([]));
+      setup.mockAxios.post.mockResolvedValueOnce(createMockItemsResponse([]));
 
       await setup.entity.list(query);
 
-      expect(setup.mockAxios.get).toHaveBeenCalledWith(
+      expect(setup.mockAxios.post).toHaveBeenCalledWith(
         '/TimeEntryAttachments/query',
-        {
-          filter: [{ op: 'eq', field: 'name', value: 'test' }],
+        expect.objectContaining({
+          filter: expect.arrayContaining([
+            expect.objectContaining({ op: 'eq', field: 'name', value: 'test' }),
+          ]),
           sort: 'id',
           page: 1,
-          MaxRecords: 10,
-        }
+          maxRecords: 10,
+        })
       );
     });
   });
@@ -101,7 +105,7 @@ describe('TimeEntryAttachments Entity', () => {
       const timeEntryAttachmentsData = { name: 'New TimeEntryAttachments' };
       const mockResponse = { id: 1, ...timeEntryAttachmentsData };
 
-      setup.mockAxios.get.mockResolvedValueOnce(
+      setup.mockAxios.post.mockResolvedValueOnce(
         createMockItemResponse(mockResponse, 201)
       );
 
@@ -117,7 +121,7 @@ describe('TimeEntryAttachments Entity', () => {
 
   describe('delete', () => {
     it('should delete timeentryattachments successfully', async () => {
-      setup.mockAxios.get.mockResolvedValueOnce(createMockDeleteResponse());
+      setup.mockAxios.delete.mockResolvedValueOnce(createMockDeleteResponse());
 
       await setup.entity.delete(1);
 

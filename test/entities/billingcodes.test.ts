@@ -70,7 +70,7 @@ describe('BillingCodes Entity', () => {
       const result = await billingCodes.list();
 
       expect(result.data).toEqual(mockData);
-      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/BillingCodes/query', {
         filter: [{ op: 'gte', field: 'id', value: 0 }],
       });
     });
@@ -87,11 +87,11 @@ describe('BillingCodes Entity', () => {
 
       await billingCodes.list(query);
 
-      expect(mockAxios.get).toHaveBeenCalledWith('/BillingCodes/query', {
+      expect(mockAxios.post).toHaveBeenCalledWith('/BillingCodes/query', {
         filter: [{ op: 'eq', field: 'name', value: 'test' }],
         sort: 'id',
         page: 1,
-        MaxRecords: 10,
+        maxRecords: 10,
       });
     });
   });
