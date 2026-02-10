@@ -17,11 +17,11 @@ export interface ITicketNotesQuery {
 
 /**
  * TicketNotes entity class for Autotask API
- * 
+ *
  * Notes for tickets
  * Supported Operations: GET, POST, PATCH, PUT
  * Category: notes
- * 
+ *
  * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/TicketNotesEntity.htm}
  */
 export class TicketNotes extends BaseEntity {
@@ -39,10 +39,10 @@ export class TicketNotes extends BaseEntity {
     return [
       {
         operation: 'createTicketNotes',
-        requiredParams: ['ticketNotes'],
+        requiredParams: ['ticketId', 'ticketNotes'],
         optionalParams: [],
         returnType: 'ITicketNotes',
-        endpoint: '/TicketNotes',
+        endpoint: '/Tickets/{ticketId}/Notes',
       },
       {
         operation: 'getTicketNotes',
@@ -64,20 +64,25 @@ export class TicketNotes extends BaseEntity {
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
         returnType: 'ITicketNotes[]',
         endpoint: '/TicketNotes',
-      }
+      },
     ];
   }
 
   /**
-   * Create a new ticketnotes
-   * @param ticketNotes - The ticketnotes data to create
-   * @returns Promise with the created ticketnotes
+   * Create a new ticket note
+   * @param ticketId - The parent ticket ID
+   * @param ticketNotes - The ticket note data to create
+   * @returns Promise with the created ticket note
    */
-  async create(ticketNotes: ITicketNotes): Promise<ApiResponse<ITicketNotes>> {
-    this.logger.info('Creating ticketnotes', { ticketNotes });
+  async create(
+    ticketId: number,
+    ticketNotes: ITicketNotes
+  ): Promise<ApiResponse<ITicketNotes>> {
+    const createEndpoint = `/Tickets/${ticketId}/Notes`;
+    this.logger.info('Creating ticketnotes', { ticketId, ticketNotes });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, ticketNotes),
-      this.endpoint,
+      async () => this.axios.post(createEndpoint, ticketNotes),
+      createEndpoint,
       'POST'
     );
   }
@@ -137,7 +142,9 @@ export class TicketNotes extends BaseEntity {
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of ticketnotes
    */
-  async list(query: ITicketNotesQuery = {}): Promise<ApiResponse<ITicketNotes[]>> {
+  async list(
+    query: ITicketNotesQuery = {}
+  ): Promise<ApiResponse<ITicketNotes[]>> {
     this.logger.info('Listing ticketnotes', { query });
     const searchBody: Record<string, any> = {};
 
@@ -156,7 +163,11 @@ export class TicketNotes extends BaseEntity {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
           // Handle nested objects like { id: { gte: 0 } }
-          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          if (
+            typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value)
+          ) {
             // Extract operator and value from nested object
             const [op, val] = Object.entries(value)[0] as [string, any];
             filterArray.push({

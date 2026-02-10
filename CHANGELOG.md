@@ -1,5 +1,19 @@
 # Autotask Node SDK Release Notes
 
+## [2.1.0] - 2026-02-10
+
+### Changed
+
+- **BREAKING**: `TicketNotes.create()` now requires `ticketId` as first parameter and POSTs to `/Tickets/{ticketId}/Notes`
+- **BREAKING**: `ProjectNotes.create()` now requires `projectId` as first parameter and POSTs to `/Projects/{projectId}/Notes`
+- **BREAKING**: `CompanyNotes.create()` now requires `companyId` as first parameter and POSTs to `/Companies/{companyId}/Notes`
+- **BREAKING**: `TimeEntries.create()` now requires `ticketId` as first parameter and POSTs to `/Tickets/{ticketId}/TimeEntries`
+
+### Fixed
+
+- Child entity create endpoints now use correct parent-child URL patterns required by the Autotask REST API
+- Updated metadata endpoints to reflect correct parent-child URLs
+
 ## [2.0.3] - 2026-01-23
 
 ### Fixed

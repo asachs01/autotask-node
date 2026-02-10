@@ -17,11 +17,11 @@ export interface IProjectNotesQuery {
 
 /**
  * ProjectNotes entity class for Autotask API
- * 
+ *
  * Notes for projects
  * Supported Operations: GET, POST, PATCH, PUT
  * Category: notes
- * 
+ *
  * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/ProjectNotesEntity.htm}
  */
 export class ProjectNotes extends BaseEntity {
@@ -39,10 +39,10 @@ export class ProjectNotes extends BaseEntity {
     return [
       {
         operation: 'createProjectNotes',
-        requiredParams: ['projectNotes'],
+        requiredParams: ['projectId', 'projectNotes'],
         optionalParams: [],
         returnType: 'IProjectNotes',
-        endpoint: '/ProjectNotes',
+        endpoint: '/Projects/{projectId}/Notes',
       },
       {
         operation: 'getProjectNotes',
@@ -64,20 +64,25 @@ export class ProjectNotes extends BaseEntity {
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
         returnType: 'IProjectNotes[]',
         endpoint: '/ProjectNotes',
-      }
+      },
     ];
   }
 
   /**
-   * Create a new projectnotes
-   * @param projectNotes - The projectnotes data to create
-   * @returns Promise with the created projectnotes
+   * Create a new project note
+   * @param projectId - The parent project ID
+   * @param projectNotes - The project note data to create
+   * @returns Promise with the created project note
    */
-  async create(projectNotes: IProjectNotes): Promise<ApiResponse<IProjectNotes>> {
-    this.logger.info('Creating projectnotes', { projectNotes });
+  async create(
+    projectId: number,
+    projectNotes: IProjectNotes
+  ): Promise<ApiResponse<IProjectNotes>> {
+    const createEndpoint = `/Projects/${projectId}/Notes`;
+    this.logger.info('Creating projectnotes', { projectId, projectNotes });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, projectNotes),
-      this.endpoint,
+      async () => this.axios.post(createEndpoint, projectNotes),
+      createEndpoint,
       'POST'
     );
   }
@@ -137,7 +142,9 @@ export class ProjectNotes extends BaseEntity {
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of projectnotes
    */
-  async list(query: IProjectNotesQuery = {}): Promise<ApiResponse<IProjectNotes[]>> {
+  async list(
+    query: IProjectNotesQuery = {}
+  ): Promise<ApiResponse<IProjectNotes[]>> {
     this.logger.info('Listing projectnotes', { query });
     const searchBody: Record<string, any> = {};
 
@@ -156,7 +163,11 @@ export class ProjectNotes extends BaseEntity {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
           // Handle nested objects like { id: { gte: 0 } }
-          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          if (
+            typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value)
+          ) {
             // Extract operator and value from nested object
             const [op, val] = Object.entries(value)[0] as [string, any];
             filterArray.push({

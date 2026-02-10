@@ -118,11 +118,11 @@ describe('ProjectNotes Entity', () => {
         createMockItemResponse(mockResponse, 201)
       );
 
-      const result = await projectNotes.create(projectNotesData);
+      const result = await projectNotes.create(456, projectNotesData);
 
       expect(result.data).toEqual(mockResponse);
       expect(mockAxios.post).toHaveBeenCalledWith(
-        '/ProjectNotes',
+        '/Projects/456/Notes',
         projectNotesData
       );
     });

@@ -17,11 +17,11 @@ export interface ITimeEntriesQuery {
 
 /**
  * TimeEntries entity class for Autotask API
- * 
+ *
  * Time tracking entries for billing
  * Supported Operations: GET, POST, PATCH, PUT, DELETE
  * Category: time
- * 
+ *
  * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/TimeEntriesEntity.htm}
  */
 export class TimeEntries extends BaseEntity {
@@ -39,10 +39,10 @@ export class TimeEntries extends BaseEntity {
     return [
       {
         operation: 'createTimeEntries',
-        requiredParams: ['timeEntries'],
+        requiredParams: ['ticketId', 'timeEntries'],
         optionalParams: [],
         returnType: 'ITimeEntries',
-        endpoint: '/TimeEntries',
+        endpoint: '/Tickets/{ticketId}/TimeEntries',
       },
       {
         operation: 'getTimeEntries',
@@ -71,20 +71,25 @@ export class TimeEntries extends BaseEntity {
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
         returnType: 'ITimeEntries[]',
         endpoint: '/TimeEntries',
-      }
+      },
     ];
   }
 
   /**
-   * Create a new timeentries
-   * @param timeEntries - The timeentries data to create
-   * @returns Promise with the created timeentries
+   * Create a new time entry under a ticket
+   * @param ticketId - The parent ticket ID
+   * @param timeEntries - The time entry data to create
+   * @returns Promise with the created time entry
    */
-  async create(timeEntries: ITimeEntries): Promise<ApiResponse<ITimeEntries>> {
-    this.logger.info('Creating timeentries', { timeEntries });
+  async create(
+    ticketId: number,
+    timeEntries: ITimeEntries
+  ): Promise<ApiResponse<ITimeEntries>> {
+    const createEndpoint = `/Tickets/${ticketId}/TimeEntries`;
+    this.logger.info('Creating timeentries', { ticketId, timeEntries });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, timeEntries),
-      this.endpoint,
+      async () => this.axios.post(createEndpoint, timeEntries),
+      createEndpoint,
       'POST'
     );
   }
@@ -158,7 +163,9 @@ export class TimeEntries extends BaseEntity {
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of timeentries
    */
-  async list(query: ITimeEntriesQuery = {}): Promise<ApiResponse<ITimeEntries[]>> {
+  async list(
+    query: ITimeEntriesQuery = {}
+  ): Promise<ApiResponse<ITimeEntries[]>> {
     this.logger.info('Listing timeentries', { query });
     const searchBody: Record<string, any> = {};
 
@@ -177,7 +184,11 @@ export class TimeEntries extends BaseEntity {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
           // Handle nested objects like { id: { gte: 0 } }
-          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          if (
+            typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value)
+          ) {
             // Extract operator and value from nested object
             const [op, val] = Object.entries(value)[0] as [string, any];
             filterArray.push({

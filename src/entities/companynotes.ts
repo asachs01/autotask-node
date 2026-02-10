@@ -17,11 +17,11 @@ export interface ICompanyNotesQuery {
 
 /**
  * CompanyNotes entity class for Autotask API
- * 
+ *
  * Notes associated with companies
  * Supported Operations: GET, POST, PATCH, PUT
  * Category: notes
- * 
+ *
  * @see {@link https://www.autotask.net/help/DeveloperHelp/Content/APIs/REST/Entities/CompanyNotesEntity.htm}
  */
 export class CompanyNotes extends BaseEntity {
@@ -39,10 +39,10 @@ export class CompanyNotes extends BaseEntity {
     return [
       {
         operation: 'createCompanyNotes',
-        requiredParams: ['companyNotes'],
+        requiredParams: ['companyId', 'companyNotes'],
         optionalParams: [],
         returnType: 'ICompanyNotes',
-        endpoint: '/CompanyNotes',
+        endpoint: '/Companies/{companyId}/Notes',
       },
       {
         operation: 'getCompanyNotes',
@@ -64,20 +64,25 @@ export class CompanyNotes extends BaseEntity {
         optionalParams: ['filter', 'sort', 'page', 'pageSize'],
         returnType: 'ICompanyNotes[]',
         endpoint: '/CompanyNotes',
-      }
+      },
     ];
   }
 
   /**
-   * Create a new companynotes
-   * @param companyNotes - The companynotes data to create
-   * @returns Promise with the created companynotes
+   * Create a new company note
+   * @param companyId - The parent company ID
+   * @param companyNotes - The company note data to create
+   * @returns Promise with the created company note
    */
-  async create(companyNotes: ICompanyNotes): Promise<ApiResponse<ICompanyNotes>> {
-    this.logger.info('Creating companynotes', { companyNotes });
+  async create(
+    companyId: number,
+    companyNotes: ICompanyNotes
+  ): Promise<ApiResponse<ICompanyNotes>> {
+    const createEndpoint = `/Companies/${companyId}/Notes`;
+    this.logger.info('Creating companynotes', { companyId, companyNotes });
     return this.executeRequest(
-      async () => this.axios.post(this.endpoint, companyNotes),
-      this.endpoint,
+      async () => this.axios.post(createEndpoint, companyNotes),
+      createEndpoint,
       'POST'
     );
   }
@@ -137,7 +142,9 @@ export class CompanyNotes extends BaseEntity {
    * @param query - Query parameters for filtering, sorting, and pagination
    * @returns Promise with array of companynotes
    */
-  async list(query: ICompanyNotesQuery = {}): Promise<ApiResponse<ICompanyNotes[]>> {
+  async list(
+    query: ICompanyNotesQuery = {}
+  ): Promise<ApiResponse<ICompanyNotes[]>> {
     this.logger.info('Listing companynotes', { query });
     const searchBody: Record<string, any> = {};
 
@@ -156,7 +163,11 @@ export class CompanyNotes extends BaseEntity {
         const filterArray = [];
         for (const [field, value] of Object.entries(query.filter)) {
           // Handle nested objects like { id: { gte: 0 } }
-          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          if (
+            typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value)
+          ) {
             // Extract operator and value from nested object
             const [op, val] = Object.entries(value)[0] as [string, any];
             filterArray.push({
